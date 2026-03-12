@@ -2052,30 +2052,35 @@ function saveRecord() {
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.innerHTML = '⏳ Menyimpan...';
 
-  // Tentukan mode: edit (dari klik Edit di tabel), atau update record terakhir di sesi ini
+  // Tentukan mode: edit (dari viewRecord / klik baris), atau update record terakhir di sesi ini
   const targetId = editId || _lastSavedIncomingId || '';
   const isEdit = !!targetId;
   data.id = targetId;
 
   editId = null; // reset edit mode
 
-  saveOneRecord(data).then((savedId) => {
-    // Simpan ID yang baru saja disimpan/diupdate untuk sesi ini
-    if (savedId) _lastSavedIncomingId = savedId;
-    else if (targetId) _lastSavedIncomingId = targetId;
+  const resetBtn = () => {
+    btn.textContent = '💾 Simpan Record';
+    btn.disabled = false;
+  };
 
-    btn.textContent = '💾 Simpan Record';
-    btn.disabled = false;
-    toast(isEdit ? '✅ Record berhasil diupdate!' : '✅ Record berhasil disimpan!', 'ok');
-    renderStats();
-  }).catch(() => {
-    btn.textContent = '💾 Simpan Record';
-    btn.disabled = false;
-  });
+  saveOneRecord(data)
+    .then((savedId) => {
+      _lastSavedIncomingId = savedId || targetId || null;
+      resetBtn();
+      toast(isEdit ? '✅ Record berhasil diupdate!' : '✅ Record berhasil disimpan!', 'ok');
+      renderStats();
+    })
+    .catch((e) => {
+      resetBtn();
+      // toast error sudah ditampilkan oleh saveOneRecord
+    });
 }
 function newForm() {
   editId = null;
   _lastSavedIncomingId = null; // reset so next save creates a new record
+  const btnSave = document.getElementById('btn-save');
+  if (btnSave) { btnSave.textContent = '💾 Simpan Record'; btnSave.disabled = false; }
   ['spesifikasi','kode_material','supplier','no_po','aql','jml_datang','jml_sample','std_sert','catatan','no_ncr','inspector_name','spv_name','ket_a','ket_b','ket_c','ket_d','ket_e','ket_f'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('tgl_inspeksi').valueAsDate = new Date();
   document.getElementById('visual-tbody').innerHTML='';
@@ -2815,8 +2820,84 @@ function renderRecords() {
 function viewRecord(id) {
   const r = records.find(x=>x.id===id);
   if (!r) return;
-  // Just open the form type and show data (simplified view for now)
-  toast('ℹ️ Buka form untuk edit: ' + (FORM_META[r.formType]||{}).label, '');
+
+  if (r.formType === 'incoming') {
+    // ── Buka form incoming & isi data
+    openForm('incoming');
+    editId = id;
+    _lastSavedIncomingId = id;
+
+    // Isi field utama
+    const setVal = (elId, val) => { const el = document.getElementById(elId); if (el) el.value = val||''; };
+    setVal('spesifikasi',    r.spesifikasi);
+    setVal('kode_material',  r.kode_material);
+    setVal('supplier',       r.supplier);
+    setVal('no_po',          r.no_po);
+    setVal('tgl_inspeksi',   r.tgl_inspeksi);
+    setVal('aql',            r.aql);
+    setVal('jml_datang',     r.jml_datang);
+    setVal('jml_sample',     r.jml_sample);
+    setVal('std_sert',       r.std_sert);
+    setVal('catatan',        r.catatan);
+    setVal('no_ncr',         r.no_ncr);
+    setVal('inspector_name', r.inspector);
+    setVal('spv_name',       r.spv);
+    setVal('ket_a', r.ket_a); setVal('ket_b', r.ket_b); setVal('ket_c', r.ket_c);
+    setVal('ket_d', r.ket_d); setVal('ket_e', r.ket_e); setVal('ket_f', r.ket_f);
+
+    // Set status
+    setStatus(r.status||'');
+
+    // Isi baris Visual
+    document.getElementById('visual-tbody').innerHTML = '';
+    vc = 0;
+    const visuals = (r.visual && r.visual.length) ? r.visual : [{item:'',ok:'',no:''},{item:'',ok:'',no:''},{item:'',ok:'',no:''}];
+    visuals.forEach(v => {
+      addVisual();
+      setVal('vi'+vc,  v.item);
+      setVal('vok'+vc, v.ok);
+      setVal('vno'+vc, v.no);
+    });
+
+    // Isi baris Pengukuran
+    document.getElementById('ukur-tbody').innerHTML = '';
+    uc = 0;
+    const meas = (r.measurement && r.measurement.length) ? r.measurement : [{}];
+    meas.forEach(m => {
+      addUkur();
+      const n = uc;
+      ['a','b','c','d','e','f'].forEach(l => {
+        const val = m[l]||'';
+        const hidEl = document.getElementById('u'+l+n+'_val');
+        const btnEl = document.getElementById('u'+l+n);
+        if (hidEl) hidEl.value = val;
+        if (btnEl) {
+          if (val==='OK') { btnEl.textContent='✓'; btnEl.className='af-toggle ok-active'; }
+          else if (val==='NO') { btnEl.textContent='✗'; btnEl.className='af-toggle no-active'; }
+          else { btnEl.textContent='—'; btnEl.className='af-toggle'; }
+        }
+      });
+      const hasil = m.hasil||'';
+      const hidH = document.getElementById('uhasil'+n);
+      const okB  = document.getElementById('uhasil'+n+'_ok');
+      const noB  = document.getElementById('uhasil'+n+'_no');
+      if (hidH) hidH.value = hasil;
+      if (okB)  okB.classList.toggle('ok-active', hasil==='OK');
+      if (noB)  noB.classList.toggle('no-active', hasil==='NO');
+    });
+
+    // Update judul tombol simpan
+    const btn = document.getElementById('btn-save');
+    if (btn) btn.textContent = '💾 Update Record';
+
+    showTab('form');
+    window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
+
+  } else {
+    // Form lain: tampilkan toast saja (bisa dikembangkan)
+    toast('ℹ️ Buka form untuk edit: ' + (FORM_META[r.formType]||{}).label, '');
+  }
 }
 
 function deleteRecord(id) {
