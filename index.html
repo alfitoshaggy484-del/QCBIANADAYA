@@ -2092,6 +2092,7 @@ function newForm() {
 }
 
 // ====== GENERIC SAVE/COLLECT FOR OTHER FORMS ======
+// calcStatus removed — status ditentukan dari data terisi
 function collectFD() {
   const rows = [];
   document.querySelectorAll('#fd-tbody tr').forEach((tr,i) => {
@@ -2129,7 +2130,7 @@ function collectFD() {
       ket: tr.querySelector('.fd-ket')?.value||'',
     });
   });
-  return { formType:'frekuensi', no:v('fd_no'), operator:v('fd_operator'), tanggal:v('fd_tanggal'), noseri:v('fd_noseri'), catatan:v('fd_catatan'), rows, inspector:v('fd_inspector'), spv:v('fd_spv'), status:'' };
+  return { formType:'frekuensi', no:v('fd_no'), operator:v('fd_operator'), tanggal:v('fd_tanggal'), noseri:v('fd_noseri'), catatan:v('fd_catatan'), rows, inspector:v('fd_inspector'), spv:v('fd_spv'), status: rows.some(r=>r.operator||r.noseri||r.tipe)?'DITERIMA':'' };
 }
 function collectIR() {
   const rows = [];
@@ -2149,7 +2150,7 @@ function collectIR() {
       ket: tr.querySelector('.ir-ket')?.value||'',
     });
   });
-  return { formType:'isolasi', no:v('ir_no'), operator:v('ir_operator'), tanggal:v('ir_tanggal'), tipe:v('ir_tipe'), noseri:v('ir_noseri'), catatan:v('ir_catatan'), rows, inspector:v('ir_inspector'), spv:v('ir_spv'), status:'' };
+  return { formType:'isolasi', no:v('ir_no'), operator:v('ir_operator'), tanggal:v('ir_tanggal'), tipe:v('ir_tipe'), noseri:v('ir_noseri'), catatan:v('ir_catatan'), rows, inspector:v('ir_inspector'), spv:v('ir_spv'), status: rows.some(r=>r.noseri||r.operator||r.l1g||r.l2g)?'DITERIMA':'' };
 }
 function collectRC() {
 
@@ -2198,7 +2199,7 @@ function collectRC() {
     const tds = tr.querySelectorAll('td');
     elektrik.push({ item: tds[0]?.textContent?.trim()||'', op_qc: inps[0]?.value||'', tgl: inps[1]?.value||'', good: gn.good, ng: gn.ng });
   });
-  return { formType:'roadcard', type:v('rc_type'), spesifikasi:v('rc_spesifikasi'), jo:v('rc_jo'), tanggal:v('rc_tanggal'), operator:v('rc_operator'), inspector:v('rc_inspector'), catatan:v('rc_catatan'), konstruksi, aksesoris, torsi, mekanis, elektrik, status:'' };
+  return { formType:'roadcard', type:v('rc_type'), spesifikasi:v('rc_spesifikasi'), jo:v('rc_jo'), tanggal:v('rc_tanggal'), operator:v('rc_operator'), inspector:v('rc_inspector'), catatan:v('rc_catatan'), konstruksi, aksesoris, torsi, mekanis, elektrik, status: (v('rc_jo')||v('rc_spesifikasi')||v('rc_operator'))?'DITERIMA':'' };
 }
 function collectTK() {
   const rows = [];
@@ -2220,7 +2221,7 @@ function collectTK() {
       ket: tr.querySelector('.tk-ket')?.value||'',
     });
   });
-  return { formType:'kontak', no:v('tk_no'), tanggal:v('tk_tanggal'), operator:v('tk_operator'), noseri:v('tk_noseri'), catatan:v('tk_catatan'), rows, inspector:v('tk_inspector'), spv:v('tk_spv'), status:'' };
+  return { formType:'kontak', no:v('tk_no'), tanggal:v('tk_tanggal'), operator:v('tk_operator'), noseri:v('tk_noseri'), catatan:v('tk_catatan'), rows, inspector:v('tk_inspector'), spv:v('tk_spv'), status: rows.some(r=>r.noseri||r.operator||r.t1l1||r.t1l2||r.t1l3)?'DITERIMA':'' };
 }
 function collectKS() {
   const rows = [];
@@ -2239,7 +2240,7 @@ function collectKS() {
       });
     }
   });
-  return { formType:'konstruksi', no:v('ks_no'), operator:v('ks_operator'), tanggal:v('ks_tanggal'), noseri:v('ks_noseri'), catatan:v('ks_catatan'), rows, inspector:v('ks_inspector'), spv:v('ks_spv'), status: rows.every(r=>r.hasil==='OK')?'DITERIMA':rows.some(r=>r.hasil==='NO')?'DITOLAK':'' };
+  return { formType:'konstruksi', no:v('ks_no'), operator:v('ks_operator'), tanggal:v('ks_tanggal'), noseri:v('ks_noseri'), catatan:v('ks_catatan'), rows, inspector:v('ks_inspector'), spv:v('ks_spv'), status: (v('ks_noseri')||v('ks_operator')||rows.some(r=>r.noseri||r.operator))?'DITERIMA':'' };
 }
 function collectUF() {
   const tipe = document.getElementById('uf_lbs')?.checked?'LBS':document.getElementById('uf_tp')?.checked?'TP':document.getElementById('uf_vt')?.checked?'VT':document.getElementById('uf_cb')?.checked?'CB':'';
@@ -2260,23 +2261,41 @@ function collectUF() {
     const ket = tr.querySelector('.uf-ket')?.value || '';
     rows.push({ item: itemText, hasil, ket });
   });
-  return { formType:'ujifungsi', tipe, jo:v('uf_jo'), tanggal:v('uf_tanggal'), operator:v('uf_operator'), rows, status:'' };
+  return { formType:'ujifungsi', tipe, jo:v('uf_jo'), tanggal:v('uf_tanggal'), operator:v('uf_operator'), rows, status: (v('uf_jo')||v('uf_operator')||rows.some(r=>r.hasil))?'DITERIMA':'' };
 }
 
 const _lastSavedGenericId = {}; // { formType: id }
 
 function saveGenericRecord(type, collectFn) {
   const data = collectFn();
+
+  // Cari tombol simpan yang sedang aktif (di dalam form yang tampil)
+  const allSaveBtns = document.querySelectorAll('.big-btn.save');
+  let btn = null;
+  allSaveBtns.forEach(b => {
+    if (b.offsetParent !== null) btn = b; // tombol yang terlihat di layar
+  });
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Menyimpan...'; }
+
+  const resetBtn = () => {
+    if (btn) { btn.textContent = '💾 Simpan Record'; btn.disabled = false; }
+  };
+
   const targetId = editId || _lastSavedGenericId[type] || '';
   const isEdit = !!targetId;
   data.id = targetId;
   editId = null;
-  saveOneRecord(data).then((savedId) => {
-    if (savedId) _lastSavedGenericId[type] = savedId;
-    else if (targetId) _lastSavedGenericId[type] = targetId;
-    toast(isEdit ? '✅ Record diupdate!' : '✅ Record disimpan!', 'ok');
-    renderStats();
-  });
+
+  saveOneRecord(data)
+    .then((savedId) => {
+      _lastSavedGenericId[type] = savedId || targetId || null;
+      resetBtn();
+      toast(isEdit ? '✅ Record diupdate!' : '✅ Record disimpan!', 'ok');
+      renderStats();
+    })
+    .catch(() => {
+      resetBtn();
+    });
 }
 function makeOkNoCell(cls) {
   return `<div class="ok-no-cell"><input type="hidden" class="${cls}-result-val" value=""><button class="okno-btn" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" onclick="toggleOkNo(this,'NO')">NO</button></div>`;
@@ -2791,9 +2810,19 @@ function renderRecords() {
     const savedTime = formatFirestoreDate(savedTs);
     const isUpdated = !!r._updated;
     // Operator: siapa yang simpan (by email/name) + field operator dari form
-    const savedBy = r._updatedBy || r._createdBy || '';
-    const savedName = r._createdName || savedBy.split('@')[0] || '';
-    const formOp = r.operator || r.inspector || '';
+    // Ambil operator sesuai field form masing-masing
+    let formOp = '';
+    if (r.formType === 'incoming') {
+      formOp = ''; // incoming tidak tampilkan operator
+    } else if (r.formType === 'frekuensi' || r.formType === 'isolasi' || r.formType === 'kontak') {
+      // operator ada di rows[0]
+      formOp = (r.rows && r.rows[0] && r.rows[0].operator) || r.operator || '';
+    } else if (r.formType === 'ujifungsi') {
+      formOp = r.operator || '';
+    } else {
+      // roadcard, konstruksi — operator di root
+      formOp = r.operator || '';
+    }
     let ident = r.spesifikasi||r.noseri||r.jo||r.type||'—';
     const badge = r.status==='DITERIMA'?'s-ok':r.status==='DITOLAK'?'s-no':'s-pend';
     return `<tr onclick="viewRecord('${r.id}')">
@@ -2803,10 +2832,7 @@ function renderRecords() {
       </td>
       <td><span class="type-badge">${meta.code}</span><br><span style="font-size:12px;color:#555;">${meta.label}</span></td>
       <td style="font-weight:600;">${ident}</td>
-      <td style="color:#555;">
-        <div>${formOp||savedName||'—'}</div>
-        ${savedName && formOp && savedName!==formOp ? `<div style="font-size:11px;color:#94a3b8;">via: ${savedName}</div>` : ''}
-      </td>
+      <td style="color:#555;">${formOp||'—'}</td>
       <td><span class="status-badge ${badge}">${r.status||'PENDING'}</span></td>
       <td class="rec-actions" onclick="event.stopPropagation()">
         <button class="del-btn" onclick="deleteRecord('${r.id}')">🗑️</button>
