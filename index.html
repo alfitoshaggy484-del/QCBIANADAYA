@@ -1690,21 +1690,17 @@ function subscribeRecords() {
   return new Promise((resolve) => {
     const { db, collection, onSnapshot } = window._fb;
     setSyncStatus('loading', '⏳ Memuat data...');
-    // Tidak pakai orderBy agar tidak butuh Firestore index khusus
-    // Sorting dilakukan di client setelah data masuk
-    const colRef = collection(db, 'qf_records');
-    unsubscribeRecords = onSnapshot(colRef,
+    unsubscribeRecords = onSnapshot(collection(db, 'qf_records'),
       (snap) => {
         records = snap.docs.map(d => ({ ...d.data(), id: d.id }));
-        // Sort by _createdMs desc (fallback ke _created.seconds)
         records.sort((a, b) => {
-          const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds * 1000 : 0);
-          const tb = b._updatedMs || b._createdMs || (b._created?.seconds ? b._created.seconds * 1000 : 0);
+          const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds*1000 : 0);
+          const tb = b._updatedMs || b._createdMs || (b._created?.seconds ? b._created.seconds*1000 : 0);
           return tb - ta;
         });
         setSyncStatus('live');
         renderStats();
-        if (document.getElementById('scr-records')?.style.display !== 'none') renderRecords();
+        renderRecords();
         resolve();
       },
       (err) => {
@@ -1726,13 +1722,12 @@ async function saveRecords() {
 }
 
 async function saveOneRecord(data) {
-  if (!window._fb) { toast('⚠️ Firebase belum siap, coba lagi.', 'err'); throw new Error('Firebase not ready'); }
+  if (!window._fb) { toast('⚠️ Firebase belum siap.', 'err'); throw new Error('Firebase not ready'); }
   const { db, doc, setDoc, collection, serverTimestamp } = window._fb;
   setSyncStatus('saving');
   const nowMs = Date.now();
   try {
     if (data.id && data.id.length > 5) {
-      // UPDATE
       const ref = doc(db, 'qf_records', data.id);
       const { id, ...rest } = data;
       await setDoc(ref, {
@@ -1743,9 +1738,9 @@ async function saveOneRecord(data) {
         _updatedName: currentUser?.displayName || currentUser?.email?.split('@')[0] || ''
       }, { merge: true });
       setSyncStatus('live');
+      toast('✅ Record berhasil diupdate!', 'ok');
       return data.id;
     } else {
-      // NEW — pakai client-side ID agar langsung dapat ID sebelum async selesai
       const { id, ...rest } = data;
       const newRef = doc(collection(db, 'qf_records'));
       await setDoc(newRef, {
@@ -1756,6 +1751,7 @@ async function saveOneRecord(data) {
         _createdName: currentUser?.displayName || currentUser?.email?.split('@')[0] || '',
       });
       setSyncStatus('live');
+      toast('✅ Record berhasil disimpan!', 'ok');
       return newRef.id;
     }
   } catch(e) {
@@ -1780,7 +1776,7 @@ async function deleteOneRecord(id) {
 function loadRecords() {
   // Sudah realtime via subscribeRecords(), tombol refresh cukup re-render
   renderStats();
-  renderRecords(); // selalu render, tidak peduli tab aktif
+  if (document.getElementById('scr-records')?.style.display !== 'none') renderRecords();
   toast('🔄 Data diperbarui dari server', 'ok');
 }
 
@@ -2100,12 +2096,10 @@ function saveRecord() {
   if (!data.id || data.id.length <= 5) {
     try {
       const { db, doc, collection } = window._fb;
-      if (db && doc && collection) {
-        const newRef = doc(collection(db, 'qf_records'));
-        data.id = newRef.id;
-        _lastSavedIncomingId = newRef.id;
-      }
-    } catch(e) { console.warn('ID gen fallback:', e); }
+      const newRef = doc(collection(db, 'qf_records'));
+      data.id = newRef.id;
+      _lastSavedIncomingId = newRef.id;
+    } catch(e) { /* fallback */ }
   }
 
   saveOneRecord(data)
@@ -2114,7 +2108,6 @@ function saveRecord() {
       if (savedId) _lastSavedIncomingId = savedId;
       resetBtn('💾 Simpan Record');
       renderStats();
-      renderRecords();
     })
     .catch(() => {
       clearTimeout(forceTimer);
@@ -2332,12 +2325,10 @@ function saveGenericRecord(type, collectFn, btnEl) {
   if (!data.id || data.id.length <= 5) {
     try {
       const { db, doc, collection } = window._fb;
-      if (db && doc && collection) {
-        const newRef = doc(collection(db, 'qf_records'));
-        data.id = newRef.id;
-        _lastSavedGenericId[type] = newRef.id;
-      }
-    } catch(e) { console.warn('ID gen fallback:', e); }
+      const newRef = doc(collection(db, 'qf_records'));
+      data.id = newRef.id;
+      _lastSavedGenericId[type] = newRef.id; // langsung simpan ID
+    } catch(e) { /* fallback ke addDoc biasa */ }
   }
 
   saveOneRecord(data)
@@ -2346,7 +2337,6 @@ function saveGenericRecord(type, collectFn, btnEl) {
       if (savedId) _lastSavedGenericId[type] = savedId;
       resetBtn();
       renderStats();
-      renderRecords();
     })
     .catch(() => {
       clearTimeout(forceTimer);
@@ -2624,12 +2614,11 @@ function onRcTypeChange() {
 }
 function resetRC() { _lastSavedGenericId['roadcard'] = null; editId = null;
   ['rc_type','rc_spesifikasi','rc_jo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
-  // Reset NO to next available number
-
   // reset inputs in RC sections
   document.querySelectorAll('#rc-aks-tbody input, #rc-torsi-tbody input, #rc-mek-tbody input, #rc-elek-tbody input').forEach(i=>i.value='');
   document.querySelectorAll('.rc-oqc, .rc-tgl, .rc-good, .rc-ng').forEach(i=>i.value='');
-  document.querySelectorAll('.rc-result-val').forEach(h=>{ h.value=''; h.closest('.ok-no-cell')?.querySelectorAll('.okno-btn').forEach(b=>b.classList.remove('ok-active','no-active')); });
+  document.querySelectorAll('.rc-result-val, .rc-good-val, .rc-ng-val').forEach(h=>{ h.value=''; h.closest('.ok-no-cell')?.querySelectorAll('.okno-btn').forEach(b=>b.classList.remove('ok-active','no-active')); });
+  document.querySelectorAll('#form-roadcard .big-btn.save').forEach(b=>{b.innerHTML='💾 Simpan Record';b.disabled=false;});
 }
 
 // ====== KONSTRUKSI ROW ======
@@ -2670,6 +2659,7 @@ function resetKS() { _lastSavedGenericId['konstruksi'] = null; editId = null;
   document.getElementById('ks-tbody').innerHTML='';
   window.ksCount=0;
   addKSRow(); addKSRow(); addKSRow();
+  document.querySelectorAll('#form-konstruksi .big-btn.save').forEach(b=>{b.innerHTML='💾 Simpan Record';b.disabled=false;});
 }
 
 // ====== UJI FUNGSI TABLE ======
@@ -2781,10 +2771,10 @@ function buildUFTable() {
     }
   });
 }
-function resetFD() { _lastSavedGenericId['frekuensi'] = null; editId = null; document.getElementById('fd-tbody').innerHTML=''; fdCount=0; addFDRow(); addFDRow(); addFDRow(); addFDRow(); addFDRow(); }
-function resetIR() { _lastSavedGenericId['isolasi'] = null; editId = null; document.getElementById('ir-tbody').innerHTML=''; irCount=0; addIRRow(); addIRRow(); addIRRow(); addIRRow(); addIRRow(); }
-function resetTK() { _lastSavedGenericId['kontak'] = null; editId = null; document.getElementById('tk-tbody').innerHTML=''; tkCount=0; addTKRow(); addTKRow(); addTKRow(); addTKRow(); addTKRow(); }
-function resetUF() { _lastSavedGenericId['ujifungsi'] = null; editId = null; ['uf_jo','uf_operator'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); ['uf_lbs','uf_tp','uf_vt','uf_cb'].forEach(id=>{ const el=document.getElementById(id); if(el) el.checked=false; }); const td=document.getElementById('uf_tanggal'); if(td) td.valueAsDate=new Date(); buildUFTable(); }
+function resetFD() { _lastSavedGenericId['frekuensi'] = null; editId = null; document.getElementById('fd-tbody').innerHTML=''; fdCount=0; addFDRow(); addFDRow(); addFDRow(); addFDRow(); addFDRow(); document.querySelectorAll('#form-frekuensi .big-btn.save').forEach(b=>{b.innerHTML='💾 Simpan Record';b.disabled=false;}); }
+function resetIR() { _lastSavedGenericId['isolasi'] = null; editId = null; document.getElementById('ir-tbody').innerHTML=''; irCount=0; addIRRow(); addIRRow(); addIRRow(); addIRRow(); addIRRow(); document.querySelectorAll('#form-isolasi .big-btn.save').forEach(b=>{b.innerHTML='💾 Simpan Record';b.disabled=false;}); }
+function resetTK() { _lastSavedGenericId['kontak'] = null; editId = null; document.getElementById('tk-tbody').innerHTML=''; tkCount=0; addTKRow(); addTKRow(); addTKRow(); addTKRow(); addTKRow(); document.querySelectorAll('#form-kontak .big-btn.save').forEach(b=>{b.innerHTML='💾 Simpan Record';b.disabled=false;}); }
+function resetUF() { _lastSavedGenericId['ujifungsi'] = null; editId = null; ['uf_jo','uf_operator'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); ['uf_lbs','uf_tp','uf_vt','uf_cb'].forEach(id=>{ const el=document.getElementById(id); if(el) el.checked=false; }); const td=document.getElementById('uf_tanggal'); if(td) td.valueAsDate=new Date(); buildUFTable(); document.querySelectorAll('#form-ujifungsi .big-btn.save').forEach(b=>{b.innerHTML='💾 Simpan Record';b.disabled=false;}); }
 
 // Toggle RC Good (OK) / NG (NO) — satu tombol per sel, klik ulang = reset
 function toggleRCCell(btn, type) {
@@ -2990,9 +2980,226 @@ function viewRecord(id) {
     window.scrollTo(0,0);
     toast('✏️ Data dimuat — siap diedit', 'ok');
 
+  } else if (r.formType === 'frekuensi') {
+    resetFD();
+    editId = id; _lastSavedGenericId['frekuensi'] = id;
+    const tbody = document.getElementById('fd-tbody');
+    tbody.innerHTML = ''; fdCount = 0;
+    const rows = r.rows || [];
+    if (!rows.length) { addFDRow(); } else {
+      rows.forEach(row => {
+        addFDRow();
+        const tr = tbody.lastElementChild;
+        const set = (cls, val) => { const el = tr.querySelector('.'+cls); if(el) el.value = val||''; };
+        const setON = (cls, val) => {
+          const hid = tr.querySelector('.'+cls);
+          const btn = hid ? hid.nextElementSibling : null;
+          if (!hid || !btn) return;
+          hid.value = val||'';
+          if (val==='OK') { btn.textContent='OK'; btn.style.background='#dcfce7'; btn.style.color='#15803d'; btn.style.borderColor='#15803d'; }
+          else if (val==='NO') { btn.textContent='NO'; btn.style.background='#fee2e2'; btn.style.color='#b91c1c'; btn.style.borderColor='#b91c1c'; }
+          else { btn.textContent='—'; btn.style.background='#f8fafc'; btn.style.color='#94a3b8'; btn.style.borderColor='#d1d5db'; }
+        };
+        set('fd-operator', row.operator); set('fd-tanggal', row.tanggal); set('fd-noseri', row.noseri); set('fd-ket', row.ket);
+        // set tipe select
+        const tipeEl = tr.querySelector('.fd-tipe-val'); if(tipeEl) tipeEl.value = row.tipe||'';
+        setON('fd-vl1a', row.vl1a); setON('fd-vl1b', row.vl1b);
+        setON('fd-vl2a', row.vl2a); setON('fd-vl2b', row.vl2b);
+        setON('fd-vl3a', row.vl3a); setON('fd-vl3b', row.vl3b);
+        setON('fd-t1l1', row.t1l1); setON('fd-t1l2', row.t1l2); setON('fd-t1l3', row.t1l3);
+        setON('fd-t2l1', row.t2l1); setON('fd-t2l2', row.t2l2); setON('fd-t2l3', row.t2l3);
+        setON('fd-t3l1', row.t3l1); setON('fd-t3l2', row.t3l2); setON('fd-t3l3', row.t3l3);
+        set('fd-arus1', row.arus1);
+        setON('fd-ss2', row.ss2); setON('fd-ss3', row.ss3); setON('fd-ssf', row.ssf);
+        set('fd-arus2', row.arus2);
+        setON('fd-tb1', row.tb1); setON('fd-tb2', row.tb2);
+        set('fd-tb3', row.tb3);
+        // hasil uji OK/NO
+        const hasilHid = tr.querySelector('.fd-hasil-val');
+        const hasilBtns = tr.querySelectorAll('.fd-hasil-val ~ .okno-btn, .ok-no-cell .okno-btn');
+        const hasilWrap = tr.querySelector('.ok-no-cell');
+        if (hasilWrap) {
+          const hh = hasilWrap.querySelector('input[type=hidden]');
+          const btns = hasilWrap.querySelectorAll('.okno-btn');
+          const hasilVal = (row.lulus==='√'||row.lulus==='OK') ? 'OK' : (row.gagal==='✗'||row.gagal==='NO') ? 'NO' : '';
+          if (hh) hh.value = hasilVal;
+          btns.forEach(b => {
+            b.classList.remove('ok-active','no-active');
+            if (hasilVal==='OK' && b.textContent.trim()==='OK') b.classList.add('ok-active');
+            if (hasilVal==='NO' && b.textContent.trim()==='NO') b.classList.add('no-active');
+          });
+        }
+      });
+    }
+    openForm('frekuensi');
+    // set btn update
+    const fdBtns = document.querySelectorAll('#form-frekuensi .big-btn.save');
+    fdBtns.forEach(b => { b.innerHTML = '💾 Update Record'; b.disabled = false; });
+    showTab('form'); window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
+
+  } else if (r.formType === 'isolasi') {
+    resetIR();
+    editId = id; _lastSavedGenericId['isolasi'] = id;
+    const tbody = document.getElementById('ir-tbody');
+    tbody.innerHTML = ''; irCount = 0;
+    const rows = r.rows || [];
+    if (!rows.length) { addIRRow(); } else {
+      rows.forEach(row => {
+        addIRRow();
+        const tr = tbody.lastElementChild;
+        const set = (cls, val) => { const el = tr.querySelector('.'+cls); if(el) el.value = val||''; };
+        set('ir-operator', row.operator); set('ir-tanggal', row.tanggal); set('ir-noseri', row.noseri); set('ir-ket', row.ket);
+        const tipeEl = tr.querySelector('.ir-tipe-val'); if(tipeEl) tipeEl.value = row.tipe||'';
+        set('ir-l1g', row.l1g); set('ir-l2g', row.l2g); set('ir-l3g', row.l3g);
+        set('ir-l1l2', row.l1l2); set('ir-l1l3', row.l1l3); set('ir-l2l3', row.l2l3);
+      });
+    }
+    openForm('isolasi');
+    const irBtns = document.querySelectorAll('#form-isolasi .big-btn.save');
+    irBtns.forEach(b => { b.innerHTML = '💾 Update Record'; b.disabled = false; });
+    showTab('form'); window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
+
+  } else if (r.formType === 'kontak') {
+    resetTK();
+    editId = id; _lastSavedGenericId['kontak'] = id;
+    const tbody = document.getElementById('tk-tbody');
+    tbody.innerHTML = ''; tkCount = 0;
+    const rows = r.rows || [];
+    if (!rows.length) { addTKRow(); } else {
+      rows.forEach(row => {
+        addTKRow();
+        const tr = tbody.lastElementChild;
+        const set = (cls, val) => { const el = tr.querySelector('.'+cls); if(el) el.value = val||''; };
+        const setChk = (cls, val) => { const el = tr.querySelector('.'+cls); if(el) el.checked = !!val; };
+        set('tk-tglopr', row.tanggal); set('tk-operator', row.operator); set('tk-noseri', row.noseri); set('tk-ket', row.ket);
+        const tipeEl = tr.querySelector('.tk-tipe-val'); if(tipeEl) tipeEl.value = row.tipe||'';
+        setChk('tk-cb', row.cb); setChk('tk-vt', row.vt); setChk('tk-tp', row.tp); setChk('tk-lbs', row.lbs);
+        set('tk-t1l1',row.t1l1); set('tk-t1l2',row.t1l2); set('tk-t1l3',row.t1l3);
+        set('tk-t2l1',row.t2l1); set('tk-t2l2',row.t2l2); set('tk-t2l3',row.t2l3);
+        set('tk-t3l1',row.t3l1); set('tk-t3l2',row.t3l2); set('tk-t3l3',row.t3l3);
+        set('tk-t4l1',row.t4l1); set('tk-t4l2',row.t4l2); set('tk-t4l3',row.t4l3);
+      });
+    }
+    openForm('kontak');
+    const tkBtns = document.querySelectorAll('#form-kontak .big-btn.save');
+    tkBtns.forEach(b => { b.innerHTML = '💾 Update Record'; b.disabled = false; });
+    showTab('form'); window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
+
+  } else if (r.formType === 'konstruksi') {
+    resetKS();
+    editId = id; _lastSavedGenericId['konstruksi'] = id;
+    const tbody = document.getElementById('ks-tbody');
+    tbody.innerHTML = ''; window.ksCount = 0;
+    const setV = (id, val) => { const el=document.getElementById(id); if(el) el.value=val||''; };
+    setV('ks_operator', r.operator); setV('ks_tanggal', r.tanggal); setV('ks_noseri', r.noseri); setV('ks_catatan', r.catatan);
+    const rows = r.rows || [];
+    rows.forEach(row => {
+      if (row.noseri !== undefined || row.operator !== undefined) {
+        // dynamic header row
+        addKSRow();
+        const tr = tbody.lastElementChild;
+        const set = (cls, val) => { const el = tr.querySelector('.'+cls); if(el) el.value = val||''; };
+        set('ks-opr', row.operator); set('ks-tgl', row.tanggal); set('ks-ns', row.noseri);
+        const tipeEl = tr.querySelector('.ks-tipe-val'); if(tipeEl) tipeEl.value = row.tipe||'';
+        set('ks-a',row.a); set('ks-b',row.b); set('ks-c',row.c); set('ks-d',row.d);
+        set('ks-e',row.e); set('ks-f',row.f); set('ks-g',row.g); set('ks-h',row.h); set('ks-i',row.i);
+        set('ks-jarak',row.jarak); set('ks-plat',row.plat); set('ks-cat',row.cat);
+        set('ks-kont',row.kont); set('ks-drag',row.drag); set('ks-ket',row.ket);
+      }
+    });
+    if (!window.ksCount) { addKSRow(); addKSRow(); addKSRow(); }
+    openForm('konstruksi');
+    const ksBtns = document.querySelectorAll('#form-konstruksi .big-btn.save');
+    ksBtns.forEach(b => { b.innerHTML = '💾 Update Record'; b.disabled = false; });
+    showTab('form'); window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
+
+  } else if (r.formType === 'roadcard') {
+    resetRC();
+    editId = id; _lastSavedGenericId['roadcard'] = id;
+    const setV = (id, val) => { const el=document.getElementById(id); if(el) el.value=val||''; };
+    setV('rc_type', r.type); setV('rc_spesifikasi', r.spesifikasi); setV('rc_jo', r.jo);
+    setV('rc_tanggal', r.tanggal); setV('rc_operator', r.operator); setV('rc_inspector', r.inspector); setV('rc_catatan', r.catatan);
+    openForm('roadcard');
+    // Restore OK/NO data setelah buildRCTable selesai
+    const restoreOkNo = (tbodyId, dataArr, goodKey, ngKey) => {
+      if (!dataArr || !dataArr.length) return;
+      const rows = document.querySelectorAll('#' + tbodyId + ' tr');
+      dataArr.forEach((d, i) => {
+        if (!rows[i]) return;
+        const gHid = rows[i].querySelector('.rc-good-val');
+        const nHid = rows[i].querySelector('.rc-ng-val');
+        const gBtns = gHid ? gHid.closest('.ok-no-cell')?.querySelectorAll('.okno-btn') : null;
+        const nBtns = nHid ? nHid.closest('.ok-no-cell')?.querySelectorAll('.okno-btn') : null;
+        if (gHid) { gHid.value = d.good||''; }
+        if (nHid) { nHid.value = d.ng||''; }
+        if (gBtns) gBtns.forEach(b => { b.classList.remove('ok-active','no-active'); if((d.good||'')==='OK' && b.textContent.trim()==='OK') b.classList.add('ok-active'); if((d.good||'')==='NO' && b.textContent.trim()==='NO') b.classList.add('no-active'); });
+        if (nBtns) nBtns.forEach(b => { b.classList.remove('ok-active','no-active'); if((d.ng||'')==='OK' && b.textContent.trim()==='OK') b.classList.add('ok-active'); if((d.ng||'')==='NO' && b.textContent.trim()==='NO') b.classList.add('no-active'); });
+        // text inputs
+        const inps = rows[i].querySelectorAll('input[type=text]');
+        if (d.op_prod !== undefined && inps[0]) inps[0].value = d.op_prod||'';
+        if (d.tgl_prod !== undefined && inps[1]) inps[1].value = d.tgl_prod||'';
+        if (d.op_qc !== undefined && inps[d.op_prod!==undefined?2:0]) inps[d.op_prod!==undefined?2:0].value = d.op_qc||'';
+        if (d.tgl !== undefined) { const tglInp = rows[i].querySelector('input[type=date]'); if(tglInp) tglInp.value = d.tgl||''; }
+        if (d.oqc !== undefined) { const oqcInp = rows[i].querySelector('.rc-oqc'); if(oqcInp) oqcInp.value = d.oqc||''; }
+        if (d.tgl !== undefined && !d.tgl_prod) { const tglInps = rows[i].querySelectorAll('input[type=date]'); if(tglInps[0]) tglInps[0].value = d.tgl||''; }
+      });
+    };
+    restoreOkNo('rc-aks-tbody', r.aksesoris);
+    restoreOkNo('rc-torsi-tbody', r.torsi);
+    restoreOkNo('rc-mek-tbody', r.mekanis);
+    restoreOkNo('rc-elek-tbody', r.elektrik);
+    const rcBtns = document.querySelectorAll('#form-roadcard .big-btn.save');
+    rcBtns.forEach(b => { b.innerHTML = '💾 Update Record'; b.disabled = false; });
+    showTab('form'); window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
+
+  } else if (r.formType === 'ujifungsi') {
+    resetUF();
+    editId = id; _lastSavedGenericId['ujifungsi'] = id;
+    const setV = (id, val) => { const el=document.getElementById(id); if(el) el.value=val||''; };
+    setV('uf_jo', r.jo); setV('uf_operator', r.operator);
+    const tipeEl = document.getElementById('uf_'+((r.tipe||'').toLowerCase()));
+    if (tipeEl) { tipeEl.checked = true; }
+    const tanggalEl = document.getElementById('uf_tanggal');
+    if (tanggalEl) tanggalEl.value = r.tanggal||'';
+    openForm('ujifungsi');
+    // Restore hasil setelah buildUFTable
+    const rows = r.rows || [];
+    rows.forEach(rowData => {
+      if (!rowData.item) return;
+      document.querySelectorAll('#uf-static-table tr').forEach(tr => {
+        const hasilHid = tr.querySelector('.uf-hasil-val');
+        if (!hasilHid) return;
+        const tds = tr.querySelectorAll('td');
+        let itemText = '';
+        for (const td of tds) {
+          if (!td.hasAttribute('rowspan') && !td.querySelector('.ok-no-cell') && td.textContent.trim()) {
+            itemText = td.textContent.trim(); break;
+          }
+        }
+        if (itemText === rowData.item) {
+          const val = rowData.hasil||'';
+          hasilHid.value = val;
+          const okBtn = tr.querySelector('.uf-ok-btn');
+          const noBtn = tr.querySelector('.uf-no-btn');
+          if (okBtn) okBtn.classList.toggle('ok-active', val==='OK');
+          if (noBtn) noBtn.classList.toggle('no-active', val==='NO');
+          const ketEl = tr.querySelector('.uf-ket');
+          if (ketEl) ketEl.value = rowData.ket||'';
+        }
+      });
+    });
+    const ufBtns = document.querySelectorAll('#form-ujifungsi .big-btn.save');
+    ufBtns.forEach(b => { b.innerHTML = '💾 Update Record'; b.disabled = false; });
+    showTab('form'); window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
+
   } else {
-    // Form lain: tampilkan toast saja (bisa dikembangkan)
-    toast('ℹ️ Buka form untuk edit: ' + (FORM_META[r.formType]||{}).label, '');
+    toast('ℹ️ Form tidak dikenal: ' + r.formType, '');
   }
 }
 
@@ -3009,16 +3216,11 @@ function renderStats() {
   document.getElementById('st-ok').textContent = records.filter(r=>r.status==='DITERIMA').length;
   document.getElementById('st-no').textContent = records.filter(r=>r.status==='DITOLAK').length;
   document.getElementById('st-month').textContent = records.filter(r=>{
-    // Pakai _createdMs (selalu ada) atau tanggal form sebagai fallback
     const ms = r._createdMs || r._updatedMs;
-    if (ms) {
-      const d = new Date(ms);
-      return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    }
+    if (ms) { const d=new Date(ms); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); }
     const tgl = r.tgl_inspeksi||r.tanggal;
     if (!tgl) return false;
-    const d = new Date(tgl);
-    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+    const d = new Date(tgl); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
   }).length;
 }
 
