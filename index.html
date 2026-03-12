@@ -278,6 +278,30 @@ body { font-family:var(--font); background:#e8eef6; color:var(--g900);
 .okno-btn.ok-active:hover { background:#bbf7d0; border-color:#16a34a; }
 .okno-btn.no-active:hover { background:#fecaca; border-color:#dc2626; }
 
+/* ── AF-TOGGLE (incoming cek pengukuran) ── */
+.af-toggle {
+  width:36px; height:28px; font-size:12px; font-weight:700;
+  border:1.5px solid var(--g200); border-radius:5px;
+  background:var(--g50); color:var(--g400);
+  cursor:pointer; font-family:var(--font); transition:all .14s;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.af-toggle:hover:not(.ok-active):not(.no-active) { background:var(--g100); color:var(--g700); border-color:var(--g300); }
+.af-toggle.ok-active { background:var(--green-lt); color:var(--green); border-color:var(--green); font-size:14px; }
+.af-toggle.no-active { background:var(--red-lt); color:var(--red); border-color:var(--red); font-size:14px; }
+
+/* ── HASIL-BTN (incoming pengukuran OK/NO) ── */
+.hasil-btn-wrap { display:flex; gap:4px; justify-content:center; }
+.hasil-btn {
+  padding:4px 10px; font-size:11px; font-weight:700;
+  border:1.5px solid var(--g200); border-radius:5px;
+  background:var(--g50); color:var(--g400);
+  cursor:pointer; font-family:var(--font); transition:all .14s; min-width:36px;
+}
+.hasil-btn:hover:not(.ok-active):not(.no-active) { background:var(--g100); color:var(--g700); border-color:var(--g300); }
+.hasil-btn.ok-active { background:var(--green-lt); color:var(--green); border-color:var(--green); }
+.hasil-btn.no-active { background:var(--red-lt); color:var(--red); border-color:var(--red); }
+
 /* ── DATE INPUT IN TABLE CELLS ── */
 input[type="date"] {
   cursor:pointer;
@@ -1967,9 +1991,18 @@ function toggleUkurHasil(n, val) {
   const hid = document.getElementById('uhasil' + n);
   const okBtn = document.getElementById('uhasil' + n + '_ok');
   const noBtn = document.getElementById('uhasil' + n + '_no');
-  if (!hid) return;
-  if (hid.value === val) { hid.value = ''; okBtn.classList.remove('ok-active'); noBtn.classList.remove('no-active'); }
-  else { hid.value = val; okBtn.classList.toggle('ok-active', val==='OK'); okBtn.classList.remove('no-active'); noBtn.classList.toggle('no-active', val==='NO'); noBtn.classList.remove('ok-active'); }
+  if (!hid || !okBtn || !noBtn) return;
+  if (hid.value === val) {
+    hid.value = '';
+    okBtn.classList.remove('ok-active');
+    noBtn.classList.remove('no-active');
+  } else {
+    hid.value = val;
+    okBtn.classList.toggle('ok-active', val === 'OK');
+    okBtn.classList.remove('no-active');
+    noBtn.classList.toggle('no-active', val === 'NO');
+    noBtn.classList.remove('ok-active');
+  }
 }
 function setStatus(s) {
   currentStatus = s;
