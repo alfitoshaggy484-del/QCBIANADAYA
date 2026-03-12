@@ -1688,20 +1688,29 @@ function initAuth() {
 // ── Real-time listener ke Firestore ──
 function subscribeRecords() {
   return new Promise((resolve) => {
-    const { db, collection, query, orderBy, onSnapshot } = window._fb;
+    const { db, collection, onSnapshot } = window._fb;
     setSyncStatus('loading', '⏳ Memuat data...');
-    const q = query(collection(db, 'qf_records'), orderBy('_created', 'desc'));
-    unsubscribeRecords = onSnapshot(q,
+    // Tidak pakai orderBy agar tidak butuh Firestore index khusus
+    // Sorting dilakukan di client setelah data masuk
+    const colRef = collection(db, 'qf_records');
+    unsubscribeRecords = onSnapshot(colRef,
       (snap) => {
         records = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        // Sort by _createdMs desc (fallback ke _created.seconds)
+        records.sort((a, b) => {
+          const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds * 1000 : 0);
+          const tb = b._updatedMs || b._createdMs || (b._created?.seconds ? b._created.seconds * 1000 : 0);
+          return tb - ta;
+        });
         setSyncStatus('live');
         renderStats();
         if (document.getElementById('scr-records')?.style.display !== 'none') renderRecords();
         resolve();
       },
       (err) => {
-        console.error(err);
+        console.error('Firestore error:', err);
         setSyncStatus('error', '✗ ' + err.message);
+        toast('⚠️ Gagal memuat data: ' + err.message, 'err');
         resolve();
       }
     );
@@ -1717,7 +1726,8 @@ async function saveRecords() {
 }
 
 async function saveOneRecord(data) {
-  const { db, doc, addDoc, setDoc, collection, serverTimestamp } = window._fb;
+  if (!window._fb) { toast('⚠️ Firebase belum siap, coba lagi.', 'err'); throw new Error('Firebase not ready'); }
+  const { db, doc, setDoc, collection, serverTimestamp } = window._fb;
   setSyncStatus('saving');
   const nowMs = Date.now();
   try {
@@ -1735,9 +1745,9 @@ async function saveOneRecord(data) {
       setSyncStatus('live');
       return data.id;
     } else {
-      // NEW — generate ID dulu secara sync agar bisa langsung dipakai
+      // NEW — pakai client-side ID agar langsung dapat ID sebelum async selesai
       const { id, ...rest } = data;
-      const newRef = doc(collection(db, 'qf_records')); // client-side ID generation
+      const newRef = doc(collection(db, 'qf_records'));
       await setDoc(newRef, {
         ...rest,
         _created: serverTimestamp(),
@@ -1749,7 +1759,9 @@ async function saveOneRecord(data) {
       return newRef.id;
     }
   } catch(e) {
-    console.error(e); setSyncStatus('error'); toast('✗ Gagal simpan: ' + e.message, 'err');
+    console.error('saveOneRecord error:', e);
+    setSyncStatus('error');
+    toast('✗ Gagal simpan: ' + e.message, 'err');
     throw e;
   }
 }
@@ -1768,7 +1780,7 @@ async function deleteOneRecord(id) {
 function loadRecords() {
   // Sudah realtime via subscribeRecords(), tombol refresh cukup re-render
   renderStats();
-  if (document.getElementById('scr-records')?.style.display !== 'none') renderRecords();
+  renderRecords(); // selalu render, tidak peduli tab aktif
   toast('🔄 Data diperbarui dari server', 'ok');
 }
 
@@ -2088,10 +2100,12 @@ function saveRecord() {
   if (!data.id || data.id.length <= 5) {
     try {
       const { db, doc, collection } = window._fb;
-      const newRef = doc(collection(db, 'qf_records'));
-      data.id = newRef.id;
-      _lastSavedIncomingId = newRef.id;
-    } catch(e) { /* fallback */ }
+      if (db && doc && collection) {
+        const newRef = doc(collection(db, 'qf_records'));
+        data.id = newRef.id;
+        _lastSavedIncomingId = newRef.id;
+      }
+    } catch(e) { console.warn('ID gen fallback:', e); }
   }
 
   saveOneRecord(data)
@@ -2099,8 +2113,8 @@ function saveRecord() {
       clearTimeout(forceTimer);
       if (savedId) _lastSavedIncomingId = savedId;
       resetBtn('💾 Simpan Record');
-      toast(isEdit ? '✅ Record berhasil diupdate!' : '✅ Record berhasil disimpan!', 'ok');
       renderStats();
+      renderRecords();
     })
     .catch(() => {
       clearTimeout(forceTimer);
@@ -2318,10 +2332,12 @@ function saveGenericRecord(type, collectFn, btnEl) {
   if (!data.id || data.id.length <= 5) {
     try {
       const { db, doc, collection } = window._fb;
-      const newRef = doc(collection(db, 'qf_records'));
-      data.id = newRef.id;
-      _lastSavedGenericId[type] = newRef.id; // langsung simpan ID
-    } catch(e) { /* fallback ke addDoc biasa */ }
+      if (db && doc && collection) {
+        const newRef = doc(collection(db, 'qf_records'));
+        data.id = newRef.id;
+        _lastSavedGenericId[type] = newRef.id;
+      }
+    } catch(e) { console.warn('ID gen fallback:', e); }
   }
 
   saveOneRecord(data)
@@ -2329,8 +2345,8 @@ function saveGenericRecord(type, collectFn, btnEl) {
       clearTimeout(forceTimer);
       if (savedId) _lastSavedGenericId[type] = savedId;
       resetBtn();
-      toast(isEdit ? '✅ Record diupdate!' : '✅ Record disimpan!', 'ok');
       renderStats();
+      renderRecords();
     })
     .catch(() => {
       clearTimeout(forceTimer);
@@ -2993,9 +3009,16 @@ function renderStats() {
   document.getElementById('st-ok').textContent = records.filter(r=>r.status==='DITERIMA').length;
   document.getElementById('st-no').textContent = records.filter(r=>r.status==='DITOLAK').length;
   document.getElementById('st-month').textContent = records.filter(r=>{
+    // Pakai _createdMs (selalu ada) atau tanggal form sebagai fallback
+    const ms = r._createdMs || r._updatedMs;
+    if (ms) {
+      const d = new Date(ms);
+      return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+    }
     const tgl = r.tgl_inspeksi||r.tanggal;
     if (!tgl) return false;
-    const d = new Date(tgl); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
+    const d = new Date(tgl);
+    return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
   }).length;
 }
 
