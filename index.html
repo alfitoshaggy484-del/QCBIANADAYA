@@ -957,7 +957,7 @@ input[type="date"].ks-tgl {
     </div>
 
     <div class="bottom-actions">
-      <button class="big-btn save" onclick="saveGenericRecord('frekuensi', collectFD)">💾 Simpan Record</button>
+      <button class="big-btn save" onclick="saveGenericRecord('frekuensi', collectFD, this)">💾 Simpan Record</button>
       <button class="big-btn print-btn" onclick="printGeneric('frekuensi')">🖨️ Cetak / PDF</button>
       <button class="big-btn reset" onclick="resetFD()">↺ Baru</button>
     </div>
@@ -996,7 +996,7 @@ input[type="date"].ks-tgl {
       </div>
     </div>
     <div class="bottom-actions">
-      <button class="big-btn save" onclick="saveGenericRecord('isolasi', collectIR)">💾 Simpan Record</button>
+      <button class="big-btn save" onclick="saveGenericRecord('isolasi', collectIR, this)">💾 Simpan Record</button>
       <button class="big-btn print-btn" onclick="printGeneric('isolasi')">🖨️ Cetak / PDF</button>
       <button class="big-btn reset" onclick="resetIR()">↺ Baru</button>
     </div>
@@ -1113,7 +1113,7 @@ input[type="date"].ks-tgl {
       </div>
     </div>
     <div class="bottom-actions">
-      <button class="big-btn save" onclick="saveGenericRecord('roadcard', collectRC)">💾 Simpan Record</button>
+      <button class="big-btn save" onclick="saveGenericRecord('roadcard', collectRC, this)">💾 Simpan Record</button>
       <button class="big-btn print-btn" onclick="printRoadCardAndUjiFungsi()">🖨️ Cetak / PDF</button>
       <button class="big-btn reset" onclick="resetRC()">↺ Baru</button>
     </div>
@@ -1165,7 +1165,7 @@ input[type="date"].ks-tgl {
       </div>
     </div>
     <div class="bottom-actions">
-      <button class="big-btn save" onclick="saveGenericRecord('kontak', collectTK)">💾 Simpan Record</button>
+      <button class="big-btn save" onclick="saveGenericRecord('kontak', collectTK, this)">💾 Simpan Record</button>
       <button class="big-btn print-btn" onclick="printGeneric('kontak')">🖨️ Cetak / PDF</button>
       <button class="big-btn reset" onclick="resetTK()">↺ Baru</button>
     </div>
@@ -1226,7 +1226,7 @@ input[type="date"].ks-tgl {
       </div>
     </div>
     <div class="bottom-actions">
-      <button class="big-btn save" onclick="saveGenericRecord('konstruksi', collectKS)">💾 Simpan Record</button>
+      <button class="big-btn save" onclick="saveGenericRecord('konstruksi', collectKS, this)">💾 Simpan Record</button>
       <button class="big-btn print-btn" onclick="printGeneric('konstruksi')">🖨️ Cetak / PDF</button>
       <button class="big-btn reset" onclick="resetKS()">↺ Baru</button>
     </div>
@@ -1284,7 +1284,7 @@ input[type="date"].ks-tgl {
       </div>
     </div>
     <div class="bottom-actions">
-      <button class="big-btn save" onclick="saveGenericRecord('ujifungsi', collectUF)">💾 Simpan Record</button>
+      <button class="big-btn save" onclick="saveGenericRecord('ujifungsi', collectUF, this)">💾 Simpan Record</button>
       <button class="big-btn print-btn" onclick="printUjiFungsiOnly()">🖨️ Cetak / PDF</button>
       <button class="big-btn reset" onclick="resetUF()">↺ Baru</button>
     </div>
@@ -2276,20 +2276,17 @@ function collectUF() {
 
 const _lastSavedGenericId = {}; // { formType: id }
 
-function saveGenericRecord(type, collectFn) {
+function saveGenericRecord(type, collectFn, btnEl) {
   const data = collectFn();
 
-  // Cari tombol simpan yang sedang aktif (di dalam form yang tampil)
-  const allSaveBtns = document.querySelectorAll('.big-btn.save');
-  let btn = null;
-  allSaveBtns.forEach(b => {
-    if (b.offsetParent !== null) btn = b; // tombol yang terlihat di layar
-  });
-  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Menyimpan...'; }
-
   const resetBtn = () => {
-    if (btn) { btn.textContent = '💾 Simpan Record'; btn.disabled = false; }
+    if (btnEl) { btnEl.innerHTML = '💾 Simpan Record'; btnEl.disabled = false; }
   };
+
+  if (btnEl) { btnEl.disabled = true; btnEl.innerHTML = '⏳ Menyimpan...'; }
+
+  // Timeout paksa — tombol pasti aktif kembali maks 5 detik
+  const forceTimer = setTimeout(resetBtn, 5000);
 
   const targetId = editId || _lastSavedGenericId[type] || '';
   const isEdit = !!targetId;
@@ -2298,12 +2295,14 @@ function saveGenericRecord(type, collectFn) {
 
   saveOneRecord(data)
     .then((savedId) => {
+      clearTimeout(forceTimer);
       _lastSavedGenericId[type] = savedId || targetId || null;
       resetBtn();
       toast(isEdit ? '✅ Record diupdate!' : '✅ Record disimpan!', 'ok');
       renderStats();
     })
     .catch(() => {
+      clearTimeout(forceTimer);
       resetBtn();
     });
 }
