@@ -2070,20 +2070,20 @@ function saveRecord() {
     if (b) { b.innerHTML = label || '💾 Simpan Record'; b.disabled = false; }
   };
 
+  // Timeout paksa — tombol PASTI aktif kembali maksimal 5 detik
+  const forceTimer = setTimeout(() => resetBtn('💾 Simpan Record'), 5000);
+
   saveOneRecord(data)
     .then((savedId) => {
+      clearTimeout(forceTimer);
       _lastSavedIncomingId = savedId || targetId || null;
       resetBtn('💾 Simpan Record');
       toast(isEdit ? '✅ Record berhasil diupdate!' : '✅ Record berhasil disimpan!', 'ok');
       renderStats();
     })
     .catch(() => {
+      clearTimeout(forceTimer);
       resetBtn('💾 Simpan Record');
-    })
-    .finally(() => {
-      // Jaminan terakhir: tombol pasti aktif kembali
-      const b = document.getElementById('btn-save');
-      if (b && b.disabled) { b.innerHTML = '💾 Simpan Record'; b.disabled = false; }
     });
 }
 function newForm() {
@@ -2936,9 +2936,9 @@ function viewRecord(id) {
       if (noB)  noB.classList.toggle('no-active', hasil==='NO');
     });
 
-    // Update judul tombol simpan
+    // Update judul tombol simpan — pastikan tombol aktif
     const btn = document.getElementById('btn-save');
-    if (btn) btn.textContent = '💾 Update Record';
+    if (btn) { btn.textContent = '💾 Update Record'; btn.disabled = false; }
 
     showTab('form');
     window.scrollTo(0,0);
