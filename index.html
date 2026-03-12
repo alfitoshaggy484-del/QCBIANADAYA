@@ -1709,9 +1709,10 @@ async function saveRecords() {
 async function saveOneRecord(data) {
   const { db, doc, addDoc, setDoc, collection, serverTimestamp } = window._fb;
   setSyncStatus('saving');
-  const nowMs = Date.now(); // fallback timestamp dalam milliseconds
+  const nowMs = Date.now();
   try {
     if (data.id && data.id.length > 5) {
+      // UPDATE
       const ref = doc(db, 'qf_records', data.id);
       const { id, ...rest } = data;
       await setDoc(ref, {
@@ -1724,8 +1725,10 @@ async function saveOneRecord(data) {
       setSyncStatus('live');
       return data.id;
     } else {
+      // NEW — generate ID dulu secara sync agar bisa langsung dipakai
       const { id, ...rest } = data;
-      const docRef = await addDoc(collection(db, 'qf_records'), {
+      const newRef = doc(collection(db, 'qf_records')); // client-side ID generation
+      await setDoc(newRef, {
         ...rest,
         _created: serverTimestamp(),
         _createdMs: nowMs,
@@ -1733,7 +1736,7 @@ async function saveOneRecord(data) {
         _createdName: currentUser?.displayName || currentUser?.email?.split('@')[0] || '',
       });
       setSyncStatus('live');
-      return docRef.id;
+      return newRef.id;
     }
   } catch(e) {
     console.error(e); setSyncStatus('error'); toast('✗ Gagal simpan: ' + e.message, 'err');
@@ -2064,19 +2067,27 @@ function saveRecord() {
   data.id = targetId;
   editId = null;
 
-  // Selalu re-query dan paksa enable tombol, apapun yang terjadi
   const resetBtn = (label) => {
     const b = document.getElementById('btn-save');
     if (b) { b.innerHTML = label || '💾 Simpan Record'; b.disabled = false; }
   };
 
-  // Timeout paksa — tombol PASTI aktif kembali maksimal 5 detik
   const forceTimer = setTimeout(() => resetBtn('💾 Simpan Record'), 5000);
+
+  // Jika record baru, generate ID sync sekarang
+  if (!data.id || data.id.length <= 5) {
+    try {
+      const { db, doc, collection } = window._fb;
+      const newRef = doc(collection(db, 'qf_records'));
+      data.id = newRef.id;
+      _lastSavedIncomingId = newRef.id;
+    } catch(e) { /* fallback */ }
+  }
 
   saveOneRecord(data)
     .then((savedId) => {
       clearTimeout(forceTimer);
-      _lastSavedIncomingId = savedId || targetId || null;
+      if (savedId) _lastSavedIncomingId = savedId;
       resetBtn('💾 Simpan Record');
       toast(isEdit ? '✅ Record berhasil diupdate!' : '✅ Record berhasil disimpan!', 'ok');
       renderStats();
@@ -2285,7 +2296,6 @@ function saveGenericRecord(type, collectFn, btnEl) {
 
   if (btnEl) { btnEl.disabled = true; btnEl.innerHTML = '⏳ Menyimpan...'; }
 
-  // Timeout paksa — tombol pasti aktif kembali maks 5 detik
   const forceTimer = setTimeout(resetBtn, 5000);
 
   const targetId = editId || _lastSavedGenericId[type] || '';
@@ -2293,10 +2303,21 @@ function saveGenericRecord(type, collectFn, btnEl) {
   data.id = targetId;
   editId = null;
 
+  // Jika ini record baru, generate ID client-side SEKARANG (sync)
+  // agar _lastSavedGenericId langsung terisi sebelum Firebase selesai
+  if (!data.id || data.id.length <= 5) {
+    try {
+      const { db, doc, collection } = window._fb;
+      const newRef = doc(collection(db, 'qf_records'));
+      data.id = newRef.id;
+      _lastSavedGenericId[type] = newRef.id; // langsung simpan ID
+    } catch(e) { /* fallback ke addDoc biasa */ }
+  }
+
   saveOneRecord(data)
     .then((savedId) => {
       clearTimeout(forceTimer);
-      _lastSavedGenericId[type] = savedId || targetId || null;
+      if (savedId) _lastSavedGenericId[type] = savedId;
       resetBtn();
       toast(isEdit ? '✅ Record diupdate!' : '✅ Record disimpan!', 'ok');
       renderStats();
