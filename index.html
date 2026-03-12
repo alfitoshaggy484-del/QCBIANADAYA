@@ -2781,10 +2781,20 @@ function toggleUFOkNo(btn, val) {
 function formatFirestoreDate(ts) {
   if (!ts) return '—';
   let d;
-  if (ts && typeof ts.toDate === 'function') d = ts.toDate();
-  else if (ts && ts.seconds) d = new Date(ts.seconds * 1000);
-  else d = new Date(ts);
-  if (isNaN(d)) return '—';
+  try {
+    if (typeof ts.toDate === 'function') {
+      d = ts.toDate();
+    } else if (ts.seconds !== undefined) {
+      d = new Date(ts.seconds * 1000 + Math.floor((ts.nanoseconds||0) / 1e6));
+    } else if (typeof ts === 'number') {
+      d = new Date(ts);
+    } else if (typeof ts === 'string') {
+      d = new Date(ts);
+    } else {
+      d = new Date(ts);
+    }
+  } catch(e) { return '—'; }
+  if (!d || isNaN(d.getTime())) return '—';
   const pad = n => String(n).padStart(2,'0');
   return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
 }
@@ -2806,9 +2816,10 @@ function renderRecords() {
   tbody.innerHTML = filtered.map(r => {
     const meta = FORM_META[r.formType]||{label:'—',code:'—'};
     // Tampilkan waktu simpan (history) dari _updated atau _created
-    const savedTs = r._updated || r._created;
+    // Ambil timestamp: coba semua kemungkinan field name
+    const savedTs = r._updated || r._created || r._updatedAt || r._createdAt || null;
     const savedTime = formatFirestoreDate(savedTs);
-    const isUpdated = !!r._updated;
+    const isUpdated = !!(r._updated || r._updatedAt);
     // Operator: siapa yang simpan (by email/name) + field operator dari form
     // Ambil operator sesuai field form masing-masing
     let formOp = '';
