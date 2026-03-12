@@ -849,7 +849,7 @@ input[type="date"].ks-tgl {
               <th rowspan="5" style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px 3px;min-width:28px;vertical-align:middle;">No</th>
               <th rowspan="5" style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px 5px;min-width:65px;vertical-align:middle;">Operator</th>
               <th rowspan="5" style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px 5px;min-width:65px;vertical-align:middle;">Tanggal<br>tes</th>
-              <th rowspan="5" style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px 5px;min-width:80px;vertical-align:middle;">Nomer Seri /<br>Nomer JO</th>
+              <th rowspan="5" style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px 5px;min-width:70px;vertical-align:middle;">Tipe</th><th rowspan="5" style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px 5px;min-width:80px;vertical-align:middle;">Nomer Seri /<br>Nomer JO</th>
               <th colspan="6"  style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px;font-size:8pt;">Voltage Presence Indicating System(VPIS)</th>
               <th colspan="14" style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px;font-size:8pt;">Posisi saklar tertutup</th>
               <th colspan="3"  style="border:1px solid #555;background:#dde8f4;text-align:center;padding:4px;font-size:8pt;">Posisi saklar terbuka</th>
@@ -1105,7 +1105,7 @@ input[type="date"].ks-tgl {
               <th rowspan="4" style="border:1px solid #555;padding:4px 3px;background:#dde8f4;text-align:center;width:28px;">No</th>
               <th rowspan="4" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:80px;">Tanggal</th>
               <th rowspan="4" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:80px;">Operator</th>
-              <th rowspan="4" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:90px;">Nomer Seri /<br>Nomer JO</th>
+              <th rowspan="4" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:90px;">Nomer Seri /<br>Nomer JO</th><th rowspan="4" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:70px;">Tipe</th>
               <th colspan="4" style="border:1px solid #555;padding:4px;background:#dde8f4;text-align:center;">Tipe</th>
               <th colspan="12" style="border:1px solid #555;padding:4px;background:#dde8f4;text-align:center;">Titik ukur</th>
               <th rowspan="4" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:70px;">Keterangan</th>
@@ -1157,7 +1157,7 @@ input[type="date"].ks-tgl {
               <th rowspan="3" style="border:1px solid #555;padding:4px 3px;background:#dde8f4;text-align:center;width:28px;">No</th>
               <th rowspan="3" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:70px;">Operator</th>
               <th rowspan="3" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:80px;">Tanggal tes</th>
-              <th rowspan="3" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:90px;">Nomer Seri /<br>Nomer JO</th>
+              <th rowspan="3" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:90px;">Nomer Seri /<br>Nomer JO</th><th rowspan="3" style="border:1px solid #555;padding:4px 6px;background:#dde8f4;text-align:center;min-width:70px;">Tipe</th>
               <th colspan="9" style="border:1px solid #555;padding:4px;background:#dde8f4;text-align:center;">Persyaratan standar (mm)</th>
               <th rowspan="2" style="border:1px solid #555;padding:3px 2px;background:#dde8f4;text-align:center;font-size:7pt;writing-mode:vertical-rl;">Jarak udara ≥220mm</th>
               <th rowspan="2" style="border:1px solid #555;padding:3px 2px;background:#dde8f4;text-align:center;font-size:7pt;writing-mode:vertical-rl;">Ketebalan pelat rangka min 2mm</th>
@@ -2042,6 +2042,7 @@ function collectFD() {
       no: i+1,
       operator: tr.querySelector('.fd-operator')?.value||'',
       tanggal: tr.querySelector('.fd-tanggal')?.value||'',
+      tipe: tr.querySelector('.fd-tipe-val')?.value||'',
       noseri: tr.querySelector('.fd-noseri')?.value||'',
       vl1a: tr.querySelector('.fd-vl1a')?.value||'',
       vl1b: tr.querySelector('.fd-vl1b')?.value||'',
@@ -2150,6 +2151,7 @@ function collectTK() {
       tanggal: tr.querySelector('.tk-tglopr')?.value||'',
       operator: tr.querySelector('.tk-operator')?.value||'',
       noseri: tr.querySelector('.tk-noseri')?.value||'',
+      tipe: tr.querySelector('.tk-tipe-val')?.value||'',
       cb: tr.querySelector('.tk-cb')?.checked||false,
       vt: tr.querySelector('.tk-vt')?.checked||false,
       tp: tr.querySelector('.tk-tp')?.checked||false,
@@ -2170,6 +2172,14 @@ function collectKS() {
     if (item) {
       const hidResult = tr.querySelector('.ks-result-val');
       rows.push({ item: item.textContent, nilai: tr.querySelector('.ks-nilai')?.value||'', hasil: hidResult?.value||'' });
+    } else {
+      // dynamic row (addKSRow)
+      rows.push({
+        operator: tr.querySelector('.ks-opr')?.value||'',
+        tanggal: tr.querySelector('.ks-tgl')?.value||'',
+        noseri: tr.querySelector('.ks-ns')?.value||'',
+        tipe: tr.querySelector('.ks-tipe-val')?.value||'',
+      });
     }
   });
   return { formType:'konstruksi', no:v('ks_no'), operator:v('ks_operator'), tanggal:v('ks_tanggal'), noseri:v('ks_noseri'), catatan:v('ks_catatan'), rows, inspector:v('ks_inspector'), spv:v('ks_spv'), status: rows.every(r=>r.hasil==='OK')?'DITERIMA':rows.some(r=>r.hasil==='NO')?'DITOLAK':'' };
@@ -2314,6 +2324,7 @@ function addFDRow() {
     `<td style="text-align:center;color:#999;border:1px solid #e0e0e0;padding:3px;font-size:11px;">${n}</td>` +
     tdL('fd-operator','Operator') +
     `<td style="border:1px solid #e0e0e0;padding:1px;"><input type="date" class="fd-tanggal" style="width:100%;border:none;padding:3px 4px;font-family:Inter,sans-serif;font-size:11px;outline:none;"></td>` +
+    `<td style="border:1px solid #e0e0e0;padding:1px;"><select class=\"fd-tipe-val\" style=\"width:100%;border:none;padding:3px 2px;font-family:Inter,sans-serif;font-size:11px;outline:none;text-align:center;cursor:pointer;background:transparent;\"><option value=\"\">--</option><option value=\"TM6-CB-24M\">TM6-CB-24M</option><option value=\"TM6-LBS-24\">TM6-LBS-24</option><option value=\"TM6-LBS-24M\">TM6-LBS-24M</option><option value=\"TM6-TP-24\">TM6-TP-24</option><option value=\"TM6-VT-24\">TM6-VT-24</option></select></td>` +
     tdL('fd-noseri','No Seri/JO') +
     // VPIS L1 (10%, 45%)
     tdON('fd-vl1a') + tdON('fd-vl1b') +
@@ -2357,7 +2368,7 @@ function addIRRow() {
     <td style="text-align:center;color:#999;border:1px solid #e0e0e0;padding:4px;">${n}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ir-operator','operator')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;"><input type="date" class="ir-tanggal" style="width:100%;border:none;padding:4px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;"></td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ir-tipe-val','tipe','70px')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;"><select class="ir-tipe-val" style="width:100%;border:none;padding:3px 2px;font-family:Inter,sans-serif;font-size:11px;outline:none;text-align:center;cursor:pointer;background:transparent;"><option value="">--</option><option value="TM6-CB-24M">TM6-CB-24M</option><option value="TM6-LBS-24">TM6-LBS-24</option><option value="TM6-LBS-24M">TM6-LBS-24M</option><option value="TM6-TP-24">TM6-TP-24</option><option value="TM6-VT-24">TM6-VT-24</option></select></td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ir-noseri','NS/JO')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ir-l1g','L1-G','60px')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ir-l2g','L2-G','60px')}</td>
@@ -2381,6 +2392,7 @@ function addTKRow() {
     <td style="border:1px solid #e0e0e0;padding:2px;"><input type="date" class="tk-tglopr" style="width:100%;border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;"></td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-operator')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-noseri')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;"><select class="tk-tipe-val" style="width:100%;border:none;padding:3px 2px;font-family:Inter,sans-serif;font-size:11px;outline:none;text-align:center;cursor:pointer;background:transparent;"><option value="">--</option><option value="TM6-CB-24M">TM6-CB-24M</option><option value="TM6-LBS-24">TM6-LBS-24</option><option value="TM6-LBS-24M">TM6-LBS-24M</option><option value="TM6-TP-24">TM6-TP-24</option><option value="TM6-VT-24">TM6-VT-24</option></select></td>
     <td style="border:1px solid #e0e0e0;padding:2px;text-align:center;">${chk('tk-cb')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;text-align:center;">${chk('tk-vt')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;text-align:center;">${chk('tk-tp')}</td>
@@ -2496,6 +2508,7 @@ function addKSRow() {
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-opr')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;"><input type="date" class="ks-tgl" style="width:100%;border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;"></td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-ns')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;"><select class="ks-tipe-val" style="width:100%;border:none;padding:3px 2px;font-family:Inter,sans-serif;font-size:11px;outline:none;text-align:center;cursor:pointer;background:transparent;"><option value="">--</option><option value="TM6-CB-24M">TM6-CB-24M</option><option value="TM6-LBS-24">TM6-LBS-24</option><option value="TM6-LBS-24M">TM6-LBS-24M</option><option value="TM6-TP-24">TM6-TP-24</option><option value="TM6-VT-24">TM6-VT-24</option></select></td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-a','55px')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-b','55px')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-c','55px')}</td>
@@ -3095,7 +3108,7 @@ function buildPrintFrekuensi(r) {
     const d=(r.rows||[])[i]||{};
     const c=(v)=>`<td class="c">${v||''}</td>`;
     return `<tr>
-      ${c(d.no||i+1)}${c(d.operator)}${c(d.tanggal)}${c(d.noseri)}
+      ${c(d.no||i+1)}${c(d.operator)}${c(d.tanggal)}${c(d.tipe)}${c(d.noseri)}
       ${c(d.vl1a)}${c(d.vl1b)}${c(d.vl2a)}${c(d.vl2b)}${c(d.vl3a)}${c(d.vl3b)}
       ${c(d.t1l1)}${c(d.t1l2)}${c(d.t1l3)}
       ${c(d.t2l1)}${c(d.t2l2)}${c(d.t2l3)}
@@ -3120,6 +3133,7 @@ function buildPrintFrekuensi(r) {
           <th rowspan="5" style="${H}padding:3px;min-width:22px;">No</th>
           <th rowspan="5" style="${H}padding:3px;min-width:55px;">Operator</th>
           <th rowspan="5" style="${H}padding:3px;min-width:55px;">Tanggal<br>tes</th>
+          <th rowspan="5" style="${H}padding:3px;min-width:55px;">Tipe</th>
           <th rowspan="5" style="${H}padding:3px;min-width:65px;">No Seri / JO</th>
           <th colspan="6"  style="${H}padding:3px;font-size:7pt;">Voltage Presence Indicating System(VPIS)</th>
           <th colspan="14" style="${H}padding:3px;font-size:7pt;">Posisi Saklar TERTUTUP</th>
@@ -3308,7 +3322,7 @@ function buildPrintKontak(r) {
     const c=(v)=>`<td class="c">${v||''}</td>`;
     const chk=(v)=>`<td class="c">${v?'☑':'☐'}</td>`;
     return `<tr>
-      ${c(d.no||i+1)}${c(d.tanggal)}${c(d.operator||'')}${c(d.noseri)}
+      ${c(d.no||i+1)}${c(d.tanggal)}${c(d.operator||'')}${c(d.noseri)}${c(d.tipe)}
       ${chk(d.cb)}${chk(d.vt)}${chk(d.tp)}${chk(d.lbs)}
       ${c(d.t1l1)}${c(d.t1l2)}${c(d.t1l3)}
       ${c(d.t2l1)}${c(d.t2l2)}${c(d.t2l3)}
@@ -3328,7 +3342,8 @@ function buildPrintKontak(r) {
           <th rowspan="4">Tanggal</th>
           <th rowspan="4">Operator</th>
           <th rowspan="4">No Seri / JO</th>
-          <th colspan="4">Tipe</th>
+          <th rowspan="4">Tipe</th>
+          <th colspan="4">Tipe Kubikel</th>
           <th colspan="12">Titik Ukur (μΩ)</th>
           <th rowspan="4">Ket</th>
         </tr>
@@ -3366,7 +3381,7 @@ function buildPrintKonstruksi(r) {
     const d=(r.rows||[])[i]||{};
     const c=(v)=>`<td class="c">${v||''}</td>`;
     return `<tr>
-      ${c(d.no||i+1)}${c(d.operator)}${c(d.tanggal)}${c(d.noseri)}
+      ${c(d.no||i+1)}${c(d.operator)}${c(d.tanggal)}${c(d.noseri)}${c(d.tipe)}
       ${c(d.a)}${c(d.b)}${c(d.c)}${c(d.d)}${c(d.e)}${c(d.f)}${c(d.g)}${c(d.h)}${c(d.i)}
       ${c(d.jarak)}${c(d.ket_plat)}${c(d.ket_cat)}${c(d.kontinuitas)}${c(d.drag)}
       <td style="text-align:left;padding:2px 5px;">${d.ket||''}</td>
@@ -3385,6 +3400,7 @@ function buildPrintKonstruksi(r) {
           <th rowspan="3">Operator</th>
           <th rowspan="3">Tanggal</th>
           <th rowspan="3">No Seri / JO</th>
+          <th rowspan="3">Tipe</th>
           <th colspan="9">Persyaratan Standar (mm)</th>
           ${STD('Jarak udara ≥220mm')}${STD('Tebal pelat ≥2mm')}${STD('Tebal cat ≥80μm')}
           ${STD('Kontinuitas TNHC')}${STD('Drag Volt ≥30')}
