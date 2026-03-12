@@ -2055,31 +2055,35 @@ let _lastSavedIncomingId = null; // track ID record incoming yg terakhir disimpa
 function saveRecord() {
   const data = collect();
   if (!data.spesifikasi.trim()) { toast('⚠️ Isi Spesifikasi terlebih dahulu!', 'err'); return; }
+
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.innerHTML = '⏳ Menyimpan...';
 
-  // Tentukan mode: edit (dari viewRecord / klik baris), atau update record terakhir di sesi ini
   const targetId = editId || _lastSavedIncomingId || '';
   const isEdit = !!targetId;
   data.id = targetId;
+  editId = null;
 
-  editId = null; // reset edit mode
-
-  const resetBtn = () => {
-    btn.textContent = '💾 Simpan Record';
-    btn.disabled = false;
+  // Selalu re-query dan paksa enable tombol, apapun yang terjadi
+  const resetBtn = (label) => {
+    const b = document.getElementById('btn-save');
+    if (b) { b.innerHTML = label || '💾 Simpan Record'; b.disabled = false; }
   };
 
   saveOneRecord(data)
     .then((savedId) => {
       _lastSavedIncomingId = savedId || targetId || null;
-      resetBtn();
+      resetBtn('💾 Simpan Record');
       toast(isEdit ? '✅ Record berhasil diupdate!' : '✅ Record berhasil disimpan!', 'ok');
       renderStats();
     })
-    .catch((e) => {
-      resetBtn();
-      // toast error sudah ditampilkan oleh saveOneRecord
+    .catch(() => {
+      resetBtn('💾 Simpan Record');
+    })
+    .finally(() => {
+      // Jaminan terakhir: tombol pasti aktif kembali
+      const b = document.getElementById('btn-save');
+      if (b && b.disabled) { b.innerHTML = '💾 Simpan Record'; b.disabled = false; }
     });
 }
 function newForm() {
