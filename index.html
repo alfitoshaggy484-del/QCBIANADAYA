@@ -2813,7 +2813,9 @@ function renderRecords() {
     // Ambil operator sesuai field form masing-masing
     let formOp = '';
     if (r.formType === 'incoming') {
-      formOp = ''; // incoming tidak tampilkan operator
+      // operator = nama user yang menyimpan (dari Firebase Auth)
+      const savedBy = r._updatedBy || r._createdBy || '';
+      formOp = r._updatedName || r._createdName || savedBy.split('@')[0] || ''
     } else if (r.formType === 'frekuensi' || r.formType === 'isolasi' || r.formType === 'kontak') {
       // operator ada di rows[0]
       formOp = (r.rows && r.rows[0] && r.rows[0].operator) || r.operator || '';
