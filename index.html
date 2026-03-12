@@ -2810,6 +2810,17 @@ function printRoadCardAndUjiFungsi() {
       inp.style.background = 'transparent';
     });
 
+    // Ganti <select> dengan span teks nilai terpilih (untuk print)
+    clone.querySelectorAll('select').forEach(sel => {
+      // Ambil value dari DOM asli (bukan clone, karena clone tidak menyalin selected state)
+      const origSel = document.getElementById(sel.id);
+      const val = origSel ? origSel.value : sel.value;
+      const span = document.createElement('span');
+      span.textContent = val || '...';
+      span.style.cssText = 'font-family:Arial;font-size:9pt;';
+      sel.replaceWith(span);
+    });
+
     // Checkbox tetap tampil sesuai state asli (sudah checked di DOM)
     // — tidak perlu diubah, browser print akan tampilkan apa adanya
 
