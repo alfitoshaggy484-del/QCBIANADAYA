@@ -2514,29 +2514,6 @@ function addKSRow() {
     <td class="del-col" style="border:1px solid #e0e0e0;"><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>`;
   document.getElementById('ks-tbody').appendChild(tr);
 }
-function collectKS() {
-  const rows = [];
-  document.querySelectorAll('#ks-tbody tr').forEach((tr,i) => {
-    rows.push({
-      no:i+1,
-      operator: tr.querySelector('.ks-opr')?.value||'',
-      tanggal: tr.querySelector('.ks-tgl')?.value||'',
-      noseri: tr.querySelector('.ks-ns')?.value||'',
-      a:tr.querySelector('.ks-a')?.value||'', b:tr.querySelector('.ks-b')?.value||'',
-      c:tr.querySelector('.ks-c')?.value||'', d:tr.querySelector('.ks-d')?.value||'',
-      e:tr.querySelector('.ks-e')?.value||'', f:tr.querySelector('.ks-f')?.value||'',
-      g:tr.querySelector('.ks-g')?.value||'', h:tr.querySelector('.ks-h')?.value||'',
-      i:tr.querySelector('.ks-i')?.value||'',
-      jarak:tr.querySelector('.ks-jarak')?.value||'',
-      ket_plat:tr.querySelector('.ks-plat')?.value||'',
-      ket_cat:tr.querySelector('.ks-cat')?.value||'',
-      kontinuitas:tr.querySelector('.ks-kont')?.value||'',
-      drag:tr.querySelector('.ks-drag')?.value||'',
-      ket:tr.querySelector('.ks-ket')?.value||'',
-    });
-  });
-  return { formType:'konstruksi', no:v('ks_no'), operator:v('ks_operator'), tanggal:v('ks_tanggal'), noseri:v('ks_noseri'), catatan:v('ks_catatan'), rows, inspector:v('ks_inspector'), spv:v('ks_spv'), status:'' };
-}
 function resetKS() {
   ['ks_no','ks_operator','ks_noseri','ks_catatan','ks_inspector','ks_spv'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('ks_tanggal').valueAsDate = new Date();
@@ -2702,6 +2679,7 @@ function toggleRCCell(btn, type) {
   okBtn.classList.remove('no-active');
   noBtn.classList.toggle('no-active', val === 'NO');
   noBtn.classList.remove('ok-active');
+}
 
 // ====== RECORDS ======
 function renderRecords() {
