@@ -1558,9 +1558,10 @@ let currentUser = null;
 let unsubscribeRecords = null;
 
 // ── Indikator sync ──
+let _syncTimer = null;
 function setSyncStatus(state, msg) {
-  const dot  = document.getElementById('sync-dot');
-  const lbl  = document.getElementById('sync-label');
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
   if (!dot || !lbl) return;
   const map = {
     idle:    { color:'#4ade80', text:'✓ Tersimpan' },
@@ -1573,6 +1574,15 @@ function setSyncStatus(state, msg) {
   const s = map[state] || map.idle;
   dot.style.background = s.color;
   lbl.textContent = msg || s.text;
+
+  // Jika status saving/loading, paksa kembali ke live setelah 6 detik
+  clearTimeout(_syncTimer);
+  if (state === 'saving' || state === 'loading') {
+    _syncTimer = setTimeout(() => {
+      dot.style.background = map.live.color;
+      lbl.textContent = map.live.text;
+    }, 6000);
+  }
 }
 
 // ── Login / Auth ──
