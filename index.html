@@ -3014,118 +3014,269 @@ function piCell(label, value, width) {
 function buildPrintHTML(r) {
   const tgl = r.tgl_inspeksi
     ? new Date(r.tgl_inspeksi+'T00:00:00').toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})
-    : '—';
-  const statusLabel = r.status==='DITERIMA' ? 'DITERIMA' : r.status==='DITOLAK' ? 'DITOLAK' : '—';
-  const statusClass = r.status==='DITERIMA' ? 'ok' : r.status==='DITOLAK' ? 'no' : 'nd';
+    : '';
+  const statusDiterima = r.status==='DITERIMA';
+  const statusDitolak  = r.status==='DITOLAK';
 
-  const vizRows = (r.visual||[]).map((v,i)=>`
-    <tr>
-      <td class="c" style="width:30px;">${i+1}</td>
-      <td>${v.item||''}</td>
-      <td class="c" style="width:80px;">${v.ok||''}</td>
-      <td class="c" style="width:80px;">${v.no||''}</td>
-    </tr>`).join('');
-  const vizPad = Math.max(0, 5-(r.visual||[]).length);
-  const vizEmpty = Array.from({length:vizPad}).map(()=>`<tr><td style="height:20px;"></td><td></td><td></td><td></td></tr>`).join('');
+  // border styles
+  const B  = 'border:1px solid #222;';
+  const BT = 'border-top:1px solid #222;';
+  const BB = 'border-bottom:1px solid #222;';
+  const BL = 'border-left:1px solid #222;';
+  const BR = 'border-right:1px solid #222;';
+  const cell = (extra='') => `style="${B}padding:3px 6px;font-size:8.5pt;vertical-align:middle;${extra}"`;
+  const hdr  = (extra='') => `style="${B}padding:4px 6px;font-size:8.5pt;font-weight:700;background:#e8e8e8;vertical-align:middle;white-space:nowrap;${extra}"`;
 
-  const measRows = (r.measurement||[]).map((m,i)=>`
-    <tr>
-      <td class="c" style="width:28px;">${i+1}</td>
-      ${['a','b','c','d','e','f'].map(l=>`<td class="c">${m[l]==='OK'?'✓':m[l]==='NO'?'✗':''}</td>`).join('')}
-      <td class="c" style="font-weight:700;">${m.hasil||''}</td>
-    </tr>`).join('');
-  const measPad = Math.max(0, 5-(r.measurement||[]).length);
-  const measEmpty = Array.from({length:measPad}).map(()=>`<tr><td style="height:20px;"></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>`).join('');
+  // Visual rows — 5 rows minimum
+  const vizCount = Math.max(5, (r.visual||[]).length);
+  let vizRows = '';
+  for(let i=0;i<vizCount;i++){
+    const v=(r.visual||[])[i]||{};
+    vizRows += `<tr>
+      <td ${cell('text-align:center;width:26px;')}>${i+1}</td>
+      <td ${cell('')}>${v.item||''}</td>
+      <td ${cell('text-align:center;width:70px;')}>${v.ok||''}</td>
+      <td ${cell('text-align:center;width:70px;')}>${v.no||''}</td>
+    </tr>`;
+  }
 
-  return `<div class="pv">
-    ${printHeader('Incoming Form','BDF-MCD-001-001','Form pemeriksaan incoming material')}
+  // Measurement rows — 5 rows minimum
+  const measCount = Math.max(5, (r.measurement||[]).length);
+  let measRows = '';
+  for(let i=0;i<measCount;i++){
+    const m=(r.measurement||[])[i]||{};
+    measRows += `<tr>
+      <td ${cell('text-align:center;width:24px;')}>${i+1}</td>
+      ${['a','b','c','d','e','f'].map(l=>`<td ${cell('text-align:center;width:30px;')}>${m[l]==='OK'?'✓':m[l]==='NO'?'✗':''}</td>`).join('')}
+      <td ${cell('text-align:center;width:50px;font-weight:700;')}>${m.hasil==='OK'?'✓':m.hasil==='NO'?'✗':''}</td>
+      <td ${cell('text-align:center;width:50px;font-weight:700;')}>${m.hasil==='NO'?'✗':''}</td>
+    </tr>`;
+  }
 
-    <div class="pi">
-      ${piCell('Spesifikasi', r.spesifikasi, '30%')}
-      ${piCell('Kode Material', r.kode_material, '20%')}
-      ${piCell('Tgl Inspeksi', tgl, '25%')}
-      ${piCell('AQL', r.aql)}
-    </div>
-    <div class="pi">
-      ${piCell('Supplier', r.supplier, '30%')}
-      ${piCell('No. PO', r.no_po, '20%')}
-      ${piCell('Jumlah Datang', r.jml_datang)}
-      ${piCell('Jumlah Sample', r.jml_sample)}
-    </div>
+  // strikethrough style for status
+  const stDiterima = statusDiterima ? '' : 'text-decoration:line-through;color:#aaa;';
+  const stDitolak  = statusDitolak  ? '' : 'text-decoration:line-through;color:#aaa;';
 
-    <table style="width:100%;border-collapse:collapse;margin-bottom:6px;">
-    <tr>
-    <td style="width:60%;vertical-align:top;padding-right:6px;">
-      <div style="font-weight:700;font-size:9pt;background:#0f2744;color:#fff;padding:5px 10px;margin-bottom:0;">CEK VISUAL</div>
-      <table class="pt" style="width:100%">
-        <thead><tr>
-          <th style="width:28px;">No</th>
-          <th style="text-align:left;">Item yang Diperiksa</th>
-          <th style="width:78px;">Jml OK</th>
-          <th style="width:78px;">Jml NO</th>
-        </tr></thead>
-        <tbody>${vizRows}${vizEmpty}</tbody>
-      </table>
-    </td>
-    <td style="vertical-align:top;padding-left:6px;">
-      <div style="font-weight:700;font-size:9pt;background:#0f2744;color:#fff;padding:5px 10px;margin-bottom:0;">CEK PENGUKURAN</div>
-      <table class="pt" style="width:100%">
-        <thead><tr>
-          <th style="width:24px;">No</th>
-          <th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th>
-          <th style="width:56px;">Hasil</th>
-        </tr></thead>
-        <tbody>${measRows}${measEmpty}</tbody>
-      </table>
-      <div style="margin-top:5px;font-size:7.5pt;font-weight:700;color:#0f2744;margin-bottom:3px;">Keterangan Pengukuran :</div>
-      <table class="pt" style="font-size:7.5pt;">
-        <tr><td class="c" style="width:20px;background:#d6e6f7;font-weight:700;">A</td><td>${r.ket_a||''}</td>
-            <td class="c" style="width:20px;background:#d6e6f7;font-weight:700;">D</td><td>${r.ket_d||''}</td></tr>
-        <tr><td class="c" style="background:#d6e6f7;font-weight:700;">B</td><td>${r.ket_b||''}</td>
-            <td class="c" style="background:#d6e6f7;font-weight:700;">E</td><td>${r.ket_e||''}</td></tr>
-        <tr><td class="c" style="background:#d6e6f7;font-weight:700;">C</td><td>${r.ket_c||''}</td>
-            <td class="c" style="background:#d6e6f7;font-weight:700;">F</td><td>${r.ket_f||''}</td></tr>
-      </table>
-    </td>
-    </tr>
-    </table>
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:8.5pt;color:#111;width:100%;">
 
-    <table style="width:100%;border-collapse:collapse;border:1px solid #bbb;">
-    <tr>
-      <td style="width:55%;border-right:1px solid #bbb;padding:7px 10px;vertical-align:top;">
-        <div style="font-weight:700;font-size:8pt;margin-bottom:4px;">Catatan :</div>
-        <div style="font-size:8pt;min-height:36px;white-space:pre-wrap;">${r.catatan||''}</div>
-      </td>
-      <td style="vertical-align:top;padding:0;">
-        <div style="padding:6px 10px;border-bottom:1px solid #bbb;">
-          <span style="font-weight:700;font-size:8pt;">Status Lot : </span>
-          <span class="pstat ${statusClass}">${statusLabel}</span>
-        </div>
-        <div style="padding:5px 10px;border-bottom:1px solid #bbb;font-size:8pt;">
-          <b>No. NCR :</b> ${r.no_ncr||''}
-        </div>
-        <table style="width:100%;border-collapse:collapse;">
-        <tr>
-          <td style="text-align:center;padding:6px 8px;border-right:1px solid #bbb;width:50%;">
-            <div style="font-weight:700;font-size:8pt;margin-bottom:2px;">Melaporkan</div>
-            <div style="height:40px;"></div>
-            <div style="border-top:1px solid #888;padding-top:3px;">
-              <div style="font-weight:700;font-size:8pt;">${r.inspector||''}</div>
-              <div style="font-size:7.5pt;color:#666;">Inspector</div>
+    <!-- TITLE -->
+    <div style="font-size:20pt;font-weight:900;text-align:left;margin-bottom:8px;letter-spacing:0.3px;">QUALITY FORM / FORMULIR MUTU</div>
+
+    <!-- MAIN OUTER TABLE -->
+    <table style="width:100%;border-collapse:collapse;border:1.5px solid #222;">
+
+      <!-- ROW 1: Incoming form + Form no -->
+      <tr>
+        <td colspan="5" style="${B}padding:5px 8px;font-size:10pt;font-weight:700;">Incoming form</td>
+        <td style="${B}padding:5px 8px;font-size:8.5pt;font-weight:700;white-space:nowrap;background:#e8e8e8;">Form no.</td>
+        <td style="${B}padding:5px 10px;font-size:10pt;font-weight:900;text-align:center;white-space:nowrap;">BDF-MCD-001-001</td>
+      </tr>
+
+      <!-- ROW 2: Purpose + Issue Date -->
+      <tr>
+        <td rowspan="2" ${hdr('width:80px;')}>Purpose</td>
+        <td rowspan="2" colspan="2" ${cell('font-size:8pt;')}>Digunakan sebagai form pemeriksaan incoming material</td>
+        <td ${hdr()}>Issue Date</td>
+        <td colspan="3" ${cell('text-align:center;')}><b>2025-03-01</b></td>
+      </tr>
+      <!-- ROW 3: Version -->
+      <tr>
+        <td ${hdr()}>Version no.</td>
+        <td ${cell('text-align:center;')}>00</td>
+        <td ${hdr('text-align:center;')}>Revision no.</td>
+        <td ${cell('text-align:center;')}><b>00</b></td>
+      </tr>
+
+      <!-- ROW 4: Spesifikasi + Tgl Inspeksi -->
+      <tr>
+        <td ${hdr()}>Spesifikasi</td>
+        <td colspan="2" ${cell('')}>${r.spesifikasi||''}</td>
+        <td ${hdr()}>Tgl Inspeksi</td>
+        <td colspan="3" ${cell('')}>${tgl}</td>
+      </tr>
+
+      <!-- ROW 5: Kode Material + Jumlah Datang -->
+      <tr>
+        <td ${hdr()}>Kode material</td>
+        <td colspan="2" ${cell('')}>${r.kode_material||''}</td>
+        <td ${hdr()}>Jumlah datang</td>
+        <td colspan="3" ${cell('')}>${r.jml_datang||''}</td>
+      </tr>
+
+      <!-- ROW 6: Supplier + Jumlah Sample -->
+      <tr>
+        <td ${hdr()}>Supplier</td>
+        <td colspan="2" ${cell('')}>${r.supplier||''}</td>
+        <td ${hdr()}>Jumlah sample</td>
+        <td colspan="3" ${cell('')}>${r.jml_sample||''}</td>
+      </tr>
+
+      <!-- ROW 7: No PO + AQL + Level -->
+      <tr>
+        <td ${hdr()}>No. PO</td>
+        <td colspan="2" ${cell('')}>${r.no_po||''}</td>
+        <td ${hdr()}>AQL</td>
+        <td ${cell('')}>${r.aql||''}</td>
+        <td ${hdr('text-align:center;')}>Level</td>
+        <td ${cell('')}>${r.level||''}</td>
+      </tr>
+
+      <!-- ROW 8: STD/SERT/TAS -->
+      <tr>
+        <td colspan="7" ${cell('text-align:right;font-size:8pt;color:#555;padding:2px 8px;')}>STD / SERT / TAS</td>
+      </tr>
+
+      <!-- ROW 9: Cek Visual header -->
+      <tr>
+        <td colspan="7" style="${B}padding:5px 8px;font-size:9pt;font-weight:700;text-align:center;background:#d0d0d0;">Cek Visual</td>
+      </tr>
+
+      <!-- ROW 10: Visual table + Jumlah OK/NO header -->
+      <tr>
+        <td style="${B}padding:0;vertical-align:top;" colspan="4">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <th style="${B}padding:4px 6px;font-size:8pt;background:#e8e8e8;text-align:center;width:28px;">No.</th>
+              <th style="${B}padding:4px 6px;font-size:8pt;background:#e8e8e8;text-align:left;">Item yang diperiksa</th>
+            </tr>
+            ${vizRows.replace(/<td [^>]*text-align:center;width:70px[^>]*>.*?<\/td>\s*<td [^>]*text-align:center;width:70px[^>]*>.*?<\/td>/gs,'').replace(/<\/tr>/g,'</tr>').replace(/(<tr>[\s\S]*?)<\/tr>/g, (m)=>{
+              // strip the last two OK/NO cells
+              return m.replace(/<td [^>]*70px[^>]*>.*?<\/td>/gs,'');
+            })}
+          </table>
+        </td>
+        <td style="${B}padding:0;vertical-align:top;" colspan="3">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <th style="${B}padding:4px 6px;font-size:8pt;background:#e8e8e8;text-align:center;">Jumlah OK</th>
+              <th style="${B}padding:4px 6px;font-size:8pt;background:#e8e8e8;text-align:center;">Jumlah NO</th>
+            </tr>
+            ${(()=>{
+              let rows2='';
+              const vizC2=Math.max(5,(r.visual||[]).length);
+              for(let i=0;i<vizC2;i++){
+                const v=(r.visual||[])[i]||{};
+                rows2+=`<tr>
+                  <td style="${B}padding:4px 6px;text-align:center;height:22px;">${v.ok||''}</td>
+                  <td style="${B}padding:4px 6px;text-align:center;">${v.no||''}</td>
+                </tr>`;
+              }
+              return rows2;
+            })()}
+          </table>
+        </td>
+      </tr>
+
+      <!-- ROW 11: Cek Pengukuran header -->
+      <tr>
+        <td colspan="7" style="${B}padding:5px 8px;font-size:9pt;font-weight:700;text-align:center;background:#d0d0d0;">Cek Pengukuran</td>
+      </tr>
+
+      <!-- ROW 12: Pengukuran table left + Keterangan right -->
+      <tr>
+        <td colspan="4" style="${B}padding:0;vertical-align:top;">
+          <table style="width:100%;border-collapse:collapse;">
+            <tr>
+              <th style="${B}padding:4px 3px;font-size:8pt;background:#e8e8e8;text-align:center;width:26px;">No.</th>
+              <th style="${B}padding:4px 5px;font-size:8pt;background:#e8e8e8;text-align:center;">A</th>
+              <th style="${B}padding:4px 5px;font-size:8pt;background:#e8e8e8;text-align:center;">B</th>
+              <th style="${B}padding:4px 5px;font-size:8pt;background:#e8e8e8;text-align:center;">C</th>
+              <th style="${B}padding:4px 5px;font-size:8pt;background:#e8e8e8;text-align:center;">D</th>
+              <th style="${B}padding:4px 5px;font-size:8pt;background:#e8e8e8;text-align:center;">E</th>
+              <th style="${B}padding:4px 5px;font-size:8pt;background:#e8e8e8;text-align:center;">F</th>
+              <th colspan="2" style="${B}padding:4px 5px;font-size:8pt;background:#d0d0d0;text-align:center;">HASIL</th>
+            </tr>
+            <tr>
+              <th style="${B}padding:2px;background:#e8e8e8;"></th>
+              <th style="${B}padding:2px;background:#e8e8e8;"></th>
+              <th style="${B}padding:2px;background:#e8e8e8;"></th>
+              <th style="${B}padding:2px;background:#e8e8e8;"></th>
+              <th style="${B}padding:2px;background:#e8e8e8;"></th>
+              <th style="${B}padding:2px;background:#e8e8e8;"></th>
+              <th style="${B}padding:2px;background:#e8e8e8;"></th>
+              <th style="${B}padding:2px 5px;font-size:7.5pt;background:#e8e8e8;text-align:center;">OK</th>
+              <th style="${B}padding:2px 5px;font-size:7.5pt;background:#e8e8e8;text-align:center;">NO</th>
+            </tr>
+            ${(()=>{
+              let mr='';
+              const mc=Math.max(5,(r.measurement||[]).length);
+              for(let i=0;i<mc;i++){
+                const m=(r.measurement||[])[i]||{};
+                mr+=`<tr>
+                  <td style="${B}padding:4px 3px;text-align:center;height:22px;">${i+1}</td>
+                  ${['a','b','c','d','e','f'].map(l=>`<td style="${B}padding:4px 5px;text-align:center;">${m[l]==='OK'?'✓':m[l]==='NO'?'✗':''}</td>`).join('')}
+                  <td style="${B}padding:4px 5px;text-align:center;font-weight:700;">${m.hasil==='OK'?'✓':''}</td>
+                  <td style="${B}padding:4px 5px;text-align:center;font-weight:700;">${m.hasil==='NO'?'✗':''}</td>
+                </tr>`;
+              }
+              return mr;
+            })()}
+          </table>
+        </td>
+        <td colspan="3" style="${B}padding:6px 8px;vertical-align:top;">
+          <div style="font-weight:700;font-size:8pt;margin-bottom:6px;">Keterngan pengukuran</div>
+          <table style="width:100%;border-collapse:collapse;font-size:8pt;">
+            <tr>
+              <td style="${B}padding:3px 6px;background:#e8e8e8;font-weight:700;width:22px;text-align:center;">A =</td>
+              <td style="${B}padding:3px 6px;">${r.ket_a||''}</td>
+              <td style="${B}padding:3px 6px;background:#e8e8e8;font-weight:700;width:22px;text-align:center;">D =</td>
+              <td style="${B}padding:3px 6px;">${r.ket_d||''}</td>
+            </tr>
+            <tr>
+              <td style="${B}padding:3px 6px;background:#e8e8e8;font-weight:700;text-align:center;">B =</td>
+              <td style="${B}padding:3px 6px;">${r.ket_b||''}</td>
+              <td style="${B}padding:3px 6px;background:#e8e8e8;font-weight:700;text-align:center;">E =</td>
+              <td style="${B}padding:3px 6px;">${r.ket_e||''}</td>
+            </tr>
+            <tr>
+              <td style="${B}padding:3px 6px;background:#e8e8e8;font-weight:700;text-align:center;">C =</td>
+              <td style="${B}padding:3px 6px;">${r.ket_c||''}</td>
+              <td style="${B}padding:3px 6px;background:#e8e8e8;font-weight:700;text-align:center;">F =</td>
+              <td style="${B}padding:3px 6px;">${r.ket_f||''}</td>
+            </tr>
+          </table>
+          <div style="margin-top:12px;font-weight:700;font-size:8pt;">Status Lot :</div>
+          <div style="margin-top:6px;text-align:center;">
+            <div style="border:1.5px solid #222;display:inline-block;padding:5px 28px;font-weight:900;font-size:9.5pt;">
+              <span style="${stDiterima}">DITERIMA</span>
+              <span style="margin:0 6px;">/</span>
+              <span style="${stDitolak}text-decoration:${statusDitolak?'none':'line-through'};${statusDitolak?'':'color:#aaa;'}">DITOLAK</span>
             </div>
-          </td>
-          <td style="text-align:center;padding:6px 8px;">
-            <div style="font-weight:700;font-size:8pt;margin-bottom:2px;">Mengetahui</div>
-            <div style="height:40px;"></div>
-            <div style="border-top:1px solid #888;padding-top:3px;">
-              <div style="font-weight:700;font-size:8pt;">${r.spv||''}</div>
-              <div style="font-size:7.5pt;color:#666;">Spv Inspector</div>
-            </div>
-          </td>
-        </tr>
-        </table>
-      </td>
-    </tr>
+          </div>
+          <div style="font-size:7.5pt;color:#666;text-align:center;margin-top:2px;">(Coret yang tidak perlu)</div>
+          <div style="margin-top:8px;font-size:8pt;"><b>No. NCR :</b> ${r.no_ncr||''}</div>
+          <table style="width:100%;border-collapse:collapse;margin-top:8px;">
+            <tr>
+              <td style="${B}text-align:center;padding:5px 6px;width:50%;vertical-align:bottom;">
+                <div style="font-weight:700;font-size:8pt;">Melaporkan</div>
+                <div style="height:40px;"></div>
+                <div style="border-top:1px solid #777;padding-top:3px;">
+                  <div style="font-weight:700;font-size:8pt;">${r.inspector||''}</div>
+                  <div style="font-size:7.5pt;color:#555;">Inspector</div>
+                </div>
+              </td>
+              <td style="${B}text-align:center;padding:5px 6px;vertical-align:bottom;">
+                <div style="font-weight:700;font-size:8pt;">Mengetahui</div>
+                <div style="height:40px;"></div>
+                <div style="border-top:1px solid #777;padding-top:3px;">
+                  <div style="font-weight:700;font-size:8pt;">${r.spv||''}</div>
+                  <div style="font-size:7.5pt;color:#555;">Spv Inspector</div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- ROW 13: Catatan -->
+      <tr>
+        <td colspan="4" style="${B}padding:6px 8px;vertical-align:top;">
+          <div style="font-weight:700;font-size:8pt;margin-bottom:4px;">Catatan :</div>
+          <div style="font-size:8pt;min-height:48px;white-space:pre-wrap;">${r.catatan||''}</div>
+        </td>
+        <td colspan="3" style="${B}padding:4px 6px;vertical-align:top;font-size:7.5pt;color:#888;"></td>
+      </tr>
+
     </table>
   </div>`;
 }
