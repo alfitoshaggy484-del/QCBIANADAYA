@@ -2662,6 +2662,8 @@ function toggleRCCell(btn, type) {
     if (!isActive && okHid) { okHid.value = ''; if(okBtn) okBtn.classList.remove('ok-active'); }
   }
 }
+
+function toggleUFOkNo(btn, val) {
   const row = btn.closest('tr');
   if (!row) return;
   const okBtn  = row.querySelector('.uf-ok-btn');
