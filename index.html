@@ -1709,20 +1709,26 @@ async function saveRecords() {
 async function saveOneRecord(data) {
   const { db, doc, addDoc, setDoc, collection, serverTimestamp } = window._fb;
   setSyncStatus('saving');
+  const nowMs = Date.now(); // fallback timestamp dalam milliseconds
   try {
     if (data.id && data.id.length > 5) {
-      // Update existing
       const ref = doc(db, 'qf_records', data.id);
       const { id, ...rest } = data;
-      await setDoc(ref, { ...rest, _updated: serverTimestamp(), _updatedBy: currentUser?.email || '', _updatedName: currentUser?.displayName || '' }, { merge: true });
+      await setDoc(ref, {
+        ...rest,
+        _updated: serverTimestamp(),
+        _updatedMs: nowMs,
+        _updatedBy: currentUser?.email || '',
+        _updatedName: currentUser?.displayName || currentUser?.email?.split('@')[0] || ''
+      }, { merge: true });
       setSyncStatus('live');
       return data.id;
     } else {
-      // New record
       const { id, ...rest } = data;
       const docRef = await addDoc(collection(db, 'qf_records'), {
         ...rest,
         _created: serverTimestamp(),
+        _createdMs: nowMs,
         _createdBy: currentUser?.email || '',
         _createdName: currentUser?.displayName || currentUser?.email?.split('@')[0] || '',
       });
@@ -2816,10 +2822,11 @@ function renderRecords() {
   tbody.innerHTML = filtered.map(r => {
     const meta = FORM_META[r.formType]||{label:'—',code:'—'};
     // Tampilkan waktu simpan (history) dari _updated atau _created
-    // Ambil timestamp: coba semua kemungkinan field name
+    // Ambil timestamp: serverTimestamp bisa null saat pending write, fallback ke Ms
     const savedTs = r._updated || r._created || r._updatedAt || r._createdAt || null;
-    const savedTime = formatFirestoreDate(savedTs);
-    const isUpdated = !!(r._updated || r._updatedAt);
+    const savedMs = r._updatedMs || r._createdMs || null;
+    const savedTime = formatFirestoreDate(savedTs) !== '—' ? formatFirestoreDate(savedTs) : formatFirestoreDate(savedMs);
+    const isUpdated = !!(r._updated || r._updatedAt || r._updatedMs);
     // Operator: siapa yang simpan (by email/name) + field operator dari form
     // Ambil operator sesuai field form masing-masing
     let formOp = '';
