@@ -986,11 +986,29 @@ input[type="date"].ks-tgl {
         <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:9pt;margin-bottom:6px;">
           <tr>
             
-            <td style="border:1px solid #555;padding:5px 8px;width:55%;"><b>Type :</b> <input type="text" id="rc_type" placeholder="..." style="border:none;outline:none;width:70%;font-family:Arial;font-size:9pt;background:transparent;border-bottom:1px solid #aaa;"></td>
+            <td style="border:1px solid #555;padding:5px 8px;width:55%;"><b>Type :</b>
+              <select id="rc_type" onchange="onRcTypeChange()" style="border:none;border-bottom:1px solid #aaa;outline:none;width:72%;font-family:Arial;font-size:9pt;background:transparent;cursor:pointer;">
+                <option value="">-- Pilih Type --</option>
+                <option value="TM6-CB-24M">TM6-CB-24M</option>
+                <option value="TM6-LBS-24">TM6-LBS-24</option>
+                <option value="TM6-LBS-24M">TM6-LBS-24M</option>
+                <option value="TM6-TP-24">TM6-TP-24</option>
+                <option value="TM6-VT-24">TM6-VT-24</option>
+              </select>
+            </td>
             <td style="border:1px solid #555;padding:5px 8px;"><b>Nomer seri/JO :</b> <input type="text" id="rc_jo" placeholder="..." style="border:none;outline:none;width:60%;font-family:Arial;font-size:9pt;background:transparent;border-bottom:1px solid #aaa;"></td>
           </tr>
           <tr>
-            <td style="border:1px solid #555;padding:5px 8px;"><b>Spesifikasi :</b> <input type="text" id="rc_spesifikasi" placeholder="..." style="border:none;outline:none;width:70%;font-family:Arial;font-size:9pt;background:transparent;border-bottom:1px solid #aaa;"></td>
+            <td style="border:1px solid #555;padding:5px 8px;"><b>Spesifikasi :</b>
+              <select id="rc_spesifikasi" style="border:none;border-bottom:1px solid #aaa;outline:none;width:72%;font-family:Arial;font-size:9pt;background:transparent;cursor:pointer;">
+                <option value="">-- Pilih Spesifikasi --</option>
+                <option value="Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-CB Motorize">Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-CB Motorize</option>
+                <option value="Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-LBS">Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-LBS</option>
+                <option value="Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-LBS Motorize">Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-LBS Motorize</option>
+                <option value="Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-TP">Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-TP</option>
+                <option value="Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-VT">Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-VT</option>
+              </select>
+            </td>
             <td style="border:1px solid #555;padding:5px 8px;"></td>
           </tr>
         </table>
@@ -1000,9 +1018,9 @@ input[type="date"].ks-tgl {
             <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:35%;">Pemeriksaan kontruksi</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:14%;">Operator QC</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:11%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:9%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:9%;">NG</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;">Referensi</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
           </tr>
           <tr><td style="border:1px solid #555;padding:4px 8px;">Dimensi</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td rowspan="6" style="border:1px solid #555;padding:5px 8px;font-size:7.5pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-005</td></tr>
           <tr><td style="border:1px solid #555;padding:4px 8px;">Ketebalan pelat rangka dan penutup</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr>
@@ -1019,8 +1037,9 @@ input[type="date"].ks-tgl {
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Tanggal</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:13%;">Operator QC</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:8%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:8%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
           </tr>
           <tbody id="rc-aks-tbody">
           </tbody>
@@ -1033,8 +1052,9 @@ input[type="date"].ks-tgl {
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Torsi (Nm)</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:13%;">Operator QC</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:8%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:8%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
           </tr>
           <tbody id="rc-torsi-tbody"></tbody>
         </table>
@@ -1044,8 +1064,9 @@ input[type="date"].ks-tgl {
             <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:35%;">Daftar pengujian mekanis <span style='font-size:7pt;font-weight:400;opacity:.85;'>(Ref: BDF-QAD-001-006)</span></td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:14%;">Operator QC</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:11%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:9%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:9%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
           </tr>
           <tbody id="rc-mek-tbody"></tbody>
         </table>
@@ -1055,8 +1076,9 @@ input[type="date"].ks-tgl {
             <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:35%;">Daftar pengujian elektrik dan dielektrik <span style='font-size:7pt;font-weight:400;opacity:.85;'>(Ref: BDF-QAD-001-006 / BDF-QAD-001-004 / BDF-QAD-001-003 / BDF-QAD-001-002)</span></td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:14%;">Operator QC</td>
             <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:11%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:9%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:9%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
           </tr>
           <tbody id="rc-elek-tbody"></tbody>
         </table>
@@ -2389,9 +2411,11 @@ function buildRCTable() {
   // Kelengkapan Aksesoris
   const aksItems = ['Pencegah kondensasi/heater','Pengaman lebur/Fuse','Busbar fasa','Busbar grounding','Transformator arus (CT)','Transformator tegangan (VT)','Voltmeter','Relay','Temporary Power Suply (TPS)'];
   const aksBody = document.getElementById('rc-aks-tbody');
+  const aksRef = 'BDF-PRO-001-002<br>BDF-QAD-001-005<br>BDF-QAD-001-006';
   aksItems.forEach((item,i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td><td ${td}><input type="text" class="rc-ket" style="width:100%;border:none;outline:none;font-size:8pt;"></td>`;
+    const refCell = i===0 ? `<td ${td} rowspan="${aksItems.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">${aksRef}</td>` : '';
+    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     aksBody.appendChild(tr);
   });
 
@@ -2405,7 +2429,8 @@ function buildRCTable() {
   const torsiBody = document.getElementById('rc-torsi-tbody');
   torsiData.forEach((d,i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td ${td}>${d[0]}</td><td ${tdC}>${d[1]}</td><td ${tdC}>${d[2]}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td><td ${td}><input type="text" class="rc-ket" style="width:100%;border:none;outline:none;font-size:8pt;"></td>`;
+    const refCell = i===0 ? `<td ${td} rowspan="${torsiData.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-006</td>` : '';
+    tr.innerHTML = `<td ${td}>${d[0]}</td><td ${tdC}>${d[1]}</td><td ${tdC}>${d[2]}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     torsiBody.appendChild(tr);
   });
 
@@ -2414,7 +2439,8 @@ function buildRCTable() {
   const mekBody = document.getElementById('rc-mek-tbody');
   mekItems.forEach((item,i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td><td ${td}><input type="text" class="rc-ket" style="width:100%;border:none;outline:none;font-size:8pt;"></td>`;
+    const refCell = i===0 ? `<td ${td} rowspan="${mekItems.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-006</td>` : '';
+    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     mekBody.appendChild(tr);
   });
 
@@ -2426,11 +2452,26 @@ function buildRCTable() {
     'Uji fungsi VIPS (menyala pada 45% Un)','Uji fungsi peralatan pencegah  kondensasi/heater'
   ];
   const elekBody = document.getElementById('rc-elek-tbody');
+  const elekRef = 'BDF-QAD-001-006<br>BDF-QAD-001-004<br>BDF-QAD-001-003<br>BDF-QAD-001-002';
   elekItems.forEach((item,i) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td><td ${td}><input type="text" class="rc-ket" style="width:100%;border:none;outline:none;font-size:8pt;"></td>`;
+    const refCell = i===0 ? `<td ${td} rowspan="${elekItems.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">${elekRef}</td>` : '';
+    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     elekBody.appendChild(tr);
   });
+}
+// Auto-fill Spesifikasi berdasarkan Type yang dipilih
+const RC_TYPE_SPEC = {
+  'TM6-CB-24M':  'Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-CB Motorize',
+  'TM6-LBS-24':  'Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-LBS',
+  'TM6-LBS-24M': 'Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-LBS Motorize',
+  'TM6-TP-24':   'Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-TP',
+  'TM6-VT-24':   'Panel Hubung Bagi Tegangan Menengah (PHBTM) type TM6-VT',
+};
+function onRcTypeChange() {
+  const type = document.getElementById('rc_type')?.value || '';
+  const specEl = document.getElementById('rc_spesifikasi');
+  if (specEl && RC_TYPE_SPEC[type]) specEl.value = RC_TYPE_SPEC[type];
 }
 function resetRC() {
   ['rc_type','rc_spesifikasi','rc_jo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
@@ -2596,7 +2637,7 @@ function buildUFTable() {
         container.appendChild(subTr);
         sub.items.forEach(item => {
           const tr = document.createElement('tr');
-          tr.innerHTML = `<td ${tdS}>${item}</td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"><div class="ok-no-cell"><input type="hidden" class="uf-hasil-val" value=""><button class="okno-btn" style="padding:3px 10px;font-size:11px;" onclick="toggleOkNo(this,\'OK\')">OK</button><button class="okno-btn" style="padding:3px 10px;font-size:11px;" onclick="toggleOkNo(this,\'NO\')">NO</button></div></td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"></td><td ${tdS}><input type="text" class="uf-ket" style="width:100%;border:none;outline:none;font-family:Arial;font-size:8.5pt;background:transparent;"></td>`;
+          tr.innerHTML = `<td ${tdS}>${item}</td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"><input type="hidden" class="uf-hasil-val" value=""><button class="okno-btn uf-ok-btn" style="padding:3px 10px;font-size:11px;width:100%;" onclick="toggleUFOkNo(this,'OK')">OK</button></td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"><button class="okno-btn uf-no-btn" style="padding:3px 10px;font-size:11px;width:100%;" onclick="toggleUFOkNo(this,'NO')">NO</button></td><td ${tdS}><input type="text" class="uf-ket" style="width:100%;border:none;outline:none;font-family:Arial;font-size:8.5pt;background:transparent;"></td>`;
           container.appendChild(tr);
         });
       });
@@ -2607,7 +2648,7 @@ function buildUFTable() {
       container.appendChild(headerTr);
       sec.items.forEach(item => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td ${tdS}>${item}</td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"><div class="ok-no-cell"><input type="hidden" class="uf-hasil-val" value=""><button class="okno-btn" style="padding:3px 10px;font-size:11px;" onclick="toggleOkNo(this,\'OK\')">OK</button><button class="okno-btn" style="padding:3px 10px;font-size:11px;" onclick="toggleOkNo(this,\'NO\')">NO</button></div></td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"></td><td ${tdS}><input type="text" class="uf-ket" style="width:100%;border:none;outline:none;font-family:Arial;font-size:8.5pt;background:transparent;"></td>`;
+        tr.innerHTML = `<td ${tdS}>${item}</td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"><input type="hidden" class="uf-hasil-val" value=""><button class="okno-btn uf-ok-btn" style="padding:3px 10px;font-size:11px;width:100%;" onclick="toggleUFOkNo(this,'OK')">OK</button></td><td style="border:1px solid #555;padding:3px 4px;text-align:center;width:60px;"><button class="okno-btn uf-no-btn" style="padding:3px 10px;font-size:11px;width:100%;" onclick="toggleUFOkNo(this,'NO')">NO</button></td><td ${tdS}><input type="text" class="uf-ket" style="width:100%;border:none;outline:none;font-family:Arial;font-size:8.5pt;background:transparent;"></td>`;
         container.appendChild(tr);
       });
     }
@@ -2617,6 +2658,51 @@ function resetFD() { document.getElementById('fd-tbody').innerHTML=''; fdCount=0
 function resetIR() { document.getElementById('ir-tbody').innerHTML=''; irCount=0; addIRRow(); addIRRow(); addIRRow(); addIRRow(); addIRRow(); }
 function resetTK() { document.getElementById('tk-tbody').innerHTML=''; tkCount=0; addTKRow(); addTKRow(); addTKRow(); addTKRow(); addTKRow(); }
 function resetUF() { ['uf_jo','uf_operator'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; }); ['uf_lbs','uf_tp','uf_vt','uf_cb'].forEach(id=>{ const el=document.getElementById(id); if(el) el.checked=false; }); const td=document.getElementById('uf_tanggal'); if(td) td.valueAsDate=new Date(); buildUFTable(); }
+
+// Toggle RC Good (OK) / NG (NO) — satu tombol per sel, klik ulang = reset
+function toggleRCCell(btn, type) {
+  const row = btn.closest('tr');
+  if (!row) return;
+  if (type === 'good') {
+    const hid = row.querySelector('.rc-good-val');
+    const ngBtn = row.querySelector('.rc-no-btn');
+    const ngHid = row.querySelector('.rc-ng-val');
+    if (!hid) return;
+    const isActive = hid.value === 'OK';
+    hid.value = isActive ? '' : 'OK';
+    btn.classList.toggle('ok-active', !isActive);
+    // jika OK dipilih, reset NG
+    if (!isActive && ngHid) { ngHid.value = ''; if(ngBtn) ngBtn.classList.remove('no-active'); }
+  } else {
+    const hid = row.querySelector('.rc-ng-val');
+    const okBtn = row.querySelector('.rc-ok-btn');
+    const okHid = row.querySelector('.rc-good-val');
+    if (!hid) return;
+    const isActive = hid.value === 'NO';
+    hid.value = isActive ? '' : 'NO';
+    btn.classList.toggle('no-active', !isActive);
+    // jika NO dipilih, reset Good
+    if (!isActive && okHid) { okHid.value = ''; if(okBtn) okBtn.classList.remove('ok-active'); }
+  }
+}
+  const row = btn.closest('tr');
+  if (!row) return;
+  const okBtn  = row.querySelector('.uf-ok-btn');
+  const noBtn  = row.querySelector('.uf-no-btn');
+  const hidVal = row.querySelector('.uf-hasil-val');
+  if (!okBtn || !noBtn || !hidVal) return;
+  if (hidVal.value === val) {
+    hidVal.value = '';
+    okBtn.classList.remove('ok-active');
+    noBtn.classList.remove('no-active');
+    return;
+  }
+  hidVal.value = val;
+  okBtn.classList.toggle('ok-active', val === 'OK');
+  okBtn.classList.remove('no-active');
+  noBtn.classList.toggle('no-active', val === 'NO');
+  noBtn.classList.remove('ok-active');
+}
 
 // ====== RECORDS ======
 function renderRecords() {
@@ -3141,13 +3227,20 @@ function buildPrintRoadcard(r) {
   const c2 = (v) => `<td class="c">${v||''}</td>`;
   const gn  = (d) => `<td class="c" style="color:${d.good==='OK'?'#15803d':'#111'};font-weight:${d.good?'700':'400'};">${d.good||''}</td><td class="c" style="color:${d.ng==='NO'?'#b91c1c':'#111'};font-weight:${d.ng?'700':'400'};">${d.ng||''}</td>`;
 
-  // Pemeriksaan Konstruksi rows
+  // Pemeriksaan Konstruksi rows - tambah kolom referensi (rowspan)
   const ks = r.konstruksi||[];
-  const ksRows = ks.map(d=>`<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.oqc)}${c2(d.tgl)}${gn(d)}<td></td></tr>`).join('');
+  const ksRows = ks.map((d,i)=>{
+    const refCell = i===0 ? `<td class="c" rowspan="${ks.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-005</td>` : '';
+    return `<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.oqc)}${c2(d.tgl)}${gn(d)}${refCell}</tr>`;
+  }).join('');
 
-  // Aksesoris rows
+  // Aksesoris rows - tambah referensi rowspan
   const aks = r.aksesoris||[];
-  const aksRows = aks.map(d=>`<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.op_prod)}${c2(d.tgl_prod)}${c2(d.op_qc)}${c2(d.tgl_qc)}${gn(d)}<td></td></tr>`).join('');
+  const aksRef = 'BDF-PRO-001-002 / BDF-QAD-001-005 / BDF-QAD-001-006';
+  const aksRows = aks.map((d,i)=>{
+    const refCell = i===0 ? `<td class="c" rowspan="${aks.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">${aksRef}</td>` : '';
+    return `<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.op_prod)}${c2(d.tgl_prod)}${c2(d.op_qc)}${c2(d.tgl_qc)}${gn(d)}${refCell}</tr>`;
+  }).join('');
 
   // Torsi rows
   const torsiData = [
@@ -3159,20 +3252,28 @@ function buildPrintRoadcard(r) {
   const torsiArr = r.torsi||[];
   const torsiRows = torsiData.map((d,i)=>{
     const t = torsiArr[i]||{};
-    return `<tr><td style="padding:3px 6px;">${d[0]}</td>${c2(d[1])}${c2(d[2])}${c2(t.op_qc)}${c2(t.tgl)}${gn(t)}<td style="font-size:7pt;color:#555;">BDF-QAD-001-006</td></tr>`;
+    const refCell = i===0 ? `<td class="c" rowspan="${torsiData.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-006</td>` : '';
+    return `<tr><td style="padding:3px 6px;">${d[0]}</td>${c2(d[1])}${c2(d[2])}${c2(t.op_qc)}${c2(t.tgl)}${gn(t)}${refCell}</tr>`;
   }).join('');
 
   // Mekanis rows
   const mekArr = r.mekanis||[];
-  const mekRows = mekArr.map(d=>`<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.op_qc)}${c2(d.tgl)}${gn(d)}<td></td></tr>`).join('');
+  const mekRows = mekArr.map((d,i)=>{
+    const refCell = i===0 ? `<td class="c" rowspan="${mekArr.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-006</td>` : '';
+    return `<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.op_qc)}${c2(d.tgl)}${gn(d)}${refCell}</tr>`;
+  }).join('');
 
   // Elektrik rows
   const elekArr = r.elektrik||[];
-  const elekRows = elekArr.map(d=>`<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.op_qc)}${c2(d.tgl)}${gn(d)}<td></td></tr>`).join('');
+  const elekRef = 'BDF-QAD-001-006 / BDF-QAD-001-004 / BDF-QAD-001-003 / BDF-QAD-001-002';
+  const elekRows = elekArr.map((d,i)=>{
+    const refCell = i===0 ? `<td class="c" rowspan="${elekArr.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">${elekRef}</td>` : '';
+    return `<tr><td style="padding:3px 6px;">${d.item}</td>${c2(d.op_qc)}${c2(d.tgl)}${gn(d)}${refCell}</tr>`;
+  }).join('');
 
   const sHdr = (label, cols, ref) =>
     `<tr class="sh-dk"><td colspan="${cols}"><b>${label}</b></td></tr>` +
-    `<tr class="sh-lt"><td>Item</td><td style="text-align:center;">Operator QC</td><td style="text-align:center;">Tanggal</td><td style="text-align:center;">Good</td><td style="text-align:center;">NG</td><td style="font-size:7pt;color:#555;">${ref||''}</td></tr>`;
+    `<tr class="sh-lt"><td>Item</td><td style="text-align:center;">Operator QC</td><td style="text-align:center;">Tanggal</td><td style="text-align:center;">Good</td><td style="text-align:center;">NG</td><td style="font-size:7pt;color:#555;text-align:center;">Referensi</td></tr>`;
 
   return `<div class="pv">
     ${printHeader('Road Card PHBTM','BDF-QAD-001-003',
@@ -3188,11 +3289,11 @@ function buildPrintRoadcard(r) {
       ${ksRows}
 
       <tr class="sh-dk"><td colspan="8"><b>KELENGKAPAN AKSESORIS</b></td></tr>
-      <tr class="sh-lt"><td>Item</td><td style="text-align:center;">Op. Produksi</td><td style="text-align:center;">Tgl</td><td style="text-align:center;">Operator QC</td><td style="text-align:center;">Tgl</td><td style="text-align:center;">Good</td><td style="text-align:center;">NG</td><td style="font-size:7pt;color:#555;">BDF-PRO-001-002</td></tr>
+      <tr class="sh-lt"><td>Item</td><td style="text-align:center;">Op. Produksi</td><td style="text-align:center;">Tgl</td><td style="text-align:center;">Operator QC</td><td style="text-align:center;">Tgl</td><td style="text-align:center;">Good</td><td style="text-align:center;">NG</td><td style="font-size:7pt;color:#555;text-align:center;">Referensi</td></tr>
       ${aksRows}
 
       <tr class="sh-dk"><td colspan="8"><b>PENGUJIAN TORSI</b></td></tr>
-      <tr class="sh-lt"><td>Item</td><td style="text-align:center;">Ukuran Baut</td><td style="text-align:center;">Torsi (Nm)</td><td style="text-align:center;">Operator QC</td><td style="text-align:center;">Tgl</td><td style="text-align:center;">Good</td><td style="text-align:center;">NG</td><td style="font-size:7pt;color:#555;">Ref</td></tr>
+      <tr class="sh-lt"><td>Item</td><td style="text-align:center;">Ukuran Baut</td><td style="text-align:center;">Torsi (Nm)</td><td style="text-align:center;">Operator QC</td><td style="text-align:center;">Tgl</td><td style="text-align:center;">Good</td><td style="text-align:center;">NG</td><td style="font-size:7pt;color:#555;text-align:center;">Referensi</td></tr>
       ${torsiRows}
 
       ${sHdr('PENGUJIAN MEKANIS', 6, 'BDF-QAD-001-006')}
