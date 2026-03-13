@@ -3273,22 +3273,58 @@ function printRoadCardOnly() {
   const area = document.getElementById('print-area');
   area.innerHTML = '';
 
-  // Kumpulkan data dari form interaktif
-  const rc = collectRC();
+  // Clone form interaktif (format sama persis dengan yang diisi)
+  const orig = document.getElementById('form-roadcard');
+  if (!orig) return;
+  const clone = orig.cloneNode(true);
 
-  // Bangun HTML compact dari builder (sama seperti preview dari database)
-  const html = buildPrintRoadcard(rc);
+  // Hapus tombol dan wrapper card UI
+  clone.querySelectorAll('.bottom-actions').forEach(e => e.remove());
+  clone.querySelectorAll('[style*="border-radius"]').forEach(e => { e.style.borderRadius = '0'; });
+  clone.querySelectorAll('[style*="box-shadow"]').forEach(e => { e.style.boxShadow = 'none'; });
+  // Bersihkan padding wrapper
+  clone.querySelectorAll('[style*="padding:16px"]').forEach(e => { e.style.padding = '0'; });
 
-  // Wrapper portrait
+  // Ganti <select> dengan teks nilai terpilih
+  clone.querySelectorAll('select').forEach(sel => {
+    const origSel = document.getElementById(sel.id);
+    const val = origSel ? origSel.options[origSel.selectedIndex]?.text || origSel.value : sel.value;
+    const span = document.createElement('span');
+    span.textContent = (val && !val.startsWith('--')) ? val : '';
+    span.style.cssText = 'font-family:Arial;font-size:8.5pt;';
+    sel.replaceWith(span);
+  });
+
+  // Ganti ok-no-cell dengan teks OK/NO/—
+  clone.querySelectorAll('.ok-no-cell').forEach(cell => {
+    const hid = cell.querySelector('input[type=hidden]');
+    const val = hid ? hid.value : '';
+    const span = document.createElement('span');
+    span.style.cssText = 'font-weight:700;font-size:10px;display:inline-block;';
+    if (val === 'OK') { span.style.color = '#15803d'; span.textContent = 'OK'; }
+    else if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = 'NO'; }
+    else { span.textContent = ''; }
+    cell.replaceWith(span);
+  });
+
+  // Bersihkan border input agar rapi
+  clone.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
+    inp.style.border = 'none';
+    inp.style.outline = 'none';
+    inp.style.background = 'transparent';
+    inp.style.padding = '1px 2px';
+  });
+
+  // Hilangkan background wrapper putih
+  clone.style.cssText = 'display:block;margin:0;padding:0;background:transparent;box-shadow:none;border-radius:0;';
+
   const wrapper = document.createElement('div');
   wrapper.id = 'rc-portrait-wrapper';
-  wrapper.innerHTML = html;
-  wrapper.style.cssText = 'font-family:Arial,Helvetica,sans-serif;font-size:7.5pt;color:#111;width:100%;margin:0 auto;';
-
+  wrapper.appendChild(clone);
   area.appendChild(wrapper);
   area.style.display = 'block';
 
-  // Inject style portrait override
+  // Inject @page portrait + scale-to-fit
   let styleTag = document.getElementById('rc-portrait-style');
   if (!styleTag) {
     styleTag = document.createElement('style');
@@ -3297,16 +3333,48 @@ function printRoadCardOnly() {
   }
   styleTag.textContent = `
     @media print {
-      @page { size: A4 portrait !important; margin: 6mm 8mm !important; }
-      #rc-portrait-wrapper { width: 100% !important; font-size: 7pt !important; }
-      #rc-portrait-wrapper table { font-size: 7pt !important; border-collapse: collapse !important; }
-      #rc-portrait-wrapper .pt td, #rc-portrait-wrapper .pt th { padding: 2px 3px !important; font-size: 6.5pt !important; line-height: 1.2 !important; }
-      #rc-portrait-wrapper .sh-dk td { padding: 3px 5px !important; font-size: 7pt !important; }
-      #rc-portrait-wrapper .sh-lt td { padding: 2px 4px !important; font-size: 6.5pt !important; }
-      #rc-portrait-wrapper .pi-c { font-size: 7pt !important; padding: 3px 5px !important; }
-      #rc-portrait-wrapper .ph-title { font-size: 9pt !important; padding: 5px 8px !important; }
-      #rc-portrait-wrapper .ph-code { font-size: 8pt !important; }
-      #rc-portrait-wrapper .ph-cell { font-size: 6.5pt !important; padding: 2px 5px !important; }
+      @page { size: A4 portrait !important; margin: 5mm 6mm !important; }
+      #rc-portrait-wrapper {
+        width: 100% !important;
+        transform-origin: top left !important;
+      }
+      #rc-portrait-wrapper table {
+        font-size: 7pt !important;
+      }
+      #rc-portrait-wrapper td,
+      #rc-portrait-wrapper th {
+        font-size: 7pt !important;
+        padding: 2px 4px !important;
+        line-height: 1.25 !important;
+      }
+      #rc-portrait-wrapper input[type=text],
+      #rc-portrait-wrapper input[type=date] {
+        font-size: 7pt !important;
+        padding: 1px 2px !important;
+      }
+      /* Header kop */
+      #rc-portrait-wrapper #kop-roadcard table td,
+      #rc-portrait-wrapper #kop-roadcard table th {
+        font-size: 7pt !important;
+        padding: 2px 5px !important;
+      }
+      #rc-portrait-wrapper #kop-roadcard [style*="font-size:19pt"],
+      #rc-portrait-wrapper [style*="font-size:19pt"] {
+        font-size: 13pt !important;
+      }
+      #rc-portrait-wrapper [style*="font-size:11.5pt"],
+      #rc-portrait-wrapper [style*="font-size: 11.5pt"] {
+        font-size: 8pt !important;
+      }
+      #rc-portrait-wrapper img[style*="height:52px"] {
+        height: 36px !important;
+      }
+      /* Tombol & elemen UI */
+      #rc-portrait-wrapper button { display: none !important; }
+      #rc-portrait-wrapper .big-btn { display: none !important; }
+      #rc-portrait-wrapper .bottom-actions { display: none !important; }
+      /* Compact row heights */
+      #rc-portrait-wrapper tr { height: auto !important; }
     }
   `;
 
