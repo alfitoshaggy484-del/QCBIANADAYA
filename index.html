@@ -3467,20 +3467,59 @@ function printUjiFungsiOnly() {
   const orig = document.getElementById('form-ujifungsi');
   if (!orig) return;
   const clone = orig.cloneNode(true);
+
+  // Hapus tombol aksi bawah
   clone.querySelectorAll('.bottom-actions').forEach(e => e.remove());
+
+  // Bersihkan input
   clone.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
     inp.style.border = 'none'; inp.style.outline = 'none'; inp.style.background = 'transparent';
   });
+
+  // Ganti setiap baris yang punya uf-hasil-val:
+  // struktur: <td>item</td><td><input hidden .uf-hasil-val><button .uf-ok-btn></td><td><button .uf-no-btn></td>
+  clone.querySelectorAll('tr').forEach(tr => {
+    const hidVal = tr.querySelector('.uf-hasil-val');
+    if (!hidVal) return;
+    const val = hidVal.value || '';
+
+    // Ganti cell OK (berisi hidden + ok-btn)
+    const okCell = tr.querySelector('.uf-ok-btn')?.closest('td');
+    if (okCell) {
+      const span = document.createElement('span');
+      span.style.cssText = 'font-weight:700;font-size:11px;display:inline-block;';
+      if (val === 'OK') { span.style.color = '#15803d'; span.textContent = '✓ OK'; }
+      else { span.textContent = ''; }
+      okCell.innerHTML = '';
+      okCell.appendChild(span);
+      okCell.style.textAlign = 'center';
+    }
+
+    // Ganti cell NO (berisi no-btn)
+    const noCell = tr.querySelector('.uf-no-btn')?.closest('td');
+    if (noCell) {
+      const span = document.createElement('span');
+      span.style.cssText = 'font-weight:700;font-size:11px;display:inline-block;';
+      if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = '✗ NO'; }
+      else { span.textContent = ''; }
+      noCell.innerHTML = '';
+      noCell.appendChild(span);
+      noCell.style.textAlign = 'center';
+    }
+  });
+
+  // Fallback: ok-no-cell lain (jika ada)
   clone.querySelectorAll('.ok-no-cell').forEach(cell => {
     const hid = cell.querySelector('input[type=hidden]');
     const val = hid ? hid.value : '';
     const span = document.createElement('span');
-    span.style.cssText = 'font-weight:700;font-size:12px;';
-    if (val === 'OK') { span.style.color = '#15803d'; span.textContent = 'OK'; }
-    else if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = 'NO'; }
+    span.style.cssText = 'font-weight:700;font-size:11px;';
+    if (val === 'OK') { span.style.color = '#15803d'; span.textContent = '✓ OK'; }
+    else if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = '✗ NO'; }
     else { span.textContent = ''; }
     cell.replaceWith(span);
   });
+
   clone.style.display = 'block';
   clone.style.boxShadow = 'none';
   clone.style.borderRadius = '0';
