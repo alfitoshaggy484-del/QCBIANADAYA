@@ -1082,78 +1082,85 @@ input[type="date"].ks-tgl {
             <td style="border:1px solid #555;padding:5px 8px;"></td>
           </tr>
         </table>
-        <!-- Section 1: Pemeriksaan Kontruksi -->
-        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;margin-bottom:0;">
+        <!-- Road Card: satu tabel terpadu 8 kolom -->
+        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;table-layout:auto;">
+          <colgroup>
+            <col style="width:33%;"><!-- item -->
+            <col style="width:8%;"><!-- op prod / ukuran -->
+            <col style="width:8%;"><!-- tgl prod / torsi -->
+            <col style="width:13%;"><!-- op qc -->
+            <col style="width:10%;"><!-- tgl qc -->
+            <col style="width:7%;"><!-- good -->
+            <col style="width:7%;"><!-- ng -->
+            <col style="width:14%;"><!-- ref -->
+          </colgroup>
+
+          <!-- ── KONSTRUKSI ── -->
           <tr>
-            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:35%;">Pemeriksaan kontruksi</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:14%;">Operator QC</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:11%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
+            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;" colspan="3">Pemeriksaan konstruksi</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Operator QC</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Tanggal</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Referensi</td>
           </tr>
-          <tr><td style="border:1px solid #555;padding:4px 8px;">Dimensi</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td rowspan="6" style="border:1px solid #555;padding:5px 8px;font-size:7.5pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-005</td></tr>
-          <tr><td style="border:1px solid #555;padding:4px 8px;">Ketebalan pelat rangka dan penutup</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr>
-          <tr><td style="border:1px solid #555;padding:4px 8px;">Ketebalan cat (min 80 mikron)</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr>
-          <tr><td style="border:1px solid #555;padding:4px 8px;">Jarak udara≥220mm</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr>
-          <tr><td style="border:1px solid #555;padding:4px 8px;">Ketebalan cat (min 80 mikron)</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr>
-          <tr><td style="border:1px solid #555;padding:4px 8px;">Kontinuitas selungkup 30AdC</td><td style="border:1px solid #555;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr>
-        </table>
-        <!-- Section 2: Kelengkapan Aksesoris -->
-        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;margin-bottom:0;border-top:0;">
+          <tr><td style="border:1px solid #555;padding:4px 8px;" colspan="3">Dimensi</td><td style="border:1px solid #555;padding:2px;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td rowspan="6" style="border:1px solid #555;padding:5px 8px;font-size:7.5pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-005</td></tr><tr><td style="border:1px solid #555;padding:4px 8px;" colspan="3">Ketebalan pelat rangka dan penutup</td><td style="border:1px solid #555;padding:2px;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr><tr><td style="border:1px solid #555;padding:4px 8px;" colspan="3">Ketebalan cat (min 80 mikron)</td><td style="border:1px solid #555;padding:2px;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr><tr><td style="border:1px solid #555;padding:4px 8px;" colspan="3">Jarak udara ≥ 220mm</td><td style="border:1px solid #555;padding:2px;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr><tr><td style="border:1px solid #555;padding:4px 8px;" colspan="3">Drag Volt ≥ 30</td><td style="border:1px solid #555;padding:2px;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr><tr><td style="border:1px solid #555;padding:4px 8px;" colspan="3">Kontinuitas selungkup 30A dC</td><td style="border:1px solid #555;padding:2px;"><input type="text" class="rc-oqc" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px;"><input type="date" class="rc-tgl" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;"></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td><td style="border:1px solid #555;padding:2px 3px;text-align:center;"><div class="ok-no-cell" style="justify-content:center;"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:3px 8px;font-size:11px;min-width:36px;" onclick="toggleOkNo(this,'NO')">NO</button></div></td></tr>
+
+          <!-- ── AKSESORIS ── -->
           <tr>
-            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:25%;">Kelengkapan Aksesoris <span style='font-size:7pt;font-weight:400;opacity:.85;'>(Ref: BDF-PRO-001-002 / BDF-QAD-001-005 / BDF-QAD-001-006)</span></td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:13%;">Operator Produksi</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:13%;">Operator QC</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
+            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;">Kelengkapan Aksesoris <span style="font-size:7pt;font-weight:400;opacity:.85;">(Ref: BDF-PRO-001-002 / BDF-QAD-001-005 / BDF-QAD-001-006)</span></td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Op. Produksi</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Tanggal</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Op. QC</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Tanggal</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Referensi</td>
           </tr>
-          <tbody id="rc-aks-tbody">
-          </tbody>
-        </table>
-        <!-- Section 3: Pengujian Torsi -->
-        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;margin-bottom:0;border-top:0;">
+          <tbody id="rc-aks-tbody"></tbody>
+
+          <!-- ── TORSI ── -->
           <tr>
-            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:25%;">Pengujian torsi <span style='font-size:7pt;font-weight:400;opacity:.85;'>(Ref: BDF-QAD-001-006)</span></td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Ukuran baut</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Torsi (Nm)</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:13%;">Operator QC</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:10%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
+            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;">Pengujian torsi <span style="font-size:7pt;font-weight:400;opacity:.85;">(Ref: BDF-QAD-001-006)</span></td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Ukuran baut</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Torsi (Nm)</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Operator QC</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Tanggal</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Referensi</td>
           </tr>
           <tbody id="rc-torsi-tbody"></tbody>
-        </table>
-        <!-- Section 4: Pengujian Mekanis -->
-        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;margin-bottom:0;border-top:0;">
+
+          <!-- ── MEKANIS ── -->
           <tr>
-            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:35%;">Daftar pengujian mekanis <span style='font-size:7pt;font-weight:400;opacity:.85;'>(Ref: BDF-QAD-001-006)</span></td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:14%;">Operator QC</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:11%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
+            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;" colspan="3">Daftar pengujian mekanis <span style="font-size:7pt;font-weight:400;opacity:.85;">(Ref: BDF-QAD-001-006)</span></td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Operator QC</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Tanggal</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Referensi</td>
           </tr>
           <tbody id="rc-mek-tbody"></tbody>
-        </table>
-        <!-- Section 5: Pengujian Elektrik -->
-        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;margin-bottom:0;border-top:0;">
+
+          <!-- ── ELEKTRIK ── -->
           <tr>
-            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;width:35%;">Daftar pengujian elektrik dan dielektrik <span style='font-size:7pt;font-weight:400;opacity:.85;'>(Ref: BDF-QAD-001-006 / BDF-QAD-001-004 / BDF-QAD-001-003 / BDF-QAD-001-002)</span></td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:14%;">Operator QC</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:11%;">Tanggal</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">Good</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:7%;">NG</td>
-            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;width:12%;">Referensi</td>
+            <td style="background:#1a6fa8;color:white;font-weight:700;padding:5px 8px;border:1px solid #1a6fa8;" colspan="3">Daftar pengujian elektrik dan dielektrik <span style="font-size:7pt;font-weight:400;opacity:.85;">(Ref: BDF-QAD-001-006 / BDF-QAD-001-004 / BDF-QAD-001-003 / BDF-QAD-001-002)</span></td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Operator QC</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Tanggal</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Good</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">NG</td>
+            <td style="background:#dde8f4;font-weight:700;padding:5px 8px;border:1px solid #555;text-align:center;white-space:nowrap;">Referensi</td>
           </tr>
           <tbody id="rc-elek-tbody"></tbody>
-        </table>
-        <table style="width:100%;border-collapse:collapse;margin-top:2px;font-family:Arial,sans-serif;font-size:8pt;">
-          <tr><td style="border:1px solid #555;padding:5px 8px;font-style:italic;"><b>Note : kosongi kolom yang tidak diperlukan dan tidak dilakukan pengujian</b></td></tr>
+
+          <!-- ── NOTE ── -->
+          <tr>
+            <td colspan="8" style="border:1px solid #555;padding:5px 8px;font-style:italic;">
+              <b>Note : kosongi kolom yang tidak diperlukan dan tidak dilakukan pengujian</b>
+            </td>
+          </tr>
+
         </table>
       </div>
     </div>
@@ -2580,30 +2587,29 @@ function addTKRow() {
 
 // ====== ROAD CARD TABLE ======
 function buildRCTable() {
-  // Always rebuild to ensure latest button layout
   ['rc-aks-tbody','rc-torsi-tbody','rc-mek-tbody','rc-elek-tbody'].forEach(id=>{
     const el=document.getElementById(id); if(el) el.innerHTML='';
   });
-  const inp = `<input type="text" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;">`;
-  const inpDate = `<input type="date" style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;">`;
-
+  const inp     = `<input type="text"  style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;">`;
+  const inpDate = `<input type="date"  style="width:100%;border:none;outline:none;padding:4px;font-size:8.5pt;">`;
+  const td  = `style="border:1px solid #555;padding:2px;"`;
+  const tdC = `style="border:1px solid #555;padding:2px;text-align:center;"`;
   const goodCell = `<div class="ok-no-cell"><input type="hidden" class="rc-good-val" value=""><button class="okno-btn" style="padding:4px 8px;font-size:11px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:4px 8px;font-size:11px;" onclick="toggleOkNo(this,'NO')">NO</button></div>`;
   const ngCell   = `<div class="ok-no-cell"><input type="hidden" class="rc-ng-val" value=""><button class="okno-btn" style="padding:4px 8px;font-size:11px;" onclick="toggleOkNo(this,'OK')">OK</button><button class="okno-btn" style="padding:4px 8px;font-size:11px;" onclick="toggleOkNo(this,'NO')">NO</button></div>`;
-  const td = `style="border:1px solid #555;padding:2px;"`;
-  const tdC = `style="border:1px solid #555;padding:2px;text-align:center;"`;
+  const refStyle = `style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;border:1px solid #555;padding:4px;"`;
 
-  // Kelengkapan Aksesoris
-  const aksItems = ['Pencegah kondensasi/heater','Pengaman lebur/Fuse','Busbar fasa','Busbar grounding','Transformator arus (CT)','Transformator tegangan (VT)','Voltmeter','Relay','Temporary Power Suply (TPS)'];
-  const aksBody = document.getElementById('rc-aks-tbody');
-  const aksRef = 'BDF-PRO-001-002<br>BDF-QAD-001-005<br>BDF-QAD-001-006';
+  // ── Aksesoris: 8 kolom (item | op.prod | tgl.prod | op.qc | tgl.qc | good | ng | ref)
+  const aksItems = ['Pencegah kondensasi/heater','Pengaman lebur/Fuse','Busbar fasa','Busbar grounding','Transformator arus (CT)','Transformator tegangan (VT)','Voltmeter','Relay','Temporary Power Supply (TPS)'];
+  const aksRef   = 'BDF-PRO-001-002<br>BDF-QAD-001-005<br>BDF-QAD-001-006';
+  const aksBody  = document.getElementById('rc-aks-tbody');
   aksItems.forEach((item,i) => {
     const tr = document.createElement('tr');
-    const refCell = i===0 ? `<td ${td} rowspan="${aksItems.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">${aksRef}</td>` : '';
+    const refCell = i===0 ? `<td ${refStyle} rowspan="${aksItems.length}">${aksRef}</td>` : '';
     tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     aksBody.appendChild(tr);
   });
 
-  // Pengujian Torsi
+  // ── Torsi: 8 kolom (item | ukuran | torsi | op.qc | tgl | good | ng | ref)
   const torsiData = [
     ['Sekunder CT/VT','6x12','8'],['Baut - standart','6x16','8'],['Connector fuse','8x16','15'],
     ['Isolator earthing CB','8x20','15'],['Earth interuptor/isolator/pole CB','8x25','28'],
@@ -2613,34 +2619,34 @@ function buildRCTable() {
   const torsiBody = document.getElementById('rc-torsi-tbody');
   torsiData.forEach((d,i) => {
     const tr = document.createElement('tr');
-    const refCell = i===0 ? `<td ${td} rowspan="${torsiData.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-006</td>` : '';
+    const refCell = i===0 ? `<td ${refStyle} rowspan="${torsiData.length}">BDF-QAD-001-006</td>` : '';
     tr.innerHTML = `<td ${td}>${d[0]}</td><td ${tdC}>${d[1]}</td><td ${tdC}>${d[2]}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     torsiBody.appendChild(tr);
   });
 
-  // Pengujian Mekanis
+  // ── Mekanis: item colspan=3, lalu op.qc | tgl | good | ng | ref (8 kolom total)
   const mekItems = ['Peralatan switching (Close-Open)','Mekanisme silih kunci','Uji kekencangan saklar (≤250Nm)'];
-  const mekBody = document.getElementById('rc-mek-tbody');
+  const mekBody  = document.getElementById('rc-mek-tbody');
   mekItems.forEach((item,i) => {
     const tr = document.createElement('tr');
-    const refCell = i===0 ? `<td ${td} rowspan="${mekItems.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">BDF-QAD-001-006</td>` : '';
-    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
+    const refCell = i===0 ? `<td ${refStyle} rowspan="${mekItems.length}">BDF-QAD-001-006</td>` : '';
+    tr.innerHTML = `<td ${td} colspan="3">${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     mekBody.appendChild(tr);
   });
 
-  // Pengujian Elektrik
+  // ── Elektrik: item colspan=3, lalu op.qc | tgl | good | ng | ref (8 kolom total)
   const elekItems = [
     'Pengukuran tahanan kontak 100A','Pengujian ketahanan insulasi sirkit utama 5kV',
     'Pengujian ketahanan insulasi sirkit bantu 2kV','Pengujian ketahanan tegangan frekuensi daya 50kV',
-    'Uji fungsi sirkit bantu/kontinuitas','Tes dielektrik sirkit bantu  1kv, 60s',
-    'Uji fungsi VIPS (menyala pada 45% Un)','Uji fungsi peralatan pencegah  kondensasi/heater'
+    'Uji fungsi sirkit bantu / kontinuitas','Tes dielektrik sirkit bantu 1kV, 60s',
+    'Uji fungsi VIPS (menyala pada 45% Un)','Uji fungsi peralatan pencegah kondensasi / heater'
   ];
+  const elekRef  = 'BDF-QAD-001-006<br>BDF-QAD-001-004<br>BDF-QAD-001-003<br>BDF-QAD-001-002';
   const elekBody = document.getElementById('rc-elek-tbody');
-  const elekRef = 'BDF-QAD-001-006<br>BDF-QAD-001-004<br>BDF-QAD-001-003<br>BDF-QAD-001-002';
   elekItems.forEach((item,i) => {
     const tr = document.createElement('tr');
-    const refCell = i===0 ? `<td ${td} rowspan="${elekItems.length}" style="font-size:7pt;color:#555;text-align:center;vertical-align:middle;">${elekRef}</td>` : '';
-    tr.innerHTML = `<td ${td}>${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
+    const refCell = i===0 ? `<td ${refStyle} rowspan="${elekItems.length}">${elekRef}</td>` : '';
+    tr.innerHTML = `<td ${td} colspan="3">${item}</td><td ${td}>${inp}</td><td ${td}>${inpDate}</td><td ${tdC}>${goodCell}</td><td ${tdC}>${ngCell}</td>${refCell}`;
     elekBody.appendChild(tr);
   });
 }
