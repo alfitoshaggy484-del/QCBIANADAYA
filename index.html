@@ -435,6 +435,28 @@ input[type="date"].ks-tgl {
         vertical-align:middle; margin-right:6px; }
 @keyframes spin { to { transform:rotate(360deg); } }
 
+/* ── TABLE CELL WRAP — kolom ikut lebar teks ── */
+#form-frekuensi table td, #form-frekuensi table th,
+#form-isolasi   table td, #form-isolasi   table th,
+#form-kontak    table td, #form-kontak    table th,
+#form-konstruksi table td, #form-konstruksi table th,
+#form-roadcard  table td, #form-roadcard  table th,
+#form-ujifungsi table td, #form-ujifungsi table th {
+  white-space: normal !important;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+#form-frekuensi table td input, #form-frekuensi table td select,
+#form-isolasi   table td input, #form-isolasi   table td select,
+#form-kontak    table td input, #form-kontak    table td select,
+#form-konstruksi table td input, #form-konstruksi table td select,
+#form-roadcard  table td input, #form-roadcard  table td select,
+#form-ujifungsi table td input, #form-ujifungsi table td select {
+  min-width: 0 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
+
 /* ── RESPONSIVE ── */
 @media(max-width:700px){
   .g2,.g3,.g4 { grid-template-columns:1fr; }
@@ -2510,11 +2532,11 @@ function addTKRow() {
   const n = tkCount;
   const tr = document.createElement('tr');
   tr.className = 'no-col'; tr.id = 'tkr'+n;
-  const inp = (cls,w) => `<input type="text" class="${cls}" style="width:${w||'100%'};border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;">`;
+  const inp = (cls) => `<input type="text" class="${cls}" style="width:100%;min-width:0;border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;box-sizing:border-box;">`;
   const chk = (cls) => `<input type="checkbox" class="${cls}" style="width:16px;height:16px;">`;
   tr.innerHTML = `
     <td style="text-align:center;color:#999;border:1px solid #e0e0e0;padding:4px;">${n}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;"><input type="date" class="tk-tglopr" style="width:100%;border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;"></td>
+    <td style="border:1px solid #e0e0e0;padding:2px;"><input type="date" class="tk-tglopr" style="width:100%;min-width:0;border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;box-sizing:border-box;"></td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-operator')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-noseri')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;"><select class="tk-tipe-val" style="width:100%;border:none;padding:3px 2px;font-family:Inter,sans-serif;font-size:11px;outline:none;text-align:center;cursor:pointer;background:transparent;"><option value="">--</option><option value="TM6-CB-24M">TM6-CB-24M</option><option value="TM6-LBS-24">TM6-LBS-24</option><option value="TM6-LBS-24M">TM6-LBS-24M</option><option value="TM6-TP-24">TM6-TP-24</option><option value="TM6-VT-24">TM6-VT-24</option></select></td>
@@ -2522,10 +2544,10 @@ function addTKRow() {
     <td style="border:1px solid #e0e0e0;padding:2px;text-align:center;">${chk('tk-vt')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;text-align:center;">${chk('tk-tp')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;text-align:center;">${chk('tk-lbs')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t1l1','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t1l2','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t1l3','50px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t2l1','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t2l2','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t2l3','50px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t3l1','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t3l2','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t3l3','50px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t4l1','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t4l2','50px')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t4l3','50px')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t1l1')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t1l2')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t1l3')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t2l1')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t2l2')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t2l3')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t3l1')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t3l2')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t3l3')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t4l1')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t4l2')}</td><td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-t4l3')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-ket')}</td>
     <td class="del-col" style="border:1px solid #e0e0e0;"><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>`;
   document.getElementById('tk-tbody').appendChild(tr);
@@ -2626,27 +2648,27 @@ function addKSRow() {
   const n = window.ksCount;
   const tr = document.createElement('tr');
   tr.className = 'no-col'; tr.id = 'ksr'+n;
-  const inp = (cls,w) => `<input type="text" class="${cls}" style="width:${w||'100%'};border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;">`;
+  const inp = (cls) => `<input type="text" class="${cls}" style="width:100%;min-width:0;border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;box-sizing:border-box;">`;
   tr.innerHTML = `
     <td style="text-align:center;color:#999;border:1px solid #e0e0e0;padding:4px;">${n}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-opr')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;"><input type="date" class="ks-tgl" style="width:100%;border:none;padding:3px;font-family:Inter,sans-serif;font-size:12px;outline:none;text-align:center;"></td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-ns')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;"><select class="ks-tipe-val" style="width:100%;border:none;padding:3px 2px;font-family:Inter,sans-serif;font-size:11px;outline:none;text-align:center;cursor:pointer;background:transparent;"><option value="">--</option><option value="TM6-CB-24M">TM6-CB-24M</option><option value="TM6-LBS-24">TM6-LBS-24</option><option value="TM6-LBS-24M">TM6-LBS-24M</option><option value="TM6-TP-24">TM6-TP-24</option><option value="TM6-VT-24">TM6-VT-24</option></select></td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-a','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-b','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-c','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-d','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-e','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-f','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-g','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-h','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-i','55px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-jarak','60px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-plat','60px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-cat','60px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-kont','60px')}</td>
-    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-drag','60px')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-a')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-b')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-c')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-d')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-e')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-f')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-g')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-h')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-i')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-jarak')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-plat')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-cat')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-kont')}</td>
+    <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-drag')}</td>
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('ks-ket')}</td>
     <td class="del-col" style="border:1px solid #e0e0e0;"><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>`;
   document.getElementById('ks-tbody').appendChild(tr);
