@@ -3464,6 +3464,8 @@ function printRoadCardAndUjiFungsi() {
 function printUjiFungsiOnly() {
   const area = document.getElementById('print-area');
   area.innerHTML = '';
+
+  // Clone form interaktif — format identik dengan yang diisi
   const orig = document.getElementById('form-ujifungsi');
   if (!orig) return;
   const clone = orig.cloneNode(true);
@@ -3471,65 +3473,133 @@ function printUjiFungsiOnly() {
   // Hapus tombol aksi bawah
   clone.querySelectorAll('.bottom-actions').forEach(e => e.remove());
 
-  // Bersihkan input
+  // Bersihkan UI wrapper
+  clone.querySelectorAll('[style*="border-radius"]').forEach(e => { e.style.borderRadius = '0'; });
+  clone.querySelectorAll('[style*="box-shadow"]').forEach(e => { e.style.boxShadow = 'none'; });
+  clone.querySelectorAll('[style*="padding:16px"]').forEach(e => { e.style.padding = '0'; });
+
+  // Bersihkan border input
   clone.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
-    inp.style.border = 'none'; inp.style.outline = 'none'; inp.style.background = 'transparent';
+    inp.style.border = 'none';
+    inp.style.outline = 'none';
+    inp.style.background = 'transparent';
+    inp.style.padding = '1px 2px';
   });
 
-  // Ganti setiap baris yang punya uf-hasil-val:
-  // struktur: <td>item</td><td><input hidden .uf-hasil-val><button .uf-ok-btn></td><td><button .uf-no-btn></td>
+  // Ganti setiap baris hasil uji: baca .uf-hasil-val, ganti cell OK & NO dengan teks
   clone.querySelectorAll('tr').forEach(tr => {
     const hidVal = tr.querySelector('.uf-hasil-val');
     if (!hidVal) return;
     const val = hidVal.value || '';
 
-    // Ganti cell OK (berisi hidden + ok-btn)
-    const okCell = tr.querySelector('.uf-ok-btn')?.closest('td');
+    // Cell Lulus (berisi hidden input + uf-ok-btn)
+    const okCell = tr.querySelector('.uf-ok-btn') ? tr.querySelector('.uf-ok-btn').closest('td') : null;
     if (okCell) {
       const span = document.createElement('span');
-      span.style.cssText = 'font-weight:700;font-size:11px;display:inline-block;';
-      if (val === 'OK') { span.style.color = '#15803d'; span.textContent = '✓ OK'; }
+      span.style.cssText = 'font-weight:700;font-size:10px;display:block;text-align:center;';
+      if (val === 'OK') { span.style.color = '#15803d'; span.textContent = '✓'; }
       else { span.textContent = ''; }
       okCell.innerHTML = '';
-      okCell.appendChild(span);
       okCell.style.textAlign = 'center';
+      okCell.appendChild(span);
     }
 
-    // Ganti cell NO (berisi no-btn)
-    const noCell = tr.querySelector('.uf-no-btn')?.closest('td');
+    // Cell Gagal (berisi uf-no-btn)
+    const noCell = tr.querySelector('.uf-no-btn') ? tr.querySelector('.uf-no-btn').closest('td') : null;
     if (noCell) {
       const span = document.createElement('span');
-      span.style.cssText = 'font-weight:700;font-size:11px;display:inline-block;';
-      if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = '✗ NO'; }
+      span.style.cssText = 'font-weight:700;font-size:10px;display:block;text-align:center;';
+      if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = '✗'; }
       else { span.textContent = ''; }
       noCell.innerHTML = '';
-      noCell.appendChild(span);
       noCell.style.textAlign = 'center';
+      noCell.appendChild(span);
     }
   });
 
-  // Fallback: ok-no-cell lain (jika ada)
-  clone.querySelectorAll('.ok-no-cell').forEach(cell => {
-    const hid = cell.querySelector('input[type=hidden]');
-    const val = hid ? hid.value : '';
-    const span = document.createElement('span');
-    span.style.cssText = 'font-weight:700;font-size:11px;';
-    if (val === 'OK') { span.style.color = '#15803d'; span.textContent = '✓ OK'; }
-    else if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = '✗ NO'; }
-    else { span.textContent = ''; }
-    cell.replaceWith(span);
-  });
+  // Sembunyikan semua button sisa
+  clone.querySelectorAll('button').forEach(b => b.style.display = 'none');
 
-  clone.style.display = 'block';
-  clone.style.boxShadow = 'none';
-  clone.style.borderRadius = '0';
-  clone.style.margin = '0';
-  clone.style.padding = '0';
-  area.appendChild(clone);
+  clone.style.cssText = 'display:block;margin:0;padding:0;background:transparent;box-shadow:none;border-radius:0;';
+
+  const wrapper = document.createElement('div');
+  wrapper.id = 'uf-portrait-wrapper';
+  wrapper.appendChild(clone);
+  area.appendChild(wrapper);
   area.style.display = 'block';
-  setTimeout(() => { window.print(); setTimeout(() => { area.style.display = 'none'; }, 500); }, 400);
-}
 
+  // Inject @page portrait
+  let styleTag = document.getElementById('uf-portrait-style');
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = 'uf-portrait-style';
+    document.head.appendChild(styleTag);
+  }
+  styleTag.textContent = `
+    @media print {
+      @page { size: A4 portrait !important; margin: 5mm 6mm !important; }
+      #uf-portrait-wrapper {
+        width: 100% !important;
+      }
+      #uf-portrait-wrapper table {
+        font-size: 7pt !important;
+        border-collapse: collapse !important;
+      }
+      #uf-portrait-wrapper td,
+      #uf-portrait-wrapper th {
+        font-size: 7pt !important;
+        padding: 2px 4px !important;
+        line-height: 1.25 !important;
+      }
+      #uf-portrait-wrapper input[type=text],
+      #uf-portrait-wrapper input[type=date] {
+        font-size: 7pt !important;
+        padding: 1px 2px !important;
+      }
+      #uf-portrait-wrapper input[type=checkbox] {
+        width: 11px !important;
+        height: 11px !important;
+      }
+      /* Header kop */
+      #uf-portrait-wrapper [style*="font-size:19pt"],
+      #uf-portrait-wrapper [style*="font-size: 19pt"] {
+        font-size: 13pt !important;
+      }
+      #uf-portrait-wrapper [style*="font-size:11.5pt"],
+      #uf-portrait-wrapper [style*="font-size: 11.5pt"] {
+        font-size: 8pt !important;
+      }
+      #uf-portrait-wrapper img[style*="height:52px"] {
+        height: 36px !important;
+      }
+      /* Section header baris biru gelap */
+      #uf-portrait-wrapper [style*="background:#1a6fa8"] td,
+      #uf-portrait-wrapper [style*="background:#1a6fa8"] {
+        padding: 2px 5px !important;
+        font-size: 7pt !important;
+      }
+      /* Sub-section biru muda */
+      #uf-portrait-wrapper [style*="background:#dde8f4"] td,
+      #uf-portrait-wrapper [style*="background:#dde8f4"] {
+        padding: 2px 5px !important;
+        font-size: 6.5pt !important;
+      }
+      #uf-portrait-wrapper button { display: none !important; }
+      #uf-portrait-wrapper .big-btn { display: none !important; }
+      #uf-portrait-wrapper .bottom-actions { display: none !important; }
+      #uf-portrait-wrapper tr { height: auto !important; }
+    }
+  `;
+
+  setTimeout(() => {
+    window.print();
+    setTimeout(() => {
+      area.style.display = 'none';
+      area.innerHTML = '';
+      styleTag.textContent = '';
+    }, 600);
+  }, 400);
+}
 function buildPrintRCUFGabung(rc, uf) {
   // Pass NO from RC to UF for consistency
   if (rc && rc.no && uf) uf.no = rc.no;
