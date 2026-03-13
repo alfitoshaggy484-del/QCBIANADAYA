@@ -469,7 +469,6 @@ input[type="date"].ks-tgl {
   #print-area [style*="box-shadow"] { box-shadow:none !important; }
   #print-area [style*="border-radius"] { border-radius:0 !important; }
   @page { size:A4 landscape; margin:8mm 10mm; }
-  body.print-portrait @page { size:A4 portrait; margin:8mm 10mm; }
 }
 #print-area { display:none; }
 
@@ -1114,7 +1113,7 @@ input[type="date"].ks-tgl {
     </div>
     <div class="bottom-actions">
       <button class="big-btn save" onclick="saveGenericRecord('roadcard', collectRC, this)">💾 Simpan Record</button>
-      <button class="big-btn print-btn" onclick="printRoadCardAndUjiFungsi()">🖨️ Cetak / PDF</button>
+      <button class="big-btn print-btn" onclick="printRoadCardOnly()">🖨️ Cetak / PDF</button>
       <button class="big-btn reset" onclick="resetRC()">↺ Baru</button>
     </div>
   </div>
@@ -3270,6 +3269,44 @@ function printGenericById(id) {
 // ============================================================
 // COMBINED PRINT: ROAD CARD + UJI FUNGSI (SATU LEMBAR)
 // ============================================================
+function printRoadCardOnly() {
+  const area = document.getElementById('print-area');
+  area.innerHTML = '';
+  const orig = document.getElementById('form-roadcard');
+  if (!orig) return;
+  const clone = orig.cloneNode(true);
+  clone.querySelectorAll('.bottom-actions').forEach(e => e.remove());
+  clone.querySelectorAll('input[type=text], input[type=date]').forEach(inp => {
+    inp.style.border = 'none'; inp.style.outline = 'none'; inp.style.background = 'transparent';
+  });
+  clone.querySelectorAll('select').forEach(sel => {
+    const origSel = document.getElementById(sel.id);
+    const val = origSel ? origSel.value : sel.value;
+    const span = document.createElement('span');
+    span.textContent = val || '...';
+    span.style.cssText = 'font-family:Arial;font-size:9pt;';
+    sel.replaceWith(span);
+  });
+  clone.querySelectorAll('.ok-no-cell').forEach(cell => {
+    const hid = cell.querySelector('input[type=hidden]');
+    const val = hid ? hid.value : '';
+    const span = document.createElement('span');
+    span.style.cssText = 'font-weight:700;font-size:12px;';
+    if (val === 'OK') { span.style.color = '#15803d'; span.textContent = 'OK'; }
+    else if (val === 'NO') { span.style.color = '#b91c1c'; span.textContent = 'NO'; }
+    else { span.textContent = '—'; span.style.color = '#aaa'; }
+    cell.replaceWith(span);
+  });
+  clone.style.display = 'block';
+  clone.style.boxShadow = 'none';
+  clone.style.borderRadius = '0';
+  clone.style.margin = '0';
+  clone.style.padding = '0';
+  area.appendChild(clone);
+  area.style.display = 'block';
+  setTimeout(() => { window.print(); setTimeout(() => { area.style.display = 'none'; }, 500); }, 400);
+}
+
 function printRoadCardAndUjiFungsi() {
   const area = document.getElementById('print-area');
   area.innerHTML = '';
