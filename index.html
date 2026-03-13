@@ -556,7 +556,8 @@ input[type="date"].ks-tgl {
 .pi-c b { color:#0f2744; }
 
 /* ── PRINT TABLE ── */
-.pt { width:100%; border-collapse:collapse; font-size:8pt; }
+.pt { width:100%; border-collapse:collapse; font-size:8pt; table-layout:auto; }
+.pt td, .pt th { word-break:break-word; overflow-wrap:anywhere; white-space:normal; }
 .pt th {
   background:#d6e6f7; border:1px solid #7ca3c8;
   padding:5px 4px; text-align:center; font-size:7.5pt;
@@ -4161,7 +4162,7 @@ function buildPrintKontak(r) {
   return `<div class="pv">
     ${printHeader('Pengukuran Tahanan Kontak','BDF-QAD-001-004',
       'Pencatatan hasil pengukuran tahanan kontak kubikel TM6')}
-    <table class="pt" style="margin-top:8px;table-layout:fixed;width:100%;">
+    <table class="pt" style="margin-top:8px;table-layout:auto;width:100%;">
       <thead>
         <tr>
           <th rowspan="4" style=";">No</th>
@@ -4219,7 +4220,7 @@ function buildPrintKonstruksi(r) {
   return `<div class="pv">
     ${printHeader('Pemeriksaan Konstruksi','BDF-QAD-001-005',
       'Pencatatan hasil pemeriksaan konstruksi kubikel TM6')}
-    <table class="pt" style="margin-top:8px;table-layout:fixed;width:100%;">
+    <table class="pt" style="margin-top:8px;table-layout:auto;width:100%;">
       <thead>
         <tr>
           <th rowspan="3" style=";">No</th>
