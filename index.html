@@ -3731,74 +3731,79 @@ function buildPrintHTML(r) {
   const statusDiterima = r.status==='DITERIMA';
   const statusDitolak  = r.status==='DITOLAK';
 
-  // ── Garis hitam, background tetap biru
-  const BDR  = 'border:1px solid #111;';
-  const LBL  = `border:1px solid #111;padding:3px 6px;font-size:7.5pt;font-weight:700;background:#cce0f5;color:#0f2744;white-space:nowrap;vertical-align:middle;`;
-  const VAL  = `border:1px solid #111;padding:3px 6px;font-size:7.5pt;background:#fff;color:#111;vertical-align:middle;`;
-  const HDR  = `border:1px solid #111;padding:3px 6px;font-size:7.5pt;font-weight:700;background:#d6e6f7;color:#0c1f3a;text-align:center;vertical-align:middle;`;
-  const CELL = `border:1px solid #111;padding:3px 5px;font-size:7.5pt;vertical-align:middle;`;
-
-  // strikethrough style for status
+  const B   = 'border:1px solid #111;';
+  const LBL = `border:1px solid #111;padding:3px 6px;font-size:7.5pt;font-weight:700;background:#cce0f5;color:#0f2744;white-space:nowrap;vertical-align:middle;`;
+  const VAL = `border:1px solid #111;padding:3px 6px;font-size:7.5pt;background:#fff;color:#111;vertical-align:middle;`;
+  const HDR = `border:1px solid #111;padding:3px 5px;font-size:7.5pt;font-weight:700;background:#d6e6f7;color:#0c1f3a;text-align:center;vertical-align:middle;`;
   const stDiterima = statusDiterima ? 'font-weight:900;' : 'text-decoration:line-through;color:#aaa;font-weight:400;';
   const stDitolak  = statusDitolak  ? 'font-weight:900;' : 'text-decoration:line-through;color:#aaa;font-weight:400;';
 
   return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:7.5pt;color:#111;width:100%;">
 
     <!-- TITLE -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
       <div style="font-size:15pt;font-weight:900;letter-spacing:0.2px;">QUALITY FORM / FORMULIR MUTU</div>
-      <img src="${LOGO_SRC}" style="height:48px;width:auto;" alt="bd">
+      <img src="${LOGO_SRC}" style="height:44px;width:auto;" alt="bd">
     </div>
 
-    <!-- MAIN TABLE -->
-    <table style="width:100%;border-collapse:collapse;border:1.5px solid #1a6fa8;">
+    <!-- MAIN TABLE: 8 kolom -->
+    <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:7.5pt;">
+      <colgroup>
+        <col style="width:13%"><col style="width:22%"><col style="width:8%">
+        <col style="width:13%"><col style="width:10%"><col style="width:8%">
+        <col style="width:13%"><col style="width:13%">
+      </colgroup>
 
-      <!-- ROW 1: Incoming form title + Form no -->
+      <!-- ROW 1: Incoming form | Form no. | BDF-MCD-001-001 -->
       <tr>
-        <td colspan="5" style="${LBL}font-size:9.5pt;font-weight:700;padding:4px 8px;">Incoming form</td>
+        <td colspan="3" style="${LBL}font-size:9.5pt;font-weight:700;padding:4px 8px;">Incoming form</td>
         <td style="${LBL}">Form no.</td>
-        <td style="${LBL}font-size:9.5pt;font-weight:900;text-align:center;white-space:nowrap;">BDF-MCD-001-001</td>
+        <td colspan="4" style="${LBL}font-size:9.5pt;font-weight:900;text-align:center;">BDF-MCD-001-001</td>
       </tr>
 
-      <!-- ROW 2+3: Purpose + Issue/Version -->
+      <!-- ROW 2: Purpose | Issue Date | 2025-03-01 | Page no. | 1 of 1 -->
       <tr>
-        <td rowspan="2" style="${LBL}width:60px;">Purpose</td>
-        <td rowspan="2" colspan="2" style="${VAL}font-size:7pt;">Digunakan sebagai form pemeriksaan incoming material</td>
+        <td rowspan="2" style="${LBL}vertical-align:middle;">Purpose</td>
+        <td rowspan="2" colspan="2" style="${VAL}font-size:7pt;vertical-align:top;">Digunakan sebagai form pemeriksaan incoming material</td>
         <td style="${LBL}">Issue Date</td>
-        <td colspan="3" style="${VAL}text-align:center;">2025-03-01</td>
+        <td colspan="2" style="${VAL}text-align:center;">2025-03-01</td>
+        <td style="${LBL}text-align:center;">Page no.</td>
+        <td style="${VAL}text-align:center;">1 of 1</td>
       </tr>
+      <!-- ROW 3: Version no. | 00 | Revision no. | 00 -->
       <tr>
         <td style="${LBL}">Version no.</td>
         <td style="${VAL}text-align:center;">00</td>
         <td style="${LBL}text-align:center;">Revision no.</td>
         <td style="${VAL}text-align:center;">00</td>
+        <td style="${VAL}"></td>
       </tr>
 
-      <!-- ROW 4: Spesifikasi + Tgl Inspeksi -->
+      <!-- ROW 4: Spesifikasi | Tgl Inspeksi -->
       <tr>
         <td style="${LBL}">Spesifikasi</td>
         <td colspan="2" style="${VAL}">${r.spesifikasi||''}</td>
         <td style="${LBL}">Tgl Inspeksi</td>
-        <td colspan="3" style="${VAL}">${tgl}</td>
+        <td colspan="4" style="${VAL}">${tgl}</td>
       </tr>
 
-      <!-- ROW 5: Kode Material + Jumlah Datang -->
+      <!-- ROW 5: Kode material | Jumlah datang -->
       <tr>
         <td style="${LBL}">Kode material</td>
         <td colspan="2" style="${VAL}">${r.kode_material||''}</td>
         <td style="${LBL}">Jumlah datang</td>
-        <td colspan="3" style="${VAL}">${r.jml_datang||''}</td>
+        <td colspan="4" style="${VAL}">${r.jml_datang||''}</td>
       </tr>
 
-      <!-- ROW 6: Supplier + Jumlah Sample -->
+      <!-- ROW 6: Supplier | Jumlah sample -->
       <tr>
         <td style="${LBL}">Supplier</td>
         <td colspan="2" style="${VAL}">${r.supplier||''}</td>
         <td style="${LBL}">Jumlah sample</td>
-        <td colspan="3" style="${VAL}">${r.jml_sample||''}</td>
+        <td colspan="4" style="${VAL}">${r.jml_sample||''}</td>
       </tr>
 
-      <!-- ROW 7: No PO + AQL + Level -->
+      <!-- ROW 7: No PO | AQL | Level | STD/SERT/TAS -->
       <tr>
         <td style="${LBL}">No. PO</td>
         <td colspan="2" style="${VAL}">${r.no_po||''}</td>
@@ -3806,27 +3811,23 @@ function buildPrintHTML(r) {
         <td style="${VAL}">${r.aql||''}</td>
         <td style="${LBL}text-align:center;">Level</td>
         <td style="${VAL}">${r.level||''}</td>
+        <td style="${VAL}text-align:right;font-size:6.5pt;color:#555;">STD / SERT / TAS</td>
       </tr>
 
-      <!-- ROW 8: STD/SERT/TAS -->
+      <!-- CEK VISUAL + CEK PENGUKURAN dalam td penuh -->
       <tr>
-        <td colspan="7" style="${VAL}text-align:right;font-size:7pt;color:#555;padding:1px 6px;">STD / SERT / TAS</td>
-      </tr>
-
-      <!-- CEK VISUAL + CEK PENGUKURAN: tabel independen dalam td colspan=7 -->
-      <tr>
-        <td colspan="7" style="padding:0;border:1px solid #111;">
+        <td colspan="8" style="padding:0;border:1px solid #111;">
 
           <!-- ── CEK VISUAL ── -->
-          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;">
+          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;">
             <tr>
-              <td colspan="4" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:5px 8px;text-align:center;border-bottom:1px solid #111;">Cek Visual</td>
+              <td colspan="4" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:4px 8px;text-align:center;border-bottom:1px solid #111;">Cek Visual</td>
             </tr>
             <tr>
-              <th style="${HDR}border:1px solid #111;width:40px;">No.</th>
-              <th style="${HDR}border:1px solid #111;text-align:left;">Item yang diperiksa</th>
-              <th style="${HDR}border:1px solid #111;width:100px;">Jumlah OK</th>
-              <th style="${HDR}border:1px solid #111;width:100px;">Jumlah NO</th>
+              <th style="${HDR}width:36px;">No.</th>
+              <th style="${HDR}text-align:left;">Item yang diperiksa</th>
+              <th style="${HDR}width:90px;">Jumlah OK</th>
+              <th style="${HDR}width:90px;">Jumlah NO</th>
             </tr>
             ${(()=>{
               let vr='';
@@ -3834,7 +3835,7 @@ function buildPrintHTML(r) {
               for(let i=0;i<vc;i++){
                 const v=(r.visual||[])[i]||{};
                 vr+=`<tr>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">${i+1}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:18px;">${i+1}</td>
                   <td style="border:1px solid #111;padding:3px 5px;">${v.item||''}</td>
                   <td style="border:1px solid #111;padding:3px 5px;text-align:center;">${v.ok||''}</td>
                   <td style="border:1px solid #111;padding:3px 5px;text-align:center;">${v.no||''}</td>
@@ -3844,28 +3845,20 @@ function buildPrintHTML(r) {
             })()}
           </table>
 
-          <!-- ── CEK PENGUKURAN + KET PENGUKURAN (berdampingan) ── -->
+          <!-- ── CEK PENGUKURAN + KET PENGUKURAN berdampingan ── -->
           <div style="display:flex;align-items:stretch;border-top:2px solid #111;">
-
             <!-- Kiri: Cek Pengukuran -->
             <div style="flex:1;min-width:0;">
-              <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;">
+              <table style="width:100%;border-collapse:collapse;font-size:7.5pt;">
                 <tr>
-                  <td colspan="9" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:5px 8px;text-align:center;border:1px solid #111;">Cek Pengukuran</td>
+                  <td colspan="9" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:4px 8px;text-align:center;border-bottom:1px solid #111;">Cek Pengukuran</td>
                 </tr>
                 <tr>
-                  <th style="${HDR}border:1px solid #111;width:32px;" rowspan="2">No.</th>
-                  <th style="${HDR}border:1px solid #111;" rowspan="2">A</th>
-                  <th style="${HDR}border:1px solid #111;" rowspan="2">B</th>
-                  <th style="${HDR}border:1px solid #111;" rowspan="2">C</th>
-                  <th style="${HDR}border:1px solid #111;" rowspan="2">D</th>
-                  <th style="${HDR}border:1px solid #111;" rowspan="2">E</th>
-                  <th style="${HDR}border:1px solid #111;" rowspan="2">F</th>
-                  <th style="${HDR}border:1px solid #111;background:#1a6fa8;color:#fff;" colspan="2">HASIL</th>
-                </tr>
-                <tr>
-                  <th style="${HDR}border:1px solid #111;font-size:7pt;width:40px;">OK</th>
-                  <th style="${HDR}border:1px solid #111;font-size:7pt;width:40px;">NO</th>
+                  <th style="${HDR}width:28px;">No.</th>
+                  <th style="${HDR}">A</th><th style="${HDR}">B</th><th style="${HDR}">C</th>
+                  <th style="${HDR}">D</th><th style="${HDR}">E</th><th style="${HDR}">F</th>
+                  <th style="${HDR}background:#1a6fa8;color:#fff;width:36px;">OK</th>
+                  <th style="${HDR}background:#1a6fa8;color:#fff;width:36px;">NO</th>
                 </tr>
                 ${(()=>{
                   let mr='';
@@ -3873,93 +3866,82 @@ function buildPrintHTML(r) {
                   for(let i=0;i<mc;i++){
                     const m=(r.measurement||[])[i]||{};
                     mr+=`<tr>
-                      <td style="border:1px solid #111;padding:3px 4px;text-align:center;height:20px;">${i+1}</td>
-                      ${['a','b','c','d','e','f'].map(l=>`<td style="border:1px solid #111;padding:3px 4px;text-align:center;">${m[l]||''}</td>`).join('')}
-                      <td style="border:1px solid #111;padding:3px 4px;text-align:center;font-weight:700;">${m.hasil==='OK'?'✓':''}</td>
-                      <td style="border:1px solid #111;padding:3px 4px;text-align:center;font-weight:700;">${m.hasil==='NO'?'✗':''}</td>
+                      <td style="border:1px solid #111;padding:2px 4px;text-align:center;height:18px;">${i+1}</td>
+                      ${['a','b','c','d','e','f'].map(l=>`<td style="border:1px solid #111;padding:2px 4px;text-align:center;">${m[l]||''}</td>`).join('')}
+                      <td style="border:1px solid #111;padding:2px 4px;text-align:center;font-weight:700;">${m.hasil==='OK'?'✓':''}</td>
+                      <td style="border:1px solid #111;padding:2px 4px;text-align:center;font-weight:700;">${m.hasil==='NO'?'✗':''}</td>
                     </tr>`;
                   }
                   return mr;
                 })()}
               </table>
             </div>
-
             <!-- Kanan: Keterangan pengukuran -->
-            <div style="width:220px;flex-shrink:0;border-left:1px solid #111;">
-              <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;height:100%;">
+            <div style="width:200px;flex-shrink:0;border-left:1px solid #111;">
+              <table style="width:100%;border-collapse:collapse;font-size:7.5pt;height:100%;">
                 <tr>
-                  <td colspan="4" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:5px 8px;text-align:center;border-bottom:1px solid #111;">Keterangan pengukuran</td>
+                  <td colspan="4" style="background:#1a6fa8;color:#fff;font-weight:700;padding:4px 8px;text-align:center;border-bottom:1px solid #111;">Keterangan pengukuran</td>
                 </tr>
                 <tr>
-                  <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">A =</td>
-                  <td style="${VAL}border:1px solid #111;">${r.ket_a||''}</td>
-                  <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">D =</td>
-                  <td style="${VAL}border:1px solid #111;">${r.ket_d||''}</td>
+                  <td style="${LBL}width:24px;text-align:center;">A =</td><td style="${VAL}">${r.ket_a||''}</td>
+                  <td style="${LBL}width:24px;text-align:center;">D =</td><td style="${VAL}">${r.ket_d||''}</td>
                 </tr>
                 <tr>
-                  <td style="${LBL}border:1px solid #111;text-align:center;">B =</td>
-                  <td style="${VAL}border:1px solid #111;">${r.ket_b||''}</td>
-                  <td style="${LBL}border:1px solid #111;text-align:center;">E =</td>
-                  <td style="${VAL}border:1px solid #111;">${r.ket_e||''}</td>
+                  <td style="${LBL}text-align:center;">B =</td><td style="${VAL}">${r.ket_b||''}</td>
+                  <td style="${LBL}text-align:center;">E =</td><td style="${VAL}">${r.ket_e||''}</td>
                 </tr>
                 <tr>
-                  <td style="${LBL}border:1px solid #111;text-align:center;">C =</td>
-                  <td style="${VAL}border:1px solid #111;">${r.ket_c||''}</td>
-                  <td style="${LBL}border:1px solid #111;text-align:center;">F =</td>
-                  <td style="${VAL}border:1px solid #111;">${r.ket_f||''}</td>
+                  <td style="${LBL}text-align:center;">C =</td><td style="${VAL}">${r.ket_c||''}</td>
+                  <td style="${LBL}text-align:center;">F =</td><td style="${VAL}">${r.ket_f||''}</td>
                 </tr>
               </table>
             </div>
-
           </div>
 
-          <!-- ── STATUS + TTD (baris bawah) ── -->
-          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;border-top:1px solid #111;">
-            <tr>
-              <td style="border:1px solid #111;padding:5px 7px;vertical-align:top;width:40%;">
-                <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Status Lot :</div>
-                <div style="padding:5px 0;text-align:center;border:1px solid #111;background:#f0f6ff;">
-                  <span style="${stDiterima}font-size:8pt;">DITERIMA</span>
-                  <span style="margin:0 5px;color:#888;">/</span>
-                  <span style="${stDitolak}font-size:8pt;">DITOLAK</span>
-                </div>
-                <div style="font-size:6.5pt;color:#888;text-align:center;margin-top:1px;">(Coret yang tidak perlu)</div>
-                <div style="margin-top:5px;font-size:7.5pt;"><b>No. NCR :</b> ${r.no_ncr||''}</div>
-              </td>
-              <td style="border:1px solid #111;padding:0;vertical-align:top;">
-                <table style="width:100%;border-collapse:collapse;height:100%;">
-                  <tr>
-                    <td style="border-right:1px solid #111;text-align:center;padding:4px 5px;vertical-align:bottom;width:50%;">
-                      <div style="font-weight:700;font-size:7pt;color:#0f2744;">Melaporkan</div>
-                      <div style="height:28px;"></div>
-                      <div style="border-top:1px solid #555;padding-top:2px;">
-                        <div style="font-weight:700;font-size:7pt;">${r.inspector||''}</div>
-                        <div style="font-size:6.5pt;color:#555;">Inspector</div>
-                      </div>
-                    </td>
-                    <td style="text-align:center;padding:4px 5px;vertical-align:bottom;">
-                      <div style="font-weight:700;font-size:7pt;color:#0f2744;">Mengetahui</div>
-                      <div style="height:28px;"></div>
-                      <div style="border-top:1px solid #555;padding-top:2px;">
-                        <div style="font-weight:700;font-size:7pt;">${r.spv||''}</div>
-                        <div style="font-size:6.5pt;color:#555;">Spv Inspector</div>
-                      </div>
-                    </td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-          </table>
+          <!-- ── CATATAN (kiri) + STATUS LOT + TTD (kanan) ── -->
+          <div style="display:flex;align-items:stretch;border-top:1px solid #111;">
+            <!-- Catatan: area besar di kiri -->
+            <div style="flex:1;min-width:0;padding:6px 8px;border-right:1px solid #111;">
+              <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;">Catatan :</div>
+              <div style="font-size:7.5pt;min-height:60px;white-space:pre-wrap;">${r.catatan||''}</div>
+            </div>
+            <!-- Status + TTD di kanan -->
+            <div style="width:240px;flex-shrink:0;">
+              <table style="width:100%;border-collapse:collapse;font-size:7.5pt;height:100%;">
+                <tr>
+                  <td colspan="2" style="border-bottom:1px solid #111;padding:5px 7px;vertical-align:top;">
+                    <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Status Lot :</div>
+                    <div style="padding:4px 0;text-align:center;border:1px solid #111;background:#f0f6ff;">
+                      <span style="${stDiterima}font-size:8pt;">DITERIMA</span>
+                      <span style="margin:0 4px;color:#888;">/</span>
+                      <span style="${stDitolak}font-size:8pt;">DITOLAK</span>
+                    </div>
+                    <div style="font-size:6.5pt;color:#888;text-align:center;margin-top:1px;">(Coret yang tidak perlu)</div>
+                    <div style="margin-top:4px;font-size:7.5pt;"><b>No. NCR :</b> ${r.no_ncr||''}</div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border-right:1px solid #111;text-align:center;padding:4px 5px;vertical-align:bottom;width:50%;">
+                    <div style="font-weight:700;font-size:7pt;color:#0f2744;">Melaporkan</div>
+                    <div style="height:30px;"></div>
+                    <div style="border-top:1px solid #555;padding-top:2px;">
+                      <div style="font-weight:700;font-size:7pt;">${r.inspector||''}</div>
+                      <div style="font-size:6.5pt;color:#555;">Inspector</div>
+                    </div>
+                  </td>
+                  <td style="text-align:center;padding:4px 5px;vertical-align:bottom;">
+                    <div style="font-weight:700;font-size:7pt;color:#0f2744;">Mengetahui</div>
+                    <div style="height:30px;"></div>
+                    <div style="border-top:1px solid #555;padding-top:2px;">
+                      <div style="font-weight:700;font-size:7pt;">${r.spv||''}</div>
+                      <div style="font-size:6.5pt;color:#555;">Spv Inspector</div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
 
-        </td>
-      </tr>
-
-
-      <!-- CATATAN -->
-      <tr>
-        <td colspan="7" style="border:1px solid #111;padding:5px 8px;vertical-align:top;">
-          <div style="font-weight:700;font-size:7.5pt;margin-bottom:3px;color:#0f2744;">Catatan :</div>
-          <div style="font-size:7.5pt;min-height:36px;white-space:pre-wrap;">${r.catatan||''}</div>
         </td>
       </tr>
 
