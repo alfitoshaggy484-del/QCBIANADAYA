@@ -3813,20 +3813,20 @@ function buildPrintHTML(r) {
         <td colspan="7" style="${VAL}text-align:right;font-size:7pt;color:#555;padding:1px 6px;">STD / SERT / TAS</td>
       </tr>
 
-      <!-- STD/SERT/TAS + CEK VISUAL + CEK PENGUKURAN: tabel independen -->
+      <!-- CEK VISUAL + CEK PENGUKURAN: tabel independen dalam td colspan=7 -->
       <tr>
-        <td colspan="7" style="padding:0;border:none;">
+        <td colspan="7" style="padding:0;border:1px solid #111;">
 
-          <!-- CEK VISUAL — tabel independen -->
-          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;margin-top:0;">
+          <!-- ── CEK VISUAL ── -->
+          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;">
             <tr>
-              <td colspan="4" style="${HDR}font-size:8.5pt;font-weight:700;padding:5px 8px;text-align:center;background:#1a6fa8;color:#fff;border:1px solid #111;">Cek Visual</td>
+              <td colspan="4" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:5px 8px;text-align:center;border-bottom:1px solid #111;">Cek Visual</td>
             </tr>
             <tr>
-              <th style="${HDR}border:1px solid #111;width:40px;text-align:center;">No.</th>
+              <th style="${HDR}border:1px solid #111;width:40px;">No.</th>
               <th style="${HDR}border:1px solid #111;text-align:left;">Item yang diperiksa</th>
-              <th style="${HDR}border:1px solid #111;width:100px;text-align:center;">Jumlah OK</th>
-              <th style="${HDR}border:1px solid #111;width:100px;text-align:center;">Jumlah NO</th>
+              <th style="${HDR}border:1px solid #111;width:100px;">Jumlah OK</th>
+              <th style="${HDR}border:1px solid #111;width:100px;">Jumlah NO</th>
             </tr>
             ${(()=>{
               let vr='';
@@ -3844,59 +3844,79 @@ function buildPrintHTML(r) {
             })()}
           </table>
 
-          <!-- CEK PENGUKURAN — tabel independen -->
-          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;margin-top:0;">
+          <!-- ── CEK PENGUKURAN + KET PENGUKURAN (berdampingan) ── -->
+          <div style="display:flex;align-items:stretch;border-top:2px solid #111;">
+
+            <!-- Kiri: Cek Pengukuran -->
+            <div style="flex:1;min-width:0;">
+              <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;">
+                <tr>
+                  <td colspan="9" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:5px 8px;text-align:center;border:1px solid #111;">Cek Pengukuran</td>
+                </tr>
+                <tr>
+                  <th style="${HDR}border:1px solid #111;width:32px;" rowspan="2">No.</th>
+                  <th style="${HDR}border:1px solid #111;" rowspan="2">A</th>
+                  <th style="${HDR}border:1px solid #111;" rowspan="2">B</th>
+                  <th style="${HDR}border:1px solid #111;" rowspan="2">C</th>
+                  <th style="${HDR}border:1px solid #111;" rowspan="2">D</th>
+                  <th style="${HDR}border:1px solid #111;" rowspan="2">E</th>
+                  <th style="${HDR}border:1px solid #111;" rowspan="2">F</th>
+                  <th style="${HDR}border:1px solid #111;background:#1a6fa8;color:#fff;" colspan="2">HASIL</th>
+                </tr>
+                <tr>
+                  <th style="${HDR}border:1px solid #111;font-size:7pt;width:40px;">OK</th>
+                  <th style="${HDR}border:1px solid #111;font-size:7pt;width:40px;">NO</th>
+                </tr>
+                ${(()=>{
+                  let mr='';
+                  const mc=Math.max(4,(r.measurement||[]).length);
+                  for(let i=0;i<mc;i++){
+                    const m=(r.measurement||[])[i]||{};
+                    mr+=`<tr>
+                      <td style="border:1px solid #111;padding:3px 4px;text-align:center;height:20px;">${i+1}</td>
+                      ${['a','b','c','d','e','f'].map(l=>`<td style="border:1px solid #111;padding:3px 4px;text-align:center;">${m[l]||''}</td>`).join('')}
+                      <td style="border:1px solid #111;padding:3px 4px;text-align:center;font-weight:700;">${m.hasil==='OK'?'✓':''}</td>
+                      <td style="border:1px solid #111;padding:3px 4px;text-align:center;font-weight:700;">${m.hasil==='NO'?'✗':''}</td>
+                    </tr>`;
+                  }
+                  return mr;
+                })()}
+              </table>
+            </div>
+
+            <!-- Kanan: Keterangan pengukuran -->
+            <div style="width:220px;flex-shrink:0;border-left:1px solid #111;">
+              <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;height:100%;">
+                <tr>
+                  <td colspan="4" style="background:#1a6fa8;color:#fff;font-weight:700;font-size:8.5pt;padding:5px 8px;text-align:center;border-bottom:1px solid #111;">Keterangan pengukuran</td>
+                </tr>
+                <tr>
+                  <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">A =</td>
+                  <td style="${VAL}border:1px solid #111;">${r.ket_a||''}</td>
+                  <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">D =</td>
+                  <td style="${VAL}border:1px solid #111;">${r.ket_d||''}</td>
+                </tr>
+                <tr>
+                  <td style="${LBL}border:1px solid #111;text-align:center;">B =</td>
+                  <td style="${VAL}border:1px solid #111;">${r.ket_b||''}</td>
+                  <td style="${LBL}border:1px solid #111;text-align:center;">E =</td>
+                  <td style="${VAL}border:1px solid #111;">${r.ket_e||''}</td>
+                </tr>
+                <tr>
+                  <td style="${LBL}border:1px solid #111;text-align:center;">C =</td>
+                  <td style="${VAL}border:1px solid #111;">${r.ket_c||''}</td>
+                  <td style="${LBL}border:1px solid #111;text-align:center;">F =</td>
+                  <td style="${VAL}border:1px solid #111;">${r.ket_f||''}</td>
+                </tr>
+              </table>
+            </div>
+
+          </div>
+
+          <!-- ── STATUS + TTD (baris bawah) ── -->
+          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;border-top:1px solid #111;">
             <tr>
-              <td colspan="9" style="${HDR}font-size:8.5pt;font-weight:700;padding:5px 8px;text-align:center;background:#1a6fa8;color:#fff;border:1px solid #111;">Cek Pengukuran</td>
-            </tr>
-            <tr>
-              <th style="${HDR}border:1px solid #111;width:36px;text-align:center;" rowspan="2">No.</th>
-              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">A</th>
-              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">B</th>
-              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">C</th>
-              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">D</th>
-              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">E</th>
-              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">F</th>
-              <th style="${HDR}border:1px solid #111;text-align:center;background:#1a6fa8;color:#fff;" colspan="2">HASIL</th>
-            </tr>
-            <tr>
-              <th style="${HDR}border:1px solid #111;text-align:center;font-size:7pt;width:48px;">OK</th>
-              <th style="${HDR}border:1px solid #111;text-align:center;font-size:7pt;width:48px;">NO</th>
-            </tr>
-            ${(()=>{
-              let mr='';
-              const mc=Math.max(4,(r.measurement||[]).length);
-              for(let i=0;i<mc;i++){
-                const m=(r.measurement||[])[i]||{};
-                mr+=`<tr>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">${i+1}</td>
-                  ${['a','b','c','d','e','f'].map(l=>`<td style="border:1px solid #111;padding:3px 5px;text-align:center;">${m[l]||''}</td>`).join('')}
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">${m.hasil==='OK'?'✓':''}</td>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">${m.hasil==='NO'?'✗':''}</td>
-                </tr>`;
-              }
-              return mr;
-            })()}
-            <!-- Keterangan + Status + TTD -->
-            <tr>
-              <td colspan="4" style="border:1px solid #111;padding:5px 7px;vertical-align:top;">
-                <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Keterangan pengukuran</div>
-                <table style="width:100%;border-collapse:collapse;font-size:7pt;">
-                  <tr>
-                    <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">A =</td><td style="${VAL}border:1px solid #111;">${r.ket_a||''}</td>
-                    <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">D =</td><td style="${VAL}border:1px solid #111;">${r.ket_d||''}</td>
-                  </tr>
-                  <tr>
-                    <td style="${LBL}border:1px solid #111;text-align:center;">B =</td><td style="${VAL}border:1px solid #111;">${r.ket_b||''}</td>
-                    <td style="${LBL}border:1px solid #111;text-align:center;">E =</td><td style="${VAL}border:1px solid #111;">${r.ket_e||''}</td>
-                  </tr>
-                  <tr>
-                    <td style="${LBL}border:1px solid #111;text-align:center;">C =</td><td style="${VAL}border:1px solid #111;">${r.ket_c||''}</td>
-                    <td style="${LBL}border:1px solid #111;text-align:center;">F =</td><td style="${VAL}border:1px solid #111;">${r.ket_f||''}</td>
-                  </tr>
-                </table>
-              </td>
-              <td colspan="2" style="border:1px solid #111;padding:5px 7px;vertical-align:top;">
+              <td style="border:1px solid #111;padding:5px 7px;vertical-align:top;width:40%;">
                 <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Status Lot :</div>
                 <div style="padding:5px 0;text-align:center;border:1px solid #111;background:#f0f6ff;">
                   <span style="${stDiterima}font-size:8pt;">DITERIMA</span>
@@ -3906,7 +3926,7 @@ function buildPrintHTML(r) {
                 <div style="font-size:6.5pt;color:#888;text-align:center;margin-top:1px;">(Coret yang tidak perlu)</div>
                 <div style="margin-top:5px;font-size:7.5pt;"><b>No. NCR :</b> ${r.no_ncr||''}</div>
               </td>
-              <td colspan="3" style="border:1px solid #111;padding:0;vertical-align:top;">
+              <td style="border:1px solid #111;padding:0;vertical-align:top;">
                 <table style="width:100%;border-collapse:collapse;height:100%;">
                   <tr>
                     <td style="border-right:1px solid #111;text-align:center;padding:4px 5px;vertical-align:bottom;width:50%;">
@@ -3933,6 +3953,7 @@ function buildPrintHTML(r) {
 
         </td>
       </tr>
+
 
       <!-- CATATAN -->
       <tr>
