@@ -2876,21 +2876,29 @@ function buildRTCTable() {
   const tbody = document.getElementById('rtc-tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
+  const btnCell = (cls) => `
+    <td style="border:1px solid #555;padding:2px;text-align:center;">
+      <input type="hidden" class="${cls}" value="">
+      <button type="button" class="fd-on-btn" onclick="toggleFDCell(this)"
+        style="width:36px;height:24px;border:1.5px solid #d1d5db;border-radius:5px;
+               background:#f8fafc;color:#94a3b8;font-size:10px;font-weight:700;
+               cursor:pointer;font-family:Inter,sans-serif;transition:all .14s;">—</button>
+    </td>`;
+  const inp = (cls) => `<input type="text" class="${cls}" style="width:100%;border:none;outline:none;padding:3px 4px;font-size:8.5pt;">`;
   RTC_DEFAULT_ITEMS.forEach((item, i) => {
     const tr = document.createElement('tr');
-    const inp = (cls, w) => `<input type="text" class="${cls}" style="width:${w||'100%'};border:none;outline:none;padding:3px 4px;font-size:8.5pt;text-align:center;">`;
     tr.innerHTML = `
       <td style="border:1px solid #555;padding:3px;text-align:center;font-size:8.5pt;">${i+1}</td>
       <td style="border:1px solid #555;padding:2px 4px;">
         <input type="text" class="rtc-item" value="${item}" style="width:100%;border:none;outline:none;padding:3px 4px;font-size:8.5pt;">
       </td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-qty','100%')}</td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-vgood','100%')}</td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-vng','100%')}</td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-fgood','100%')}</td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-fng','100%')}</td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-aksesoris','100%')}</td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-ket','100%')}</td>`;
+      <td style="border:1px solid #555;padding:2px;text-align:center;">${inp('rtc-qty')}</td>
+      ${btnCell('rtc-vgood')}
+      ${btnCell('rtc-vng')}
+      ${btnCell('rtc-fgood')}
+      ${btnCell('rtc-fng')}
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-aksesoris')}</td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-ket')}</td>`;
     tbody.appendChild(tr);
   });
 }
@@ -2902,10 +2910,10 @@ function collectRTC() {
       no: i+1,
       item:      tr.querySelector('.rtc-item')?.value||'',
       qty:       tr.querySelector('.rtc-qty')?.value||'',
-      vgood:     tr.querySelector('.rtc-vgood')?.value||'',
-      vng:       tr.querySelector('.rtc-vng')?.value||'',
-      fgood:     tr.querySelector('.rtc-fgood')?.value||'',
-      fng:       tr.querySelector('.rtc-fng')?.value||'',
+      vgood:     tr.querySelector('input.rtc-vgood')?.value||'',
+      vng:       tr.querySelector('input.rtc-vng')?.value||'',
+      fgood:     tr.querySelector('input.rtc-fgood')?.value||'',
+      fng:       tr.querySelector('input.rtc-fng')?.value||'',
       aksesoris: tr.querySelector('.rtc-aksesoris')?.value||'',
       ket:       tr.querySelector('.rtc-ket')?.value||'',
     });
@@ -2974,10 +2982,10 @@ function buildPrintRTC(r) {
       <td style="${C}height:18px;">${i+1}</td>
       <td style="border:1px solid #111;padding:3px 6px;font-size:7.5pt;text-align:center;">${d.item||''}</td>
       <td style="${C}">${d.qty||''}</td>
-      <td style="${C}">${d.vgood||''}</td>
-      <td style="${C}">${d.vng||''}</td>
-      <td style="${C}">${d.fgood||''}</td>
-      <td style="${C}">${d.fng||''}</td>
+      <td style="${C}${d.vgood==='OK'?'color:#15803d;font-weight:700;':d.vgood==='NO'?'color:#b91c1c;font-weight:700;':''}">${d.vgood||''}</td>
+      <td style="${C}${d.vng==='OK'?'color:#15803d;font-weight:700;':d.vng==='NO'?'color:#b91c1c;font-weight:700;':''}">${d.vng||''}</td>
+      <td style="${C}${d.fgood==='OK'?'color:#15803d;font-weight:700;':d.fgood==='NO'?'color:#b91c1c;font-weight:700;':''}">${d.fgood||''}</td>
+      <td style="${C}${d.fng==='OK'?'color:#15803d;font-weight:700;':d.fng==='NO'?'color:#b91c1c;font-weight:700;':''}">${d.fng||''}</td>
       <td style="${C}">${d.aksesoris||''}</td>
       <td style="border:1px solid #111;padding:3px 6px;font-size:7.5pt;">${d.ket||''}</td>
     </tr>`;
@@ -3749,11 +3757,21 @@ function viewRecord(id) {
     if (tbody && r.rows) {
       tbody.querySelectorAll('tr').forEach((tr, i) => {
         const d = r.rows[i]||{};
-        const set = (cls, val) => { const el=tr.querySelector('.'+cls); if(el) el.value=val||''; };
-        set('rtc-item', d.item); set('rtc-qty', d.qty);
-        set('rtc-vgood', d.vgood); set('rtc-vng', d.vng);
-        set('rtc-fgood', d.fgood); set('rtc-fng', d.fng);
-        set('rtc-aksesoris', d.aksesoris); set('rtc-ket', d.ket);
+        const setInp = (cls, val) => { const el=tr.querySelector('input.'+cls); if(el) el.value=val||''; };
+        setInp('rtc-item', d.item); setInp('rtc-qty', d.qty);
+        setInp('rtc-aksesoris', d.aksesoris); setInp('rtc-ket', d.ket);
+        // Restore toggle buttons
+        ['rtc-vgood','rtc-vng','rtc-fgood','rtc-fng'].forEach(cls => {
+          const val = d[cls.replace('rtc-','')]||'';
+          const hid = tr.querySelector('input.'+cls);
+          const btn = hid ? hid.nextElementSibling : null;
+          if (hid) hid.value = val;
+          if (btn) {
+            if (val==='OK') { btn.textContent='OK'; btn.style.background='#dcfce7'; btn.style.color='#15803d'; btn.style.borderColor='#15803d'; }
+            else if (val==='NO') { btn.textContent='NO'; btn.style.background='#fee2e2'; btn.style.color='#b91c1c'; btn.style.borderColor='#b91c1c'; }
+            else { btn.textContent='—'; btn.style.background='#f8fafc'; btn.style.color='#94a3b8'; btn.style.borderColor='#d1d5db'; }
+          }
+        });
       });
     }
     showTab('form');
