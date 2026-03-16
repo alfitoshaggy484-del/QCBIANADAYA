@@ -3833,12 +3833,12 @@ function buildPrintHTML(r) {
               const vc=Math.max(4,(r.visual||[]).length);
               for(let i=0;i<vc;i++){
                 const v=(r.visual||[])[i]||{};
-                vr+=\`<tr>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">\${i+1}</td>
-                  <td style="border:1px solid #111;padding:3px 5px;">\${v.item||''}</td>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;">\${v.ok||''}</td>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;">\${v.no||''}</td>
-                </tr>\`;
+                vr+=`<tr>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">${i+1}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;">${v.item||''}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;">${v.ok||''}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;">${v.no||''}</td>
+                </tr>`;
               }
               return vr;
             })()}
@@ -3868,12 +3868,12 @@ function buildPrintHTML(r) {
               const mc=Math.max(4,(r.measurement||[]).length);
               for(let i=0;i<mc;i++){
                 const m=(r.measurement||[])[i]||{};
-                mr+=\`<tr>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">\${i+1}</td>
-                  \${['a','b','c','d','e','f'].map(l=>\`<td style="border:1px solid #111;padding:3px 5px;text-align:center;">\${m[l]||''}</td>\`).join('')}
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">\${m.hasil==='OK'?'✓':''}</td>
-                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">\${m.hasil==='NO'?'✗':''}</td>
-                </tr>\`;
+                mr+=`<tr>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">${i+1}</td>
+                  ${['a','b','c','d','e','f'].map(l=>`<td style="border:1px solid #111;padding:3px 5px;text-align:center;">${m[l]||''}</td>`).join('')}
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">${m.hasil==='OK'?'✓':''}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">${m.hasil==='NO'?'✗':''}</td>
+                </tr>`;
               }
               return mr;
             })()}
