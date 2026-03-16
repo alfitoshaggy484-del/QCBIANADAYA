@@ -3813,126 +3813,130 @@ function buildPrintHTML(r) {
         <td colspan="7" style="${VAL}text-align:right;font-size:7pt;color:#555;padding:1px 6px;">STD / SERT / TAS</td>
       </tr>
 
-      <!-- CEK VISUAL header -->
+      <!-- STD/SERT/TAS + CEK VISUAL + CEK PENGUKURAN: tabel independen -->
       <tr>
-        <td colspan="7" style="${HDR}font-size:8.5pt;font-weight:700;padding:4px 8px;text-align:center;background:#1a6fa8;color:#fff;">Cek Visual</td>
-      </tr>
-      <!-- CEK VISUAL sub-header -->
-      <tr>
-        <td style="${HDR}text-align:center;width:32px;">No.</td>
-        <td colspan="4" style="${HDR}text-align:left;">Item yang diperiksa</td>
-        <td style="${HDR}text-align:center;">Jumlah OK</td>
-        <td style="${HDR}text-align:center;">Jumlah NO</td>
-      </tr>
-      <!-- CEK VISUAL rows -->
-      ${(()=>{
-        let vr='';
-        const vc=Math.max(4,(r.visual||[]).length);
-        for(let i=0;i<vc;i++){
-          const v=(r.visual||[])[i]||{};
-          vr+=`<tr>
-            <td style="${CELL}text-align:center;height:19px;">${i+1}</td>
-            <td colspan="4" style="${CELL}">${v.item||''}</td>
-            <td style="${CELL}text-align:center;">${v.ok||''}</td>
-            <td style="${CELL}text-align:center;">${v.no||''}</td>
-          </tr>`;
-        }
-        return vr;
-      })()}
+        <td colspan="7" style="padding:0;border:none;">
 
-      <!-- CEK PENGUKURAN header -->
-      <tr>
-        <td colspan="7" style="${HDR}font-size:8.5pt;font-weight:700;padding:4px 8px;text-align:center;background:#1a6fa8;color:#fff;">Cek Pengukuran</td>
-      </tr>
-      <!-- CEK PENGUKURAN sub-header row 1 -->
-      <tr>
-        <td style="${HDR}text-align:center;width:28px;" rowspan="2">No.</td>
-        <td style="${HDR}text-align:center;" rowspan="2">A</td>
-        <td style="${HDR}text-align:center;" rowspan="2">B</td>
-        <td style="${HDR}text-align:center;" rowspan="2">C</td>
-        <td style="${HDR}text-align:center;" rowspan="2">D</td>
-        <td style="${HDR}text-align:center;background:#1a6fa8;color:#fff;" colspan="2">HASIL</td>
-      </tr>
-      <!-- CEK PENGUKURAN sub-header row 2: OK / NO -->
-      <tr>
-        <td style="${HDR}text-align:center;font-size:7pt;">OK</td>
-        <td style="${HDR}text-align:center;font-size:7pt;">NO</td>
-      </tr>
-      <!-- CEK PENGUKURAN rows -->
-      ${(()=>{
-        let mr='';
-        const mc=Math.max(4,(r.measurement||[]).length);
-        for(let i=0;i<mc;i++){
-          const m=(r.measurement||[])[i]||{};
-          mr+=`<tr>
-            <td style="${CELL}text-align:center;height:19px;">${i+1}</td>
-            <td style="${CELL}text-align:center;">${m.a||''}</td>
-            <td style="${CELL}text-align:center;">${m.b||''}</td>
-            <td style="${CELL}text-align:center;">${m.c||''}</td>
-            <td style="${CELL}text-align:center;">${m.d||''}</td>
-            <td style="${CELL}text-align:center;font-weight:700;">${m.hasil==='OK'?'✓':''}</td>
-            <td style="${CELL}text-align:center;font-weight:700;">${m.hasil==='NO'?'✗':''}</td>
-          </tr>`;
-        }
-        return mr;
-      })()}
-
-      <!-- KETERANGAN + STATUS + TANDATANGAN -->
-      <tr>
-        <td colspan="3" style="border:1px solid #1a6fa8;padding:5px 7px;vertical-align:top;">
-          <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Keterangan pengukuran</div>
-          <table style="width:100%;border-collapse:collapse;font-size:7pt;">
+          <!-- CEK VISUAL — tabel independen -->
+          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;margin-top:0;">
             <tr>
-              <td style="${LBL}width:28px;text-align:center;">A =</td><td style="${VAL}">${r.ket_a||''}</td>
-              <td style="${LBL}width:28px;text-align:center;">D =</td><td style="${VAL}">${r.ket_d||''}</td>
+              <td colspan="4" style="${HDR}font-size:8.5pt;font-weight:700;padding:5px 8px;text-align:center;background:#1a6fa8;color:#fff;border:1px solid #111;">Cek Visual</td>
             </tr>
             <tr>
-              <td style="${LBL}text-align:center;">B =</td><td style="${VAL}">${r.ket_b||''}</td>
-              <td style="${LBL}text-align:center;">E =</td><td style="${VAL}">${r.ket_e||''}</td>
+              <th style="${HDR}border:1px solid #111;width:40px;text-align:center;">No.</th>
+              <th style="${HDR}border:1px solid #111;text-align:left;">Item yang diperiksa</th>
+              <th style="${HDR}border:1px solid #111;width:100px;text-align:center;">Jumlah OK</th>
+              <th style="${HDR}border:1px solid #111;width:100px;text-align:center;">Jumlah NO</th>
+            </tr>
+            ${(()=>{
+              let vr='';
+              const vc=Math.max(4,(r.visual||[]).length);
+              for(let i=0;i<vc;i++){
+                const v=(r.visual||[])[i]||{};
+                vr+=\`<tr>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">\${i+1}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;">\${v.item||''}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;">\${v.ok||''}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;">\${v.no||''}</td>
+                </tr>\`;
+              }
+              return vr;
+            })()}
+          </table>
+
+          <!-- CEK PENGUKURAN — tabel independen -->
+          <table style="width:100%;border-collapse:collapse;font-size:7.5pt;font-family:Arial,sans-serif;margin-top:0;">
+            <tr>
+              <td colspan="9" style="${HDR}font-size:8.5pt;font-weight:700;padding:5px 8px;text-align:center;background:#1a6fa8;color:#fff;border:1px solid #111;">Cek Pengukuran</td>
             </tr>
             <tr>
-              <td style="${LBL}text-align:center;">C =</td><td style="${VAL}">${r.ket_c||''}</td>
-              <td style="${LBL}text-align:center;">F =</td><td style="${VAL}">${r.ket_f||''}</td>
+              <th style="${HDR}border:1px solid #111;width:36px;text-align:center;" rowspan="2">No.</th>
+              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">A</th>
+              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">B</th>
+              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">C</th>
+              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">D</th>
+              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">E</th>
+              <th style="${HDR}border:1px solid #111;width:11%;text-align:center;" rowspan="2">F</th>
+              <th style="${HDR}border:1px solid #111;text-align:center;background:#1a6fa8;color:#fff;" colspan="2">HASIL</th>
+            </tr>
+            <tr>
+              <th style="${HDR}border:1px solid #111;text-align:center;font-size:7pt;width:48px;">OK</th>
+              <th style="${HDR}border:1px solid #111;text-align:center;font-size:7pt;width:48px;">NO</th>
+            </tr>
+            ${(()=>{
+              let mr='';
+              const mc=Math.max(4,(r.measurement||[]).length);
+              for(let i=0;i<mc;i++){
+                const m=(r.measurement||[])[i]||{};
+                mr+=\`<tr>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;height:20px;">\${i+1}</td>
+                  \${['a','b','c','d','e','f'].map(l=>\`<td style="border:1px solid #111;padding:3px 5px;text-align:center;">\${m[l]||''}</td>\`).join('')}
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">\${m.hasil==='OK'?'✓':''}</td>
+                  <td style="border:1px solid #111;padding:3px 5px;text-align:center;font-weight:700;">\${m.hasil==='NO'?'✗':''}</td>
+                </tr>\`;
+              }
+              return mr;
+            })()}
+            <!-- Keterangan + Status + TTD -->
+            <tr>
+              <td colspan="4" style="border:1px solid #111;padding:5px 7px;vertical-align:top;">
+                <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Keterangan pengukuran</div>
+                <table style="width:100%;border-collapse:collapse;font-size:7pt;">
+                  <tr>
+                    <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">A =</td><td style="${VAL}border:1px solid #111;">${r.ket_a||''}</td>
+                    <td style="${LBL}border:1px solid #111;width:28px;text-align:center;">D =</td><td style="${VAL}border:1px solid #111;">${r.ket_d||''}</td>
+                  </tr>
+                  <tr>
+                    <td style="${LBL}border:1px solid #111;text-align:center;">B =</td><td style="${VAL}border:1px solid #111;">${r.ket_b||''}</td>
+                    <td style="${LBL}border:1px solid #111;text-align:center;">E =</td><td style="${VAL}border:1px solid #111;">${r.ket_e||''}</td>
+                  </tr>
+                  <tr>
+                    <td style="${LBL}border:1px solid #111;text-align:center;">C =</td><td style="${VAL}border:1px solid #111;">${r.ket_c||''}</td>
+                    <td style="${LBL}border:1px solid #111;text-align:center;">F =</td><td style="${VAL}border:1px solid #111;">${r.ket_f||''}</td>
+                  </tr>
+                </table>
+              </td>
+              <td colspan="2" style="border:1px solid #111;padding:5px 7px;vertical-align:top;">
+                <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Status Lot :</div>
+                <div style="padding:5px 0;text-align:center;border:1px solid #111;background:#f0f6ff;">
+                  <span style="${stDiterima}font-size:8pt;">DITERIMA</span>
+                  <span style="margin:0 5px;color:#888;">/</span>
+                  <span style="${stDitolak}font-size:8pt;">DITOLAK</span>
+                </div>
+                <div style="font-size:6.5pt;color:#888;text-align:center;margin-top:1px;">(Coret yang tidak perlu)</div>
+                <div style="margin-top:5px;font-size:7.5pt;"><b>No. NCR :</b> ${r.no_ncr||''}</div>
+              </td>
+              <td colspan="3" style="border:1px solid #111;padding:0;vertical-align:top;">
+                <table style="width:100%;border-collapse:collapse;height:100%;">
+                  <tr>
+                    <td style="border-right:1px solid #111;text-align:center;padding:4px 5px;vertical-align:bottom;width:50%;">
+                      <div style="font-weight:700;font-size:7pt;color:#0f2744;">Melaporkan</div>
+                      <div style="height:28px;"></div>
+                      <div style="border-top:1px solid #555;padding-top:2px;">
+                        <div style="font-weight:700;font-size:7pt;">${r.inspector||''}</div>
+                        <div style="font-size:6.5pt;color:#555;">Inspector</div>
+                      </div>
+                    </td>
+                    <td style="text-align:center;padding:4px 5px;vertical-align:bottom;">
+                      <div style="font-weight:700;font-size:7pt;color:#0f2744;">Mengetahui</div>
+                      <div style="height:28px;"></div>
+                      <div style="border-top:1px solid #555;padding-top:2px;">
+                        <div style="font-weight:700;font-size:7pt;">${r.spv||''}</div>
+                        <div style="font-size:6.5pt;color:#555;">Spv Inspector</div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
             </tr>
           </table>
-        </td>
-        <td colspan="2" style="border:1px solid #1a6fa8;padding:5px 7px;vertical-align:top;">
-          <div style="font-weight:700;font-size:7.5pt;margin-bottom:4px;color:#0f2744;">Status Lot :</div>
-          <div style="margin-top:4px;padding:5px 0;text-align:center;border:1px solid #1a6fa8;background:#f0f6ff;">
-            <span style="${stDiterima}font-size:8pt;">DITERIMA</span>
-            <span style="margin:0 5px;color:#888;">/</span>
-            <span style="${stDitolak}font-size:8pt;">DITOLAK</span>
-          </div>
-          <div style="font-size:6.5pt;color:#888;text-align:center;margin-top:1px;">(Coret yang tidak perlu)</div>
-          <div style="margin-top:5px;font-size:7.5pt;"><b>No. NCR :</b> ${r.no_ncr||''}</div>
-        </td>
-        <td colspan="2" style="border:1px solid #1a6fa8;padding:0;vertical-align:top;">
-          <table style="width:100%;border-collapse:collapse;height:100%;">
-            <tr>
-              <td style="border-bottom:1px solid #1a6fa8;border-right:1px solid #1a6fa8;text-align:center;padding:4px 5px;vertical-align:bottom;width:50%;">
-                <div style="font-weight:700;font-size:7pt;color:#0f2744;">Melaporkan</div>
-                <div style="height:28px;"></div>
-                <div style="border-top:1px solid #7ca3c8;padding-top:2px;">
-                  <div style="font-weight:700;font-size:7pt;">${r.inspector||''}</div>
-                  <div style="font-size:6.5pt;color:#555;">Inspector</div>
-                </div>
-              </td>
-              <td style="border-bottom:1px solid #1a6fa8;text-align:center;padding:4px 5px;vertical-align:bottom;">
-                <div style="font-weight:700;font-size:7pt;color:#0f2744;">Mengetahui</div>
-                <div style="height:28px;"></div>
-                <div style="border-top:1px solid #7ca3c8;padding-top:2px;">
-                  <div style="font-weight:700;font-size:7pt;">${r.spv||''}</div>
-                  <div style="font-size:6.5pt;color:#555;">Spv Inspector</div>
-                </div>
-              </td>
-            </tr>
-          </table>
+
         </td>
       </tr>
 
       <!-- CATATAN -->
       <tr>
-        <td colspan="7" style="border:1px solid #1a6fa8;padding:5px 8px;vertical-align:top;">
+        <td colspan="7" style="border:1px solid #111;padding:5px 8px;vertical-align:top;">
           <div style="font-weight:700;font-size:7.5pt;margin-bottom:3px;color:#0f2744;">Catatan :</div>
           <div style="font-size:7.5pt;min-height:36px;white-space:pre-wrap;">${r.catatan||''}</div>
         </td>
