@@ -813,6 +813,14 @@ input[type="date"].ks-tgl {
       <div class="fc-arrow">›</div>
     </button>
 
+    <button class="form-card" onclick="openForm('rtc')">
+      <div class="fc-icon">🔩</div>
+      <div class="fc-code">BDF-MCD-001-002</div>
+      <div class="fc-title">Incoming RTC</div>
+      <div class="fc-desc">Pengecekan incoming material kubikel RTC</div>
+      <div class="fc-arrow">›</div>
+    </button>
+
   </div>
 </div>
 
@@ -1343,6 +1351,97 @@ input[type="date"].ks-tgl {
     </div>
   </div>
 
+
+
+  <!-- ===== FORM: INCOMING RTC (BDF-MCD-001-002) ===== -->
+  <div id="form-rtc" style="display:none;">
+    <div style="background:white;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.1);margin-bottom:16px;overflow:hidden;">
+      <div style="overflow-x:auto;padding:16px;">
+        <div id="kop-rtc"></div>
+
+        <!-- Info Header -->
+        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:9pt;margin-bottom:6px;">
+          <tr>
+            <td style="border:1px solid #555;padding:5px 8px;width:30%;"><b>Tipe kubikel :</b>
+              <input type="text" id="rtc_tipe" style="border:none;border-bottom:1px solid #aaa;outline:none;width:60%;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+            <td style="border:1px solid #555;padding:5px 8px;width:30%;"><b>Supplier :</b>
+              <input type="text" id="rtc_supplier" style="border:none;border-bottom:1px solid #aaa;outline:none;width:65%;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+            <td style="border:1px solid #555;padding:5px 8px;"><b>Jumlah datang :</b>
+              <input type="text" id="rtc_jml_datang" style="border:none;border-bottom:1px solid #aaa;outline:none;width:50%;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+          </tr>
+          <tr>
+            <td style="border:1px solid #555;padding:5px 8px;"><b>Nomer seri :</b>
+              <input type="text" id="rtc_noseri" style="border:none;border-bottom:1px solid #aaa;outline:none;width:65%;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+            <td style="border:1px solid #555;padding:5px 8px;"><b>Nomer PO :</b>
+              <input type="text" id="rtc_nopo" style="border:none;border-bottom:1px solid #aaa;outline:none;width:65%;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+            <td style="border:1px solid #555;padding:5px 8px;"><b>Tanggal Inspeksi :</b>
+              <input type="date" id="rtc_tgl" style="border:none;border-bottom:1px solid #aaa;outline:none;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+          </tr>
+        </table>
+
+        <!-- Tabel Item Check -->
+        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;">
+          <thead>
+            <tr>
+              <th rowspan="3" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;width:32px;">No.</th>
+              <th rowspan="3" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;">Check list</th>
+              <th rowspan="3" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;width:50px;">QTY</th>
+              <th colspan="4" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;">Item check</th>
+              <th rowspan="3" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;width:70px;">Aksesoris</th>
+              <th rowspan="3" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;width:100px;">Keterangan</th>
+            </tr>
+            <tr>
+              <th colspan="2" style="background:#dde8f4;border:1px solid #555;padding:3px;text-align:center;font-size:8pt;">Visual</th>
+              <th colspan="2" style="background:#dde8f4;border:1px solid #555;padding:3px;text-align:center;font-size:8pt;">Fungsi</th>
+            </tr>
+            <tr>
+              <th style="background:#dde8f4;border:1px solid #555;padding:3px;text-align:center;font-size:7.5pt;width:44px;">Good</th>
+              <th style="background:#dde8f4;border:1px solid #555;padding:3px;text-align:center;font-size:7.5pt;width:44px;">NG</th>
+              <th style="background:#dde8f4;border:1px solid #555;padding:3px;text-align:center;font-size:7.5pt;width:44px;">Good</th>
+              <th style="background:#dde8f4;border:1px solid #555;padding:3px;text-align:center;font-size:7.5pt;width:44px;">NG</th>
+            </tr>
+          </thead>
+          <tbody id="rtc-tbody"></tbody>
+        </table>
+
+        <!-- Footer -->
+        <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;margin-top:0;border-top:0;">
+          <tr>
+            <td style="border:1px solid #555;padding:5px 8px;width:28%;vertical-align:top;">
+              <div><b>Status Lot:</b></div>
+              <div style="margin-top:6px;">
+                <button id="rtc-btn-diterima" class="okno-btn" style="padding:4px 10px;" onclick="setRtcStatus('DITERIMA')">DITERIMA</button>
+                <button id="rtc-btn-ditolak"  class="okno-btn" style="padding:4px 10px;" onclick="setRtcStatus('DITOLAK')">DITOLAK</button>
+              </div>
+              <div style="font-size:7.5pt;color:#888;margin-top:3px;">(coret yang tidak perlu)</div>
+              <input type="hidden" id="rtc_status" value="">
+            </td>
+            <td style="border:1px solid #555;padding:5px 8px;width:20%;"><b>QC:</b>
+              <input type="text" id="rtc_qc" style="border:none;border-bottom:1px solid #aaa;outline:none;width:70%;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+            <td style="border:1px solid #555;padding:5px 8px;width:20%;"><b>Tanggal:</b>
+              <input type="date" id="rtc_tgl_ttd" style="border:none;border-bottom:1px solid #aaa;outline:none;font-family:Arial;font-size:9pt;background:transparent;">
+            </td>
+            <td style="border:1px solid #555;padding:5px 8px;"><b>Catatan:</b>
+              <textarea id="rtc_catatan" rows="2" style="width:100%;border:none;outline:none;font-family:Arial;font-size:9pt;background:transparent;resize:none;"></textarea>
+            </td>
+          </tr>
+        </table>
+
+      </div>
+    </div>
+    <div class="bottom-actions">
+      <button class="big-btn save" onclick="saveGenericRecord('rtc', collectRTC, this)">💾 Simpan Record</button>
+      <button class="big-btn print-btn" onclick="printRTC()">🖨️ Cetak / PDF</button>
+      <button class="big-btn reset" onclick="resetRTC()">↺ Baru</button>
+    </div>
+  </div>
 </div><!-- end scr-form -->
 
 <!-- ===== RECORDS SCREEN ===== -->
@@ -1361,6 +1460,7 @@ input[type="date"].ks-tgl {
         <select class="filter-sel" id="filter-type" onchange="renderRecords()">
           <option value="">Semua Jenis Form</option>
           <option value="incoming">Incoming</option>
+          <option value="rtc">Incoming RTC</option>
           <option value="frekuensi">Frekuensi Daya</option>
           <option value="isolasi">Tahanan Isolasi</option>
           <option value="roadcard">Road Card</option>
@@ -1589,6 +1689,7 @@ function initKop() {
     { id:'kop-kontak',      label:'Form Pengukuran tahanan kontak',          no:'BDF-QAD-001-004', purpose:'Sebagai pencatatan hasil pengukuran tahanan kontak kubikel TM6' },
     { id:'kop-konstruksi',  label:'Form pemeriksaan konstruksi',             no:'BDF-QAD-001-005', purpose:'Sebagai lembar pencatatan hasil pemeriksaan konstruksi kubikel TM6' },
     { id:'kop-ujifungsi',   label:'Form uji fungsi dan kesesuaian',          no:'BDF-QAD-001-006', purpose:'Sebagai lembar pencatatan hasil uji fungsi dan kesesuaian kubikel TM6' },
+    { id:'kop-rtc',         label:'Incoming RTC',                            no:'BDF-MCD-001-002', purpose:'Pengecekan incoming material kubikel RTC' },
   ];
   forms.forEach(f => {
     const el = document.getElementById(f.id);
@@ -1727,6 +1828,7 @@ function initAuth() {
       await subscribeRecords();
       renderStats();
       initKop();
+      startDraftWatcher();
     } else {
       currentUser = null;
       records = [];
@@ -1964,6 +2066,7 @@ const FORM_META = {
   kontak:      { code:'BDF-QAD-001-004', label:'Tahanan Kontak' },
   konstruksi:  { code:'BDF-QAD-001-005', label:'Konstruksi' },
   ujifungsi:   { code:'BDF-QAD-001-006', label:'Uji Fungsi & Kesesuaian' },
+  rtc:         { code:'BDF-MCD-001-002', label:'Incoming RTC' },
 };
 
 function openForm(type) {
@@ -1994,6 +2097,7 @@ function openForm(type) {
     if (!vc) { addVisual(); addVisual(); addVisual(); }
     if (!uc) addUkur();
     document.getElementById('tgl_inspeksi').valueAsDate = new Date();
+    if (!editId) setTimeout(() => restoreDraftIfAny('incoming'), 300);
   } else if (type === 'frekuensi') {
     document.getElementById('fd_tanggal').valueAsDate = new Date();
     if (!fdCount) { addFDRow(); addFDRow(); addFDRow(); addFDRow(); addFDRow(); }
@@ -2012,6 +2116,14 @@ function openForm(type) {
   } else if (type === 'ujifungsi') {
     document.getElementById('uf_tanggal').valueAsDate = new Date();
     buildUFTable();
+  } else if (type === 'rtc') {
+    document.getElementById('rtc_tgl').valueAsDate = new Date();
+    document.getElementById('rtc_tgl_ttd').valueAsDate = new Date();
+    if (!window.rtcBuilt) { buildRTCTable(); window.rtcBuilt = true; }
+  }
+  // Restore draft jika form baru (bukan edit)
+  if (type !== 'incoming' && !editId) {
+    setTimeout(() => restoreDraftIfAny(type), 300);
   }
   window.scrollTo(0, 0);
 }
@@ -2123,7 +2235,165 @@ function collect() {
     status: currentStatus
   };
 }
+
 let _lastSavedIncomingId = null; // track ID record incoming yg terakhir disimpan di sesi ini
+
+// ══════════════════════════════════════════════
+// DRAFT AUTO-SAVE — simpan ke Firestore 'qf_drafts'
+// setiap 3 detik jika ada perubahan, restore saat login
+// ══════════════════════════════════════════════
+let _draftTimer = null;
+let _draftDirty = false;
+let _draftFormType = null;
+
+function draftMarkDirty(formType) {
+  _draftDirty = true;
+  _draftFormType = formType || currentForm;
+}
+
+function startDraftWatcher() {
+  // Listen to all input/change events on form screens
+  document.getElementById('scr-form').addEventListener('input',  () => draftMarkDirty());
+  document.getElementById('scr-form').addEventListener('change', () => draftMarkDirty());
+
+  // Save every 3s if dirty
+  setInterval(async () => {
+    if (!_draftDirty || !currentForm || !currentUser || !window._fb) return;
+    _draftDirty = false;
+    await saveDraft();
+  }, 3000);
+}
+
+async function saveDraft() {
+  if (!window._fb || !currentUser || !currentForm) return;
+  try {
+    const { db, doc, setDoc, serverTimestamp } = window._fb;
+    let data = null;
+    if      (currentForm === 'incoming')   data = collect();
+    else if (currentForm === 'frekuensi')  data = collectFD();
+    else if (currentForm === 'isolasi')    data = collectIR();
+    else if (currentForm === 'kontak')     data = collectTK();
+    else if (currentForm === 'konstruksi') data = collectKS();
+    else if (currentForm === 'roadcard')   data = collectRC();
+    else if (currentForm === 'ujifungsi')  data = collectUF();
+    if (!data) return;
+
+    const draftId = currentUser.uid + '_' + currentForm;
+    const ref = doc(db, 'qf_drafts', draftId);
+    await setDoc(ref, {
+      ...data,
+      _draftForm: currentForm,
+      _draftUser: currentUser.email,
+      _draftTs: serverTimestamp(),
+      _editId: editId || null,
+      _lastSavedIncomingId: _lastSavedIncomingId || null,
+    });
+  } catch(e) {
+    console.warn('Draft save error:', e);
+  }
+}
+
+async function loadDraft(formType) {
+  if (!window._fb || !currentUser) return null;
+  try {
+    const { db, doc, getDoc } = window._fb;
+    const draftId = currentUser.uid + '_' + formType;
+    const snap = await getDoc(doc(db, 'qf_drafts', draftId));
+    if (snap.exists()) return snap.data();
+  } catch(e) {
+    console.warn('Draft load error:', e);
+  }
+  return null;
+}
+
+async function clearDraft(formType) {
+  if (!window._fb || !currentUser) return;
+  try {
+    const { db, doc, deleteDoc } = window._fb;
+    const draftId = currentUser.uid + '_' + (formType || currentForm);
+    await deleteDoc(doc(db, 'qf_drafts', draftId));
+  } catch(e) { /* ignore */ }
+}
+
+async function restoreDraftIfAny(formType) {
+  const draft = await loadDraft(formType);
+  if (!draft) return false;
+
+  // Tanya user apakah mau restore
+  const ts = draft._draftTs?.toDate?.()?.toLocaleString('id-ID') || 'sebelumnya';
+  if (!confirm(`📋 Ditemukan draft tersimpan (\${ts}).\nMau lanjutkan dari draft?`)) {
+    await clearDraft(formType);
+    return false;
+  }
+
+  // Restore berdasarkan formType
+  if (formType === 'incoming') {
+    restoreDraftIncoming(draft);
+  } else {
+    restoreDraftGeneric(formType, draft);
+  }
+
+  editId = draft._editId || null;
+  _lastSavedIncomingId = draft._lastSavedIncomingId || null;
+  toast('📋 Draft dipulihkan!', 'ok');
+  return true;
+}
+
+function restoreDraftIncoming(r) {
+  const setVal = (id, val) => { const el=document.getElementById(id); if(el) el.value=val||''; };
+  setVal('spesifikasi', r.spesifikasi); setVal('kode_material', r.kode_material);
+  setVal('supplier', r.supplier); setVal('no_po', r.no_po);
+  setVal('tgl_inspeksi', r.tgl_inspeksi); setVal('aql', r.aql);
+  setVal('jml_datang', r.jml_datang); setVal('jml_sample', r.jml_sample);
+  setVal('std_sert', r.std_sert); setVal('catatan', r.catatan);
+  setVal('no_ncr', r.no_ncr); setVal('inspector_name', r.inspector);
+  setVal('spv_name', r.spv);
+  setVal('ket_a',r.ket_a); setVal('ket_b',r.ket_b); setVal('ket_c',r.ket_c);
+  setVal('ket_d',r.ket_d); setVal('ket_e',r.ket_e); setVal('ket_f',r.ket_f);
+  setStatus(r.status||'');
+
+  document.getElementById('visual-tbody').innerHTML=''; vc=0;
+  const visuals = (r.visual&&r.visual.length) ? r.visual : [{item:'',ok:'',no:''}];
+  visuals.forEach(v => { addVisual(); setVal('vi'+vc,v.item); setVal('vok'+vc,v.ok); setVal('vno'+vc,v.no); });
+
+  document.getElementById('ukur-tbody').innerHTML=''; uc=0;
+  const meas = (r.measurement&&r.measurement.length) ? r.measurement : [{}];
+  meas.forEach(m => {
+    addUkur();
+    ['a','b','c','d','e','f'].forEach(l => {
+      const el = document.getElementById('u'+l+uc+'_val');
+      if (el) el.value = m[l]||'';
+      const btn = document.getElementById('u'+l+uc+'_btn');
+      if (btn && m[l]) {
+        btn.textContent = m[l];
+        if (m[l]==='OK') { btn.style.background='#dcfce7'; btn.style.color='#15803d'; btn.style.borderColor='#15803d'; }
+        else if (m[l]==='NO') { btn.style.background='#fee2e2'; btn.style.color='#b91c1c'; btn.style.borderColor='#b91c1c'; }
+      }
+    });
+    const hasilEl = document.getElementById('uhasil'+uc);
+    const hasilBtn = document.getElementById('uhasil'+uc+'_btn');
+    if (hasilEl) hasilEl.value = m.hasil||'';
+    if (hasilBtn && m.hasil) {
+      hasilBtn.textContent = m.hasil;
+      if (m.hasil==='OK') { hasilBtn.style.background='#dcfce7'; hasilBtn.style.color='#15803d'; hasilBtn.style.borderColor='#15803d'; }
+      else if (m.hasil==='NO') { hasilBtn.style.background='#fee2e2'; hasilBtn.style.color='#b91c1c'; hasilBtn.style.borderColor='#b91c1c'; }
+    }
+  });
+}
+
+function restoreDraftGeneric(formType, r) {
+  // Untuk form generic — cukup panggil viewRecord logic yang sudah ada
+  // Tapi kita tidak punya record ID, kita inject data langsung
+  const tempId = '__draft__';
+  const rWithId = { ...r, id: tempId };
+  // Simpan sementara lalu panggil viewRecord-like restore
+  const existing = records.find(x=>x.id===tempId);
+  if (!existing) records.unshift(rWithId); else Object.assign(existing, r);
+  viewRecord(tempId);
+  // Bersihkan temp record
+  const idx = records.findIndex(x=>x.id===tempId);
+  if (idx>=0) records.splice(idx,1);
+}
 
 function saveRecord() {
   const data = collect();
@@ -2160,6 +2430,7 @@ function saveRecord() {
       if (savedId) _lastSavedIncomingId = savedId;
       resetBtn('💾 Simpan Record');
       renderStats();
+      clearDraft('incoming');
     })
     .catch(() => {
       clearTimeout(forceTimer);
@@ -2389,6 +2660,7 @@ function saveGenericRecord(type, collectFn, btnEl) {
       if (savedId) _lastSavedGenericId[type] = savedId;
       resetBtn();
       renderStats();
+      clearDraft(type);
     })
     .catch(() => {
       clearTimeout(forceTimer);
@@ -2583,6 +2855,214 @@ function addTKRow() {
     <td style="border:1px solid #e0e0e0;padding:2px;">${inp('tk-ket')}</td>
     <td class="del-col" style="border:1px solid #e0e0e0;"><button class="del-btn" onclick="this.closest('tr').remove()">×</button></td>`;
   document.getElementById('tk-tbody').appendChild(tr);
+}
+
+// ====== INCOMING RTC (BDF-MCD-001-002) ======
+const RTC_DEFAULT_ITEMS = [
+  'MCB 1P 2A','MCB 2P 10A','Thermostat','Pilot lamp','Push button',
+  'Selector switch','Terminal block','Rail Mounting','Rubber LV Cover',
+  'CT block','VT block','Relay P3U30','Fuse disconnector','MV Fuse',
+  'Fuse holder','MCB BOX','Body kubikel',''
+];
+
+function buildRTCTable() {
+  const tbody = document.getElementById('rtc-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  RTC_DEFAULT_ITEMS.forEach((item, i) => {
+    const tr = document.createElement('tr');
+    const inp = (cls, w) => `<input type="text" class="${cls}" style="width:${w||'100%'};border:none;outline:none;padding:3px 4px;font-size:8.5pt;text-align:center;">`;
+    tr.innerHTML = `
+      <td style="border:1px solid #555;padding:3px;text-align:center;font-size:8.5pt;">${i+1}</td>
+      <td style="border:1px solid #555;padding:2px 4px;">
+        <input type="text" class="rtc-item" value="${item}" style="width:100%;border:none;outline:none;padding:3px 4px;font-size:8.5pt;">
+      </td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-qty','100%')}</td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-vgood','100%')}</td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-vng','100%')}</td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-fgood','100%')}</td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-fng','100%')}</td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-aksesoris','100%')}</td>
+      <td style="border:1px solid #555;padding:2px;">${inp('rtc-ket','100%')}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function collectRTC() {
+  const rows = [];
+  document.querySelectorAll('#rtc-tbody tr').forEach((tr, i) => {
+    rows.push({
+      no: i+1,
+      item:      tr.querySelector('.rtc-item')?.value||'',
+      qty:       tr.querySelector('.rtc-qty')?.value||'',
+      vgood:     tr.querySelector('.rtc-vgood')?.value||'',
+      vng:       tr.querySelector('.rtc-vng')?.value||'',
+      fgood:     tr.querySelector('.rtc-fgood')?.value||'',
+      fng:       tr.querySelector('.rtc-fng')?.value||'',
+      aksesoris: tr.querySelector('.rtc-aksesoris')?.value||'',
+      ket:       tr.querySelector('.rtc-ket')?.value||'',
+    });
+  });
+  const vf = id => document.getElementById(id)?.value||'';
+  return {
+    formType: 'rtc',
+    tipe:        vf('rtc_tipe'),
+    noseri:      vf('rtc_noseri'),
+    supplier:    vf('rtc_supplier'),
+    nopo:        vf('rtc_nopo'),
+    jml_datang:  vf('rtc_jml_datang'),
+    tgl:         vf('rtc_tgl'),
+    qc:          vf('rtc_qc'),
+    tgl_ttd:     vf('rtc_tgl_ttd'),
+    catatan:     vf('rtc_catatan'),
+    status:      vf('rtc_status'),
+    rows,
+  };
+}
+
+function setRtcStatus(s) {
+  document.getElementById('rtc_status').value = s;
+  document.getElementById('rtc-btn-diterima').classList.toggle('ok-active', s==='DITERIMA');
+  document.getElementById('rtc-btn-ditolak').classList.toggle('no-active', s==='DITOLAK');
+}
+
+function resetRTC() {
+  _lastSavedGenericId['rtc'] = null; editId = null;
+  ['rtc_tipe','rtc_noseri','rtc_supplier','rtc_nopo','rtc_jml_datang','rtc_qc','rtc_catatan'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('rtc_tgl').valueAsDate = new Date();
+  document.getElementById('rtc_tgl_ttd').valueAsDate = new Date();
+  document.getElementById('rtc_status').value='';
+  document.getElementById('rtc-btn-diterima').classList.remove('ok-active');
+  document.getElementById('rtc-btn-ditolak').classList.remove('no-active');
+  window.rtcBuilt = false;
+  buildRTCTable(); window.rtcBuilt = true;
+  document.querySelectorAll('#form-rtc .big-btn.save').forEach(b=>{b.innerHTML='💾 Simpan Record';b.disabled=false;});
+}
+
+function printRTC() {
+  const r = collectRTC();
+  const area = document.getElementById('print-area');
+  area.innerHTML = buildPrintRTC(r);
+  area.style.display = 'block';
+  let styleTag = document.getElementById('rtc-print-style');
+  if (!styleTag) { styleTag = document.createElement('style'); styleTag.id='rtc-print-style'; document.head.appendChild(styleTag); }
+  styleTag.textContent = `@media print { @page { size:A4 landscape !important; margin:8mm 10mm !important; } }`;
+  window.print();
+  setTimeout(()=>{ area.style.display='none'; area.innerHTML=''; styleTag.textContent=''; },1000);
+}
+
+function buildPrintRTC(r) {
+  const LBL = 'border:1px solid #111;padding:3px 6px;font-size:7.5pt;font-weight:700;background:#cce0f5;color:#0f2744;white-space:nowrap;vertical-align:middle;';
+  const VAL = 'border:1px solid #111;padding:3px 6px;font-size:7.5pt;background:#fff;color:#111;vertical-align:middle;';
+  const HDR = 'border:1px solid #111;padding:3px 5px;font-size:7.5pt;font-weight:700;background:#d6e6f7;color:#0c1f3a;text-align:center;vertical-align:middle;';
+  const C   = 'border:1px solid #111;padding:3px 5px;font-size:7.5pt;text-align:center;vertical-align:middle;';
+  const stD = r.status==='DITERIMA' ? 'font-weight:900;' : 'text-decoration:line-through;color:#aaa;';
+  const stT = r.status==='DITOLAK'  ? 'font-weight:900;' : 'text-decoration:line-through;color:#aaa;';
+
+  const rows = Array.from({length: Math.max(18, (r.rows||[]).length)}).map((_,i)=>{
+    const d = (r.rows||[])[i]||{};
+    return `<tr>
+      <td style="${C}height:18px;">${i+1}</td>
+      <td style="border:1px solid #111;padding:3px 6px;font-size:7.5pt;text-align:center;">${d.item||''}</td>
+      <td style="${C}">${d.qty||''}</td>
+      <td style="${C}">${d.vgood||''}</td>
+      <td style="${C}">${d.vng||''}</td>
+      <td style="${C}">${d.fgood||''}</td>
+      <td style="${C}">${d.fng||''}</td>
+      <td style="${C}">${d.aksesoris||''}</td>
+      <td style="border:1px solid #111;padding:3px 6px;font-size:7.5pt;">${d.ket||''}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:7.5pt;color:#111;width:100%;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <div style="font-size:15pt;font-weight:900;">QUALITY FORM / FORMULIR MUTU</div>
+      <img src="${LOGO_SRC}" style="height:44px;width:auto;" alt="bd">
+    </div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:4px;">
+      <tr>
+        <td colspan="4" style="${LBL}font-size:9.5pt;font-weight:700;padding:4px 8px;">Incoming RTC</td>
+        <td style="${LBL}">Form no.</td>
+        <td colspan="3" style="${LBL}font-size:9.5pt;font-weight:900;text-align:center;">BDF-MCD-001-002</td>
+      </tr>
+      <tr>
+        <td rowspan="2" style="${LBL}">Purpose</td>
+        <td rowspan="2" colspan="3" style="${VAL}font-size:7pt;">Pengecekan incoming material kubikel RTC</td>
+        <td style="${LBL}">Issue Date</td>
+        <td colspan="2" style="${VAL}text-align:center;">2025-03-01</td>
+        <td style="${VAL}text-align:right;font-size:6.5pt;color:#555;white-space:nowrap;">Page no. 1 of 1</td>
+      </tr>
+      <tr>
+        <td style="${LBL}">Version no.</td>
+        <td style="${VAL}text-align:center;">00</td>
+        <td style="${LBL}text-align:center;">Revision no.</td>
+        <td style="${VAL}text-align:center;">00</td>
+      </tr>
+      <tr>
+        <td style="${LBL}">Tipe kubikel</td>
+        <td colspan="3" style="${VAL}">${r.tipe||''}</td>
+        <td style="${LBL}">Supplier</td>
+        <td colspan="3" style="${VAL}">${r.supplier||''}</td>
+      </tr>
+      <tr>
+        <td style="${LBL}">Nomer seri</td>
+        <td colspan="3" style="${VAL}">${r.noseri||''}</td>
+        <td style="${LBL}">Nomer PO</td>
+        <td style="${VAL}">${r.nopo||''}</td>
+        <td style="${LBL}">Jumlah datang</td>
+        <td style="${VAL}">${r.jml_datang||''}</td>
+      </tr>
+    </table>
+
+    <table style="width:100%;border-collapse:collapse;">
+      <thead>
+        <tr>
+          <th rowspan="3" style="${HDR}width:28px;">No.</th>
+          <th rowspan="3" style="${HDR}">Check list</th>
+          <th rowspan="3" style="${HDR}width:40px;">QTY</th>
+          <th colspan="4" style="${HDR}">Item check</th>
+          <th rowspan="3" style="${HDR}width:70px;">Aksesoris</th>
+          <th rowspan="3" style="${HDR}">Keterangan</th>
+        </tr>
+        <tr>
+          <th colspan="2" style="${HDR}">Visual</th>
+          <th colspan="2" style="${HDR}">Fungsi</th>
+        </tr>
+        <tr>
+          <th style="${HDR}width:40px;">Good</th>
+          <th style="${HDR}width:40px;">NG</th>
+          <th style="${HDR}width:40px;">Good</th>
+          <th style="${HDR}width:40px;">NG</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>
+
+    <table style="width:100%;border-collapse:collapse;margin-top:0;border-top:0;">
+      <tr>
+        <td style="border:1px solid #111;padding:5px 8px;width:28%;vertical-align:top;">
+          <div style="font-weight:700;margin-bottom:4px;">Status Lot:</div>
+          <div style="padding:4px 0;text-align:center;border:1px solid #111;background:#f0f6ff;">
+            <span style="${stD}font-size:8pt;">DITERIMA</span>
+            <span style="margin:0 4px;color:#888;">/</span>
+            <span style="${stT}font-size:8pt;">DITOLAK</span>
+          </div>
+          <div style="font-size:6.5pt;color:#888;text-align:center;">(coret yang tidak perlu)</div>
+        </td>
+        <td style="border:1px solid #111;padding:5px 8px;width:18%;">
+          <b>QC:</b> ${r.qc||''}
+        </td>
+        <td style="border:1px solid #111;padding:5px 8px;width:20%;">
+          <b>Tanggal:</b> ${r.tgl_ttd||''}
+        </td>
+        <td style="border:1px solid #111;padding:5px 8px;vertical-align:top;">
+          <b>Catatan:</b><br>${r.catatan||''}
+        </td>
+      </tr>
+    </table>
+  </div>`;
 }
 
 // ====== ROAD CARD TABLE ======
@@ -2934,7 +3414,7 @@ function renderRecords() {
       // roadcard, konstruksi — operator di root
       formOp = r.operator || '';
     }
-    let ident = r.spesifikasi||r.noseri||r.jo||r.type||'—';
+    let ident = r.formType==='rtc' ? (r.tipe||r.noseri||'—') : r.spesifikasi||r.noseri||r.jo||r.type||'—';
     const badge = r.status==='DITERIMA'?'s-ok':r.status==='DITOLAK'?'s-no':'s-pend';
     return `<tr onclick="viewRecord('${r.id}')">
       <td>
@@ -3249,6 +3729,27 @@ function viewRecord(id) {
     showTab('form'); window.scrollTo(0,0);
     toast('✏️ Data dimuat — siap diedit', 'ok');
 
+  } else if (r.formType === 'rtc') {
+    openForm('rtc');
+    editId = id;
+    const sv = (elId, val) => { const el=document.getElementById(elId); if(el) el.value=val||''; };
+    sv('rtc_tipe', r.tipe); sv('rtc_noseri', r.noseri); sv('rtc_supplier', r.supplier);
+    sv('rtc_nopo', r.nopo); sv('rtc_jml_datang', r.jml_datang); sv('rtc_tgl', r.tgl);
+    sv('rtc_qc', r.qc); sv('rtc_tgl_ttd', r.tgl_ttd); sv('rtc_catatan', r.catatan);
+    setRtcStatus(r.status||'');
+    // Restore rows
+    const tbody = document.getElementById('rtc-tbody');
+    if (tbody && r.rows) {
+      tbody.querySelectorAll('tr').forEach((tr, i) => {
+        const d = r.rows[i]||{};
+        const set = (cls, val) => { const el=tr.querySelector('.'+cls); if(el) el.value=val||''; };
+        set('rtc-item', d.item); set('rtc-qty', d.qty);
+        set('rtc-vgood', d.vgood); set('rtc-vng', d.vng);
+        set('rtc-fgood', d.fgood); set('rtc-fng', d.fng);
+        set('rtc-aksesoris', d.aksesoris); set('rtc-ket', d.ket);
+      });
+    }
+    showTab('form');
   } else {
     toast('ℹ️ Form tidak dikenal: ' + r.formType, '');
   }
