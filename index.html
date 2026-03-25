@@ -1402,6 +1402,7 @@ input[type="date"].ks-tgl {
               <th colspan="4" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;">Item check</th>
               <th rowspan="3" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;width:70px;">Aksesoris</th>
               <th rowspan="3" style="background:#dde8f4;border:1px solid #555;padding:4px;text-align:center;width:100px;">Keterangan</th>
+              <th rowspan="3" style="background:#f0f4f8;border:1px solid #555;padding:4px;text-align:center;width:28px;"></th>
             </tr>
             <tr>
               <th colspan="2" style="background:#dde8f4;border:1px solid #555;padding:3px;text-align:center;font-size:8pt;">Visual</th>
@@ -1416,6 +1417,7 @@ input[type="date"].ks-tgl {
           </thead>
           <tbody id="rtc-tbody"></tbody>
         </table>
+        <button class="add-row-btn" onclick="addRTCRow()" style="margin:8px 0;">＋ Tambah Baris Item</button>
 
         <!-- Footer -->
         <table style="width:100%;border-collapse:collapse;font-family:Arial,sans-serif;font-size:8.5pt;margin-top:0;border-top:0;">
@@ -2876,6 +2878,12 @@ function buildRTCTable() {
   const tbody = document.getElementById('rtc-tbody');
   if (!tbody) return;
   tbody.innerHTML = '';
+  RTC_DEFAULT_ITEMS.forEach((item, i) => {
+    tbody.appendChild(_makeRTCRow(item, i + 1));
+  });
+}
+
+function _makeRTCRow(item, no) {
   const btnCell = (cls) => `
     <td style="border:1px solid #555;padding:2px;text-align:center;">
       <input type="hidden" class="${cls}" value="">
@@ -2885,21 +2893,41 @@ function buildRTCTable() {
                cursor:pointer;font-family:Inter,sans-serif;transition:all .14s;">—</button>
     </td>`;
   const inp = (cls) => `<input type="text" class="${cls}" style="width:100%;border:none;outline:none;padding:3px 4px;font-size:8.5pt;">`;
-  RTC_DEFAULT_ITEMS.forEach((item, i) => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td style="border:1px solid #555;padding:3px;text-align:center;font-size:8.5pt;">${i+1}</td>
-      <td style="border:1px solid #555;padding:2px 4px;">
-        <input type="text" class="rtc-item" value="${item}" style="width:100%;border:none;outline:none;padding:3px 4px;font-size:8.5pt;">
-      </td>
-      <td style="border:1px solid #555;padding:2px;text-align:center;">${inp('rtc-qty')}</td>
-      ${btnCell('rtc-vgood')}
-      ${btnCell('rtc-vng')}
-      ${btnCell('rtc-fgood')}
-      ${btnCell('rtc-fng')}
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-aksesoris')}</td>
-      <td style="border:1px solid #555;padding:2px;">${inp('rtc-ket')}</td>`;
-    tbody.appendChild(tr);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td class="rtc-no" style="border:1px solid #555;padding:3px;text-align:center;font-size:8.5pt;">${no}</td>
+    <td style="border:1px solid #555;padding:2px 4px;">
+      <input type="text" class="rtc-item" value="${item||''}" style="width:100%;border:none;outline:none;padding:3px 4px;font-size:8.5pt;">
+    </td>
+    <td style="border:1px solid #555;padding:2px;text-align:center;">${inp('rtc-qty')}</td>
+    ${btnCell('rtc-vgood')}
+    ${btnCell('rtc-vng')}
+    ${btnCell('rtc-fgood')}
+    ${btnCell('rtc-fng')}
+    <td style="border:1px solid #555;padding:2px;">${inp('rtc-aksesoris')}</td>
+    <td style="border:1px solid #555;padding:2px;">${inp('rtc-ket')}</td>
+    <td style="border:1px solid #555;padding:2px;text-align:center;">
+      <button type="button" class="del-btn" onclick="delRTCRow(this)" title="Hapus baris">×</button>
+    </td>`;
+  return tr;
+}
+
+function addRTCRow() {
+  const tbody = document.getElementById('rtc-tbody');
+  if (!tbody) return;
+  const no = tbody.querySelectorAll('tr').length + 1;
+  tbody.appendChild(_makeRTCRow('', no));
+}
+
+function delRTCRow(btn) {
+  const tr = btn.closest('tr');
+  if (!tr) return;
+  tr.remove();
+  // Renumber
+  const tbody = document.getElementById('rtc-tbody');
+  tbody.querySelectorAll('tr').forEach((row, i) => {
+    const noCell = row.querySelector('.rtc-no');
+    if (noCell) noCell.textContent = i + 1;
   });
 }
 
@@ -2976,7 +3004,7 @@ function buildPrintRTC(r) {
   const stD = r.status==='DITERIMA' ? 'font-weight:900;' : 'text-decoration:line-through;color:#aaa;';
   const stT = r.status==='DITOLAK'  ? 'font-weight:900;' : 'text-decoration:line-through;color:#aaa;';
 
-  const rows = Array.from({length: Math.max(18, (r.rows||[]).length)}).map((_,i)=>{
+  const rows = Array.from({length: (r.rows||[]).length || 1}).map((_,i)=>{
     const d = (r.rows||[])[i]||{};
     return `<tr>
       <td style="${C}height:18px;">${i+1}</td>
