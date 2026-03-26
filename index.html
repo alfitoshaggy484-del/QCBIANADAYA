@@ -3010,10 +3010,10 @@ function buildPrintRTC(r) {
       <td style="${C}height:18px;">${i+1}</td>
       <td style="border:1px solid #111;padding:3px 6px;font-size:7.5pt;text-align:center;">${d.item||''}</td>
       <td style="${C}">${d.qty||''}</td>
-      <td style="${C}color:#15803d;font-size:11pt;font-weight:700;">${d.vgood==='OK'?'✓':''}</td>
-      <td style="${C}color:#b91c1c;font-size:11pt;font-weight:700;">${d.vng==='NO'?'✗':''}</td>
-      <td style="${C}color:#15803d;font-size:11pt;font-weight:700;">${d.fgood==='OK'?'✓':''}</td>
-      <td style="${C}color:#b91c1c;font-size:11pt;font-weight:700;">${d.fng==='NO'?'✗':''}</td>
+      <td style="${C}color:#15803d;font-size:11pt;font-weight:700;">${(d.vgood==='OK'||d.vgood==='NO')?'✓':''}</td>
+      <td style="${C}color:#b91c1c;font-size:11pt;font-weight:700;">${(d.vng==='OK'||d.vng==='NO')?'✓':''}</td>
+      <td style="${C}color:#15803d;font-size:11pt;font-weight:700;">${(d.fgood==='OK'||d.fgood==='NO')?'✓':''}</td>
+      <td style="${C}color:#b91c1c;font-size:11pt;font-weight:700;">${(d.fng==='OK'||d.fng==='NO')?'✓':''}</td>
       <td style="${C}">${d.aksesoris||''}</td>
       <td style="border:1px solid #111;padding:3px 6px;font-size:7.5pt;">${d.ket||''}</td>
     </tr>`;
