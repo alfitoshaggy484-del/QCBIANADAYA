@@ -1466,7 +1466,7 @@ input[type="date"].ks-tgl {
     <div class="stat-card orange"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="st-month">0</div><div class="stat-sub">record bulan ini</div></div>
   </div>
   <div class="card">
-    <div class="card-header">📋 Semua Record <span style="font-size:11px;font-weight:400;opacity:0.7;margin-left:8px;">— data bersama, terbarui otomatis setiap 10 detik</span></div>
+    <div class="card-header">📋 Semua Record <span style="font-size:11px;font-weight:400;opacity:0.7;margin-left:8px;" id="rec-header-info">— semua akun, terbarui otomatis</span></div>
     <div class="card-body">
       <div class="rec-toolbar">
         <input class="search-input" type="text" id="search-q" placeholder="🔍 Cari..." oninput="renderRecords()">
@@ -1855,13 +1855,18 @@ function initAuth() {
   });
 }
 
-// ── Real-time listener ke Firestore ──
+// ── Real-time listener ke Firestore — ambil SEMUA record tanpa filter ──
 function subscribeRecords() {
   return new Promise((resolve) => {
     const { db, collection, onSnapshot } = window._fb;
     setSyncStatus('loading', '⏳ Memuat data...');
-    unsubscribeRecords = onSnapshot(collection(db, 'qf_records'),
+
+    // Ambil SEMUA dokumen dari semua user — tanpa where/filter
+    const colRef = collection(db, 'qf_records');
+
+    unsubscribeRecords = onSnapshot(colRef,
       (snap) => {
+        console.log('[QF] Total docs dari Firestore:', snap.docs.length, '| User:', currentUser?.email);
         records = snap.docs.map(d => ({ ...d.data(), id: d.id }));
         records.sort((a, b) => {
           const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds*1000 : 0);
@@ -1874,9 +1879,13 @@ function subscribeRecords() {
         resolve();
       },
       (err) => {
-        console.error('Firestore error:', err);
+        console.error('[QF] Firestore error:', err.code, err.message);
         setSyncStatus('error', '✗ ' + err.message);
-        toast('⚠️ Gagal memuat data: ' + err.message, 'err');
+        if (err.code === 'permission-denied') {
+          toast('⚠️ Akses ditolak — update Firestore Rules di Firebase Console', 'err');
+        } else {
+          toast('⚠️ Gagal memuat data: ' + err.message, 'err');
+        }
         resolve();
       }
     );
@@ -3439,6 +3448,12 @@ function renderRecords() {
     const ms = !st || r.status===st;
     return mq && mft && ms;
   });
+  // Update header info
+  const uniqueUsers = [...new Set(records.map(r=>r._createdBy||r._updatedBy).filter(Boolean))];
+  const hdrInfo = document.getElementById('rec-header-info');
+  if (hdrInfo) {
+    hdrInfo.textContent = `— ${records.length} record dari ${uniqueUsers.length} akun`;
+  }
   const tbody = document.getElementById('rec-tbody');
   const empty = document.getElementById('rec-empty');
   if (!filtered.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
@@ -5062,12 +5077,17 @@ function toast(msg, type) {
       <pre style="background:#0f172a;color:#e2e8f0;padding:14px;border-radius:8px;overflow-x:auto;font-size:12px;">rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Semua user login bisa baca & tulis SEMUA record (shared)
     match /qf_records/{doc} {
+      allow read, write: if request.auth != null;
+    }
+    // Draft per-user
+    match /qf_drafts/{doc} {
       allow read, write: if request.auth != null;
     }
   }
 }</pre>
-      <p style="color:#64748b;font-size:13px;margin-top:8px;">Artinya: hanya pengguna yang sudah login yang bisa baca/tulis data.</p>
+      <p style="color:#64748b;font-size:13px;margin-top:8px;">Artinya: semua karyawan yang sudah login bisa melihat dan mengakses seluruh record dari semua akun.</p>
     </div>
 
     <div style="background:#dcfce7;border:1.5px solid #16a34a;border-radius:12px;padding:16px 20px;">
