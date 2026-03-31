@@ -11,7 +11,8 @@
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, updateProfile }
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, updateProfile,
+           browserLocalPersistence, setPersistence }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -33,6 +34,9 @@
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db   = getFirestore(app);
+
+  // Aktifkan persistensi sesi login — user tetap login meski browser ditutup/refresh
+  await setPersistence(auth, browserLocalPersistence);
 
   // Expose ke global scope
   window._fb = { auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged,
@@ -1838,6 +1842,8 @@ function initAuth() {
       renderStats();
       initKop();
       startDraftWatcher();
+      // Pastikan tampilan kembali ke home
+      showHome();
     } else {
       currentUser = null;
       records = [];
@@ -2260,7 +2266,11 @@ function draftMarkDirty(formType) {
   _draftFormType = formType || currentForm;
 }
 
+let _draftWatcherStarted = false;
+
 function startDraftWatcher() {
+  if (_draftWatcherStarted) return; // jangan duplikat listener
+  _draftWatcherStarted = true;
   // Listen to all input/change events on form screens
   document.getElementById('scr-form').addEventListener('input',  () => draftMarkDirty());
   document.getElementById('scr-form').addEventListener('change', () => draftMarkDirty());
