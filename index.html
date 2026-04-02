@@ -35,7 +35,7 @@
   const auth = getAuth(app);
   const db   = getFirestore(app);
 
-  // Aktifkan persistensi sesi login — user tetap login meski browser ditutup/refresh
+  // Sesi login tetap aktif meski browser ditutup/refresh
   await setPersistence(auth, browserLocalPersistence);
 
   // Expose ke global scope
@@ -731,7 +731,6 @@ input[type="date"].ks-tgl {
   <button class="nav-btn outline" id="nav-home-btn" onclick="showHome()" style="display:none;">🏠 Menu</button>
   <button class="nav-btn outline" id="nav-records-btn" onclick="showTab('records')" style="display:none;">📋 Riwayat</button>
   <button class="nav-btn primary" id="nav-new-btn" onclick="showHome()" style="display:none;">➕ Form Baru</button>
-  <div id="diag-banner" style="display:none;background:#fef3c7;color:#92400e;font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:6px;cursor:pointer;border:1px solid #fcd34d;" onclick="showDiagModal()">⚠️ Klik: Cek Sinkronisasi</div>
   <div id="sync-indicator">
     <div id="sync-dot"></div>
     <span id="sync-label">Menghubungkan...</span>
@@ -1467,7 +1466,7 @@ input[type="date"].ks-tgl {
     <div class="stat-card orange"><div class="stat-label">Bulan Ini</div><div class="stat-val" id="st-month">0</div><div class="stat-sub">record bulan ini</div></div>
   </div>
   <div class="card">
-    <div class="card-header">📋 Semua Record <span style="font-size:11px;font-weight:400;opacity:0.7;margin-left:8px;" id="rec-header-info">— semua akun, terbarui otomatis</span></div>
+    <div class="card-header">📋 Semua Record <span style="font-size:11px;font-weight:400;opacity:0.7;margin-left:8px;">— data bersama, terbarui otomatis setiap 10 detik</span></div>
     <div class="card-body">
       <div class="rec-toolbar">
         <input class="search-input" type="text" id="search-q" placeholder="🔍 Cari..." oninput="renderRecords()">
@@ -1649,163 +1648,6 @@ function openPrintEmailWindow(rList, isAll) {
 <div class="paper">
 ${pages}
 </div>
-<!-- ═══ RULES OVERLAY ═══ -->
-<div id="rules-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(15,39,68,.95);align-items:flex-start;justify-content:center;overflow-y:auto;font-family:Inter,sans-serif;padding:20px 0;">
-  <div style="background:#fff;border-radius:20px;width:100%;max-width:580px;margin:auto;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.5);">
-    <div style="background:#b91c1c;padding:20px 28px;color:#fff;">
-      <div style="font-size:18px;font-weight:800;margin-bottom:4px;">⚠️ Perlu Update Firebase Rules</div>
-      <div style="font-size:13px;opacity:.85;">Data antar akun tidak tersinkron karena Firestore Rules belum diatur</div>
-    </div>
-    <div style="padding:24px 28px;">
-
-      <div style="font-size:13px;font-weight:700;color:#0f2744;margin-bottom:12px;">Ikuti 4 langkah berikut:</div>
-
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
-        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#f8fafc;border-radius:10px;border:1.5px solid #e2e8f0;">
-          <div style="min-width:28px;height:28px;background:#1b6fc8;border-radius:50%;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">1</div>
-          <div>
-            <div style="font-weight:700;font-size:13px;color:#0f2744;margin-bottom:3px;">Buka Firebase Console</div>
-            <a href="https://console.firebase.google.com/project/quality-form-d08f6/firestore/rules" target="_blank" style="color:#1b6fc8;font-size:12px;word-break:break-all;">console.firebase.google.com → project quality-form-d08f6 → Firestore → Rules</a>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#f8fafc;border-radius:10px;border:1.5px solid #e2e8f0;">
-          <div style="min-width:28px;height:28px;background:#1b6fc8;border-radius:50%;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">2</div>
-          <div>
-            <div style="font-weight:700;font-size:13px;color:#0f2744;margin-bottom:3px;">Salin rules ini</div>
-            <div style="font-size:12px;color:#64748b;">Klik tombol "Salin Rules" di bawah</div>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#f8fafc;border-radius:10px;border:1.5px solid #e2e8f0;">
-          <div style="min-width:28px;height:28px;background:#1b6fc8;border-radius:50%;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">3</div>
-          <div>
-            <div style="font-weight:700;font-size:13px;color:#0f2744;margin-bottom:3px;">Hapus semua isi Rules yang ada → Paste → klik <span style="background:#1b6fc8;color:#fff;padding:1px 8px;border-radius:4px;">Publish</span></div>
-            <div style="font-size:12px;color:#64748b;">Pastikan klik Publish sampai ada notifikasi "Rules published"</div>
-          </div>
-        </div>
-
-        <div style="display:flex;gap:12px;align-items:flex-start;padding:12px;background:#f8fafc;border-radius:10px;border:1.5px solid #e2e8f0;">
-          <div style="min-width:28px;height:28px;background:#15803d;border-radius:50%;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;">4</div>
-          <div>
-            <div style="font-weight:700;font-size:13px;color:#0f2744;margin-bottom:3px;">Kembali ke sini → klik "Sudah Publish"</div>
-          </div>
-        </div>
-      </div>
-
-      <pre id="overlay-rules" style="background:#0f172a;color:#4ade80;padding:16px;border-radius:10px;font-size:12px;line-height:1.9;margin:0 0 16px;overflow-x:auto;white-space:pre;">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}</pre>
-
-      <div style="display:flex;gap:10px;margin-bottom:10px;">
-        <button onclick="copyOverlayRules()" style="flex:1;padding:13px;background:#0f2744;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;" id="copy-overlay-btn">📋 Salin Rules</button>
-        <a href="https://console.firebase.google.com/project/quality-form-d08f6/firestore/rules" target="_blank" style="flex:1;padding:13px;background:#1b6fc8;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">🔗 Buka Firebase Console</a>
-      </div>
-      <button onclick="document.getElementById('rules-overlay').style.display='none';location.reload();" style="width:100%;padding:12px;background:#15803d;color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:700;cursor:pointer;">✅ Sudah Publish — Refresh Sekarang</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ DIAGNOSTIC MODAL ═══ -->
-<div id="diag-modal" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);align-items:center;justify-content:center;">
-  <div style="background:#fff;border-radius:16px;width:100%;max-width:500px;margin:20px;padding:28px;font-family:Inter,sans-serif;box-shadow:0 24px 80px rgba(0,0,0,.4);">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
-      <div style="font-size:17px;font-weight:800;color:#0f2744;">🔍 Diagnostik Sinkronisasi</div>
-      <button onclick="document.getElementById('diag-modal').style.display='none'" style="background:transparent;border:none;font-size:20px;cursor:pointer;color:#666;">✕</button>
-    </div>
-    <div id="diag-content" style="font-size:13px;color:#334155;line-height:1.8;"></div>
-    <div style="margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;">
-      <div style="font-size:12px;font-weight:700;color:#64748b;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Rules Firestore yang HARUS dipakai:</div>
-      <pre id="diag-rules" style="background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;font-size:11px;overflow-x:auto;white-space:pre;margin:0;">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if request.auth != null;
-    }
-  }
-}</pre>
-      <button onclick="navigator.clipboard.writeText(document.getElementById('diag-rules').textContent).then(()=>toast('Rules disalin!','ok'))" style="margin-top:8px;padding:6px 14px;background:#0f2744;color:#fff;border:none;border-radius:7px;cursor:pointer;font-size:12px;font-weight:600;">Salin Rules</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ══ AUTO TEST FIRESTORE ══
-async function autoTestFirestore() {
-  if (!window._fb || !currentUser) return;
-  try {
-    const { db, collection, getDocs } = window._fb;
-    const snap = await getDocs(collection(db, 'qf_records'));
-    if (snap.size === 0) {
-      // Mungkin memang kosong - tidak perlu alert
-    } else if (snap.size !== records.length) {
-      // Ada dokumen tapi tidak semua terbaca via onSnapshot
-      toast('⚠️ Klik "Cek Sinkronisasi" untuk info lebih lanjut', 'err');
-    }
-  } catch(e) {
-    // Rules error - tampilkan overlay
-    if (e.code === 'permission-denied' || e.message?.includes('permission')) {
-      showRulesOverlay();
-    }
-  }
-}
-
-// ══ RULES OVERLAY — muncul otomatis jika rules salah ══
-function showRulesOverlay() {
-  document.getElementById('rules-overlay').style.display = 'flex';
-}
-function copyOverlayRules() {
-  const text = document.getElementById('overlay-rules').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById('copy-overlay-btn');
-    btn.textContent = '✅ Tersalin!';
-    setTimeout(() => btn.textContent = '📋 Salin Rules', 2000);
-  });
-}
-
-async function showDiagModal() {
-  const modal = document.getElementById('diag-modal');
-  const content = document.getElementById('diag-content');
-  modal.style.display = 'flex';
-  content.innerHTML = '<div style="color:#64748b;">⏳ Mengambil data diagnostik...</div>';
-
-  const lines = [];
-  lines.push(`<b>User login:</b> ${currentUser?.email || '—'}`);
-  lines.push(`<b>Total record di memori:</b> ${records.length}`);
-
-  // Try to fetch directly from Firestore to test
-  try {
-    const { db, collection, getDocs } = window._fb;
-    const snap = await getDocs(collection(db, 'qf_records'));
-    lines.push(`<b>Total dokumen di Firestore:</b> <span style="color:#15803d;font-weight:700;">${snap.size}</span>`);
-
-    const users = [...new Set(snap.docs.map(d => d.data()._createdBy || d.data()._updatedBy).filter(Boolean))];
-    lines.push(`<b>Akun yang punya data:</b> ${users.length > 0 ? users.map(u=>'<code style="background:#e0eeff;padding:1px 6px;border-radius:3px;">'+u+'</code>').join(', ') : '—'}`);
-
-    if (snap.size === 0) {
-      lines.push('<div style="margin-top:8px;padding:10px;background:#fef3c7;border-radius:8px;color:#92400e;">⚠️ Tidak ada dokumen — database kosong atau Rules memblokir.</div>');
-    } else if (snap.size === records.length && snap.size > 0) {
-      lines.push('<div style="margin-top:8px;padding:10px;background:#dcfce7;border-radius:8px;color:#15803d;">✅ Sinkronisasi OK — semua dokumen terbaca.</div>');
-    } else {
-      lines.push('<div style="margin-top:8px;padding:10px;background:#fee2e2;border-radius:8px;color:#b91c1c;">❌ Ada perbedaan jumlah — kemungkinan Rules memblokir sebagian dokumen.</div>');
-    }
-  } catch(e) {
-    lines.push(`<div style="margin-top:8px;padding:10px;background:#fee2e2;border-radius:8px;color:#b91c1c;">❌ Error: <b>${e.code || e.message}</b><br>Ini berarti Firestore Rules memblokir akses. Update Rules di Firebase Console.</div>`);
-  }
-
-  content.innerHTML = lines.join('<br>');
-}
-
-// Tampilkan diag-banner setelah login
-function showDiagBanner() {
-  document.getElementById('diag-banner').style.display = 'flex';
-}
-</script>
 </body>
 </html>`;
 
@@ -2000,11 +1842,7 @@ function initAuth() {
       renderStats();
       initKop();
       startDraftWatcher();
-      // Pastikan tampilan kembali ke home
       showHome();
-      showDiagBanner();
-      // Auto test Firestore access
-      setTimeout(autoTestFirestore, 1500);
     } else {
       currentUser = null;
       records = [];
@@ -2016,41 +1854,31 @@ function initAuth() {
   });
 }
 
-// ── Real-time listener ke Firestore — ambil SEMUA record semua akun ──
+// ── Real-time listener ke Firestore ──
 function subscribeRecords() {
   return new Promise((resolve) => {
     const { db, collection, onSnapshot } = window._fb;
     setSyncStatus('loading', '⏳ Memuat data...');
-
-    try {
-      unsubscribeRecords = onSnapshot(
-        collection(db, 'qf_records'),
-        { includeMetadataChanges: false },
-        (snap) => {
-          records = [];
-          snap.forEach(d => records.push({ ...d.data(), id: d.id }));
-          records.sort((a, b) => {
-            const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds*1000 : 0);
-            const tb = b._updatedMs || b._createdMs || (b._created?.seconds ? b._created.seconds*1000 : 0);
-            return tb - ta;
-          });
-          setSyncStatus('live');
-          renderStats();
-          renderRecords();
-          resolve();
-        },
-        (err) => {
-          console.error('[QF] Firestore onSnapshot error:', err.code, err.message);
-          setSyncStatus('error', '✗ Rules');
-          showRulesOverlay();
-          resolve();
-        }
-      );
-    } catch(e) {
-      setSyncStatus('error', '✗ Error');
-      showRulesOverlay();
-      resolve();
-    }
+    unsubscribeRecords = onSnapshot(collection(db, 'qf_records'),
+      (snap) => {
+        records = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        records.sort((a, b) => {
+          const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds*1000 : 0);
+          const tb = b._updatedMs || b._createdMs || (b._created?.seconds ? b._created.seconds*1000 : 0);
+          return tb - ta;
+        });
+        setSyncStatus('live');
+        renderStats();
+        renderRecords();
+        resolve();
+      },
+      (err) => {
+        console.error('Firestore error:', err);
+        setSyncStatus('error', '✗ ' + err.message);
+        toast('⚠️ Gagal memuat data: ' + err.message, 'err');
+        resolve();
+      }
+    );
   });
 }
 
@@ -2438,15 +2266,11 @@ function draftMarkDirty(formType) {
 }
 
 let _draftWatcherStarted = false;
-
 function startDraftWatcher() {
-  if (_draftWatcherStarted) return; // jangan duplikat listener
+  if (_draftWatcherStarted) return;
   _draftWatcherStarted = true;
-  // Listen to all input/change events on form screens
   document.getElementById('scr-form').addEventListener('input',  () => draftMarkDirty());
   document.getElementById('scr-form').addEventListener('change', () => draftMarkDirty());
-
-  // Save every 3s if dirty
   setInterval(async () => {
     if (!_draftDirty || !currentForm || !currentUser || !window._fb) return;
     _draftDirty = false;
@@ -3610,12 +3434,6 @@ function renderRecords() {
     const ms = !st || r.status===st;
     return mq && mft && ms;
   });
-  // Update header info
-  const uniqueUsers = [...new Set(records.map(r=>r._createdBy||r._updatedBy).filter(Boolean))];
-  const hdrInfo = document.getElementById('rec-header-info');
-  if (hdrInfo) {
-    hdrInfo.textContent = `— ${records.length} record dari ${uniqueUsers.length} akun`;
-  }
   const tbody = document.getElementById('rec-tbody');
   const empty = document.getElementById('rec-empty');
   if (!filtered.length) { tbody.innerHTML=''; empty.style.display='block'; return; }
@@ -5244,7 +5062,7 @@ service cloud.firestore {
     }
   }
 }</pre>
-      <p style="color:#64748b;font-size:13px;margin-top:8px;">⚠️ <b>Penting:</b> Gunakan rules ini agar semua akun bisa melihat data bersama. Wildcard <code>/{document=**}</code> mengizinkan akses ke semua collection sekaligus.</p>
+      <p style="color:#64748b;font-size:13px;margin-top:8px;">Rules ini mengizinkan semua akun yang login untuk melihat dan menyimpan data bersama (sinkron antar akun).</p>
     </div>
 
     <div style="background:#dcfce7;border:1.5px solid #16a34a;border-radius:12px;padding:16px 20px;">
