@@ -726,7 +726,7 @@ input[type="date"].ks-tgl {
 
 <!-- NAV -->
 <div class="app-nav">
-  <div class="brand">Quality<span>Form</span> <span style="font-size:12px;font-weight:400;opacity:0.6;" id="nav-subtitle">— BDF QAD</span></div>
+  <div class="brand">Quality<span>Form</span> <span style="font-size:12px;font-weight:400;opacity:0.6;" id="nav-subtitle">— BDF QAD</span><span style="font-size:10px;font-weight:400;opacity:0.4;margin-left:6px;" id="nav-project">quality-form-d08f6</span></div>
   <button class="nav-btn success" onclick="sendEmailAll()" id="nav-email-btn" style="display:none;">📧 Kirim ke Email</button>
   <button class="nav-btn outline" id="nav-home-btn" onclick="showHome()" style="display:none;">🏠 Menu</button>
   <button class="nav-btn outline" id="nav-records-btn" onclick="showTab('records')" style="display:none;">📋 Riwayat</button>
@@ -1837,6 +1837,9 @@ function initAuth() {
       const name = user.displayName || user.email.split('@')[0];
       document.getElementById('nav-username').textContent = name;
       document.getElementById('nav-avatar').textContent = name[0].toUpperCase();
+      // Tampilkan project ID di console untuk verifikasi
+      console.log('[QF] Project:', window._fb?.auth?.app?.options?.projectId);
+      console.log('[QF] User:', user.email, '| UID:', user.uid);
       // Load records realtime
       await subscribeRecords();
       renderStats();
@@ -1862,6 +1865,7 @@ function subscribeRecords() {
     unsubscribeRecords = onSnapshot(collection(db, 'qf_records'),
       (snap) => {
         records = snap.docs.map(d => ({ ...d.data(), id: d.id }));
+        console.log('[QF] onSnapshot:', records.length, 'records dari Firestore');
         records.sort((a, b) => {
           const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds*1000 : 0);
           const tb = b._updatedMs || b._createdMs || (b._created?.seconds ? b._created.seconds*1000 : 0);
@@ -1892,6 +1896,7 @@ async function saveRecords() {
 
 async function saveOneRecord(data) {
   if (!window._fb) { toast('⚠️ Firebase belum siap.', 'err'); throw new Error('Firebase not ready'); }
+  if (!currentUser) { toast('⚠️ Belum login — silakan login ulang.', 'err'); throw new Error('Not logged in'); }
   const { db, doc, setDoc, collection, serverTimestamp } = window._fb;
   setSyncStatus('saving');
   const nowMs = Date.now();
@@ -1920,7 +1925,7 @@ async function saveOneRecord(data) {
         _createdName: currentUser?.displayName || currentUser?.email?.split('@')[0] || '',
       });
       setSyncStatus('live');
-      toast('✅ Record berhasil disimpan!', 'ok');
+      toast('✅ Tersimpan ke cloud (project: quality-form-d08f6)', 'ok');
       return newRef.id;
     }
   } catch(e) {
@@ -1950,18 +1955,21 @@ function loadRecords() {
 }
 
 // ── Init Firebase ketika SDK siap ──
-window.addEventListener('firebase-ready', () => {
-  // Cek apakah config sudah diisi
+function onFirebaseReady() {
   const cfg = window._fb?.auth?.app?.options;
   if (!cfg || cfg.apiKey === 'GANTI_API_KEY_ANDA') {
     document.getElementById('config-banner').classList.add('show');
-    document.getElementById('login-screen').style.display = 'none'; // hide login, show config warning
+    document.getElementById('login-screen').style.display = 'none';
     setSyncStatus('offline', '⚙ Perlu konfigurasi');
     renderStats(); initKop();
     return;
   }
+  console.log('[QF] Firebase ready, project:', cfg.projectId);
   initAuth();
-});
+}
+window.addEventListener('firebase-ready', onFirebaseReady);
+// Fallback: jika event sudah terjadi sebelum listener terpasang
+if (window._fb) onFirebaseReady();
 
 // ============================================================
 // KIRIM KE EMAIL — format data record jadi teks email
@@ -2410,6 +2418,7 @@ function restoreDraftGeneric(formType, r) {
 }
 
 function saveRecord() {
+  console.log('[QF] saveRecord user='+currentUser?.email+' fb='+(!!window._fb));
   const data = collect();
   if (!data.spesifikasi.trim()) { toast('⚠️ Isi Spesifikasi terlebih dahulu!', 'err'); return; }
 
@@ -2642,6 +2651,7 @@ function collectUF() {
 const _lastSavedGenericId = {}; // { formType: id }
 
 function saveGenericRecord(type, collectFn, btnEl) {
+  console.log('[QF] saveGenericRecord type='+type+' user='+currentUser?.email+' fb='+(!!window._fb));
   const data = collectFn();
 
   const resetBtn = () => {
