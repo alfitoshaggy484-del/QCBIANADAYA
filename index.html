@@ -4974,6 +4974,8 @@ function buildPrintUjiFungsi(r) {
 // ─────────────────────────────────────────────────────────────
 function buildGenericPrintHTML(r) {
   switch(r.formType) {
+    case 'rtc':        return buildPrintRTC(r);
+    case 'incoming':   return buildPrintHTML(r);
     case 'frekuensi':  return buildPrintFrekuensi(r);
     case 'isolasi':    return buildPrintIsolasi(r);
     case 'roadcard':   return buildPrintRoadcard(r);
