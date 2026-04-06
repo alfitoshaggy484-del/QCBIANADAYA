@@ -1867,7 +1867,15 @@ function subscribeRecords() {
     unsubscribeRecords = onValue(recRef, (snap) => {
       records = [];
       if (snap.exists()) {
-        snap.forEach(child => records.push({ ...child.val(), id: child.key }));
+        snap.forEach(child => {
+          const val = child.val();
+          // Lewati record yang bukan object (string/number/null) — data rusak di DB
+          if (!val || typeof val !== 'object' || Array.isArray(val)) {
+            console.warn('[QF] Record dilewati (data tidak valid):', child.key, val);
+            return;
+          }
+          records.push({ ...val, id: child.key });
+        });
       }
       console.log('[QF] onValue fired → total records dari DB:', records.length, records.map(r=>r.id));
       records.sort((a,b) => (b._updatedMs||b._createdMs||0) - (a._updatedMs||a._createdMs||0));
@@ -3402,6 +3410,8 @@ function renderRecords() {
   const ft = (document.getElementById('filter-type')||{}).value||'';
   const st = (document.getElementById('filter-status')||{}).value||'';
   const filtered = records.filter(r=>{
+    // Lewati record rusak yang tidak punya formType
+    if (!r || typeof r !== 'object' || !r.formType) return false;
     const mq = !q || JSON.stringify(r).toLowerCase().includes(q);
     const mft = !ft || r.formType===ft;
     const ms = !st || r.status===st;
@@ -3794,10 +3804,11 @@ function deleteRecord(id) {
 
 function renderStats() {
   const now = new Date();
-  document.getElementById('st-total').textContent = records.length;
-  document.getElementById('st-ok').textContent = records.filter(r=>r.status==='DITERIMA').length;
-  document.getElementById('st-no').textContent = records.filter(r=>r.status==='DITOLAK').length;
-  document.getElementById('st-month').textContent = records.filter(r=>{
+  const validRecords = records.filter(r => r && typeof r === 'object' && r.formType);
+  document.getElementById('st-total').textContent = validRecords.length;
+  document.getElementById('st-ok').textContent = validRecords.filter(r=>r.status==='DITERIMA').length;
+  document.getElementById('st-no').textContent = validRecords.filter(r=>r.status==='DITOLAK').length;
+  document.getElementById('st-month').textContent = validRecords.filter(r=>{
     const ms = r._createdMs || r._updatedMs;
     if (ms) { const d=new Date(ms); return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear(); }
     const tgl = r.tgl_inspeksi||r.tanggal;
