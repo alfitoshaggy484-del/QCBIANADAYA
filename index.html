@@ -1869,6 +1869,7 @@ function subscribeRecords() {
       if (snap.exists()) {
         snap.forEach(child => records.push({ ...child.val(), id: child.key }));
       }
+      console.log('[QF] onValue fired → total records dari DB:', records.length, records.map(r=>r.id));
       records.sort((a,b) => (b._updatedMs||b._createdMs||0) - (a._updatedMs||a._createdMs||0));
       setSyncStatus('live');
       renderStats();
@@ -1911,6 +1912,7 @@ async function saveOneRecord(data) {
       payload._createdMs = nowMs;
       payload._createdBy = currentUser?.email || '';
       const newRef = push(ref(db, 'qf_records'));
+      console.log('[QF] PUSH baru → key=', newRef.key, '| sebelumnya id=', id||'(kosong)');
       await set(newRef, payload);
       setSyncStatus('live');
       toast('✅ Tersimpan & sinkron ke semua akun!', 'ok');
