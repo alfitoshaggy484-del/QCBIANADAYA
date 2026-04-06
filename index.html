@@ -2407,7 +2407,8 @@ function saveRecord() {
   const btn = document.getElementById('btn-save');
   btn.disabled = true; btn.innerHTML = '⏳ Menyimpan...';
 
-  const targetId = editId || _lastSavedIncomingId || '';
+  // Hanya pakai _lastSavedIncomingId jika sedang dalam mode edit (via viewRecord)
+  const targetId = editId || '';
   const isEdit = !!targetId;
   data.id = targetId;
   editId = null;
@@ -2419,16 +2420,6 @@ function saveRecord() {
 
   const forceTimer = setTimeout(() => resetBtn('💾 Simpan Record'), 5000);
 
-  // Jika record baru, generate ID sync sekarang
-  if (!data.id || data.id.length <= 5) {
-    try {
-      const { db, doc, collection } = window._fb;
-      const newRef = doc(collection(db, 'qf_records'));
-      data.id = newRef.id;
-      _lastSavedIncomingId = newRef.id;
-    } catch(e) { /* fallback */ }
-  }
-
   saveOneRecord(data)
     .then((savedId) => {
       clearTimeout(forceTimer);
@@ -2436,6 +2427,8 @@ function saveRecord() {
       resetBtn('💾 Simpan Record');
       renderStats();
       clearDraft('incoming');
+      // Reset agar klik simpan berikutnya buat record baru
+      _lastSavedIncomingId = null;
     })
     .catch(() => {
       clearTimeout(forceTimer);
@@ -2644,21 +2637,12 @@ function saveGenericRecord(type, collectFn, btnEl) {
 
   const forceTimer = setTimeout(resetBtn, 5000);
 
-  const targetId = editId || _lastSavedGenericId[type] || '';
+  // Hanya pakai _lastSavedGenericId jika sedang dalam mode edit (via viewRecord)
+  // Jika editId kosong (bukan dari viewRecord), buat record baru
+  const targetId = editId || '';
   const isEdit = !!targetId;
   data.id = targetId;
   editId = null;
-
-  // Jika ini record baru, generate ID client-side SEKARANG (sync)
-  // agar _lastSavedGenericId langsung terisi sebelum Firebase selesai
-  if (!data.id || data.id.length <= 5) {
-    try {
-      const { db, doc, collection } = window._fb;
-      const newRef = doc(collection(db, 'qf_records'));
-      data.id = newRef.id;
-      _lastSavedGenericId[type] = newRef.id; // langsung simpan ID
-    } catch(e) { /* fallback ke addDoc biasa */ }
-  }
 
   saveOneRecord(data)
     .then((savedId) => {
@@ -2667,6 +2651,8 @@ function saveGenericRecord(type, collectFn, btnEl) {
       resetBtn();
       renderStats();
       clearDraft(type);
+      // Reset setelah save agar klik simpan berikutnya buat record baru
+      _lastSavedGenericId[type] = null;
     })
     .catch(() => {
       clearTimeout(forceTimer);
