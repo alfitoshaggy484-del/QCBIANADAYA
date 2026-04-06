@@ -14,8 +14,8 @@
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, createUserWithEmailAndPassword, updateProfile,
            browserLocalPersistence, setPersistence }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs, deleteDoc, onSnapshot, query, orderBy, serverTimestamp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getDatabase, ref, set, get, push, remove, onValue, query as dbQuery, orderByChild, serverTimestamp as dbTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
   // ══════════════════════════════════════════════════════
   // 🔧 KONFIGURASI FIREBASE — ISI DENGAN DATA ANDA
@@ -28,21 +28,22 @@
     storageBucket:     "quality-form-d08f6.firebasestorage.app",
     messagingSenderId: "882713876059",
     appId:             "1:882713876059:web:be792f910c2390268b517e",
+    databaseURL:       "https://quality-form-d08f6-default-rtdb.asia-southeast1.firebasedatabase.app",
     measurementId:     "G-FSLHSZFSR0"
   };
 
   const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-  const db   = getFirestore(app);
+  const db   = getDatabase(app);
 
   // Sesi login tetap aktif meski browser ditutup/refresh
   await setPersistence(auth, browserLocalPersistence);
 
   // Expose ke global scope
-  window._fb = { auth, db, signInWithEmailAndPassword, signOut, onAuthStateChanged,
-                 createUserWithEmailAndPassword, updateProfile,
-                 collection, doc, addDoc, setDoc, getDoc, getDocs,
-                 deleteDoc, onSnapshot, query, orderBy, serverTimestamp };
+  window._fb = { auth, db,
+                 ref, set, get, push, remove, onValue, dbTimestamp,
+                 signInWithEmailAndPassword, signOut, onAuthStateChanged,
+                 createUserWithEmailAndPassword, updateProfile };
   window.dispatchEvent(new Event('firebase-ready'));
 </script>
 
@@ -1857,76 +1858,63 @@ function initAuth() {
   });
 }
 
-// ── Real-time listener ke Firestore ──
+// ── Real-time listener ke Realtime Database — semua akun ──
 function subscribeRecords() {
   return new Promise((resolve) => {
-    const { db, collection, onSnapshot } = window._fb;
+    const { db, ref, onValue } = window._fb;
     setSyncStatus('loading', '⏳ Memuat data...');
-    unsubscribeRecords = onSnapshot(collection(db, 'qf_records'),
-      (snap) => {
-        records = snap.docs.map(d => ({ ...d.data(), id: d.id }));
-        console.log('[QF] onSnapshot:', records.length, 'records dari Firestore');
-        records.sort((a, b) => {
-          const ta = a._updatedMs || a._createdMs || (a._created?.seconds ? a._created.seconds*1000 : 0);
-          const tb = b._updatedMs || b._createdMs || (b._created?.seconds ? b._created.seconds*1000 : 0);
-          return tb - ta;
-        });
-        setSyncStatus('live');
-        renderStats();
-        renderRecords();
-        resolve();
-      },
-      (err) => {
-        console.error('Firestore error:', err);
-        setSyncStatus('error', '✗ ' + err.message);
-        toast('⚠️ Gagal memuat data: ' + err.message, 'err');
-        resolve();
+    const recRef = ref(db, 'qf_records');
+    unsubscribeRecords = onValue(recRef, (snap) => {
+      records = [];
+      if (snap.exists()) {
+        snap.forEach(child => records.push({ ...child.val(), id: child.key }));
       }
-    );
+      records.sort((a,b) => (b._updatedMs||b._createdMs||0) - (a._updatedMs||a._createdMs||0));
+      setSyncStatus('live');
+      renderStats();
+      renderRecords();
+      resolve();
+    }, (err) => {
+      setSyncStatus('error', '✗ ' + err.message);
+      toast('⚠️ Gagal memuat: ' + err.message, 'err');
+      resolve();
+    });
   });
 }
 
-// ── Simpan ke Firestore ──
-async function saveRecords() {
-  // saveRecords() dipanggil setelah records[] dimodifikasi di memory.
-  // Versi Firebase: simpan record terbaru (index 0) atau update record yg diedit.
-  // Handled per-record via saveOneRecord().
-  // Fungsi ini dipertahankan untuk kompatibilitas (delete, dll).
-}
+async function saveRecords() {}
 
 async function saveOneRecord(data) {
   if (!window._fb) { toast('⚠️ Firebase belum siap.', 'err'); throw new Error('Firebase not ready'); }
   if (!currentUser) { toast('⚠️ Belum login — silakan login ulang.', 'err'); throw new Error('Not logged in'); }
-  const { db, doc, setDoc, collection, serverTimestamp } = window._fb;
+  const { db, ref, set, push } = window._fb;
   setSyncStatus('saving');
   const nowMs = Date.now();
   try {
-    if (data.id && data.id.length > 5) {
-      const ref = doc(db, 'qf_records', data.id);
-      const { id, ...rest } = data;
-      await setDoc(ref, {
-        ...rest,
-        _updated: serverTimestamp(),
-        _updatedMs: nowMs,
-        _updatedBy: currentUser?.email || '',
-        _updatedName: currentUser?.displayName || currentUser?.email?.split('@')[0] || ''
-      }, { merge: true });
+    const { id, ...rest } = data;
+    const payload = {
+      ...rest,
+      _updatedMs: nowMs,
+      _updatedBy: currentUser?.email || '',
+      _updatedName: currentUser?.displayName || currentUser?.email?.split('@')[0] || '',
+    };
+    if (id && id.length > 5) {
+      // Update existing
+      payload._createdMs = data._createdMs || nowMs;
+      payload._createdBy = data._createdBy || currentUser?.email || '';
+      await set(ref(db, 'qf_records/' + id), payload);
       setSyncStatus('live');
       toast('✅ Record berhasil diupdate!', 'ok');
-      return data.id;
+      return id;
     } else {
-      const { id, ...rest } = data;
-      const newRef = doc(collection(db, 'qf_records'));
-      await setDoc(newRef, {
-        ...rest,
-        _created: serverTimestamp(),
-        _createdMs: nowMs,
-        _createdBy: currentUser?.email || '',
-        _createdName: currentUser?.displayName || currentUser?.email?.split('@')[0] || '',
-      });
+      // Baru
+      payload._createdMs = nowMs;
+      payload._createdBy = currentUser?.email || '';
+      const newRef = push(ref(db, 'qf_records'));
+      await set(newRef, payload);
       setSyncStatus('live');
-      toast('✅ Tersimpan ke cloud (project: quality-form-d08f6)', 'ok');
-      return newRef.id;
+      toast('✅ Tersimpan & sinkron ke semua akun!', 'ok');
+      return newRef.key;
     }
   } catch(e) {
     console.error('saveOneRecord error:', e);
@@ -1937,10 +1925,10 @@ async function saveOneRecord(data) {
 }
 
 async function deleteOneRecord(id) {
-  const { db, doc, deleteDoc } = window._fb;
+  const { db, ref, remove } = window._fb;
   setSyncStatus('saving');
   try {
-    await deleteDoc(doc(db, 'qf_records', id));
+    await remove(ref(db, 'qf_records/' + id));
     setSyncStatus('live');
   } catch(e) {
     console.error(e); setSyncStatus('error'); toast('✗ Gagal hapus: ' + e.message, 'err');
@@ -2289,7 +2277,7 @@ function startDraftWatcher() {
 async function saveDraft() {
   if (!window._fb || !currentUser || !currentForm) return;
   try {
-    const { db, doc, setDoc, serverTimestamp } = window._fb;
+    const { db, ref, set } = window._fb;
     let data = null;
     if      (currentForm === 'incoming')   data = collect();
     else if (currentForm === 'frekuensi')  data = collectFD();
@@ -2299,41 +2287,35 @@ async function saveDraft() {
     else if (currentForm === 'roadcard')   data = collectRC();
     else if (currentForm === 'ujifungsi')  data = collectUF();
     if (!data) return;
-
     const draftId = currentUser.uid + '_' + currentForm;
-    const ref = doc(db, 'qf_drafts', draftId);
-    await setDoc(ref, {
+    await set(ref(db, 'qf_drafts/' + draftId), {
       ...data,
       _draftForm: currentForm,
       _draftUser: currentUser.email,
-      _draftTs: serverTimestamp(),
+      _draftTs: Date.now(),
       _editId: editId || null,
       _lastSavedIncomingId: _lastSavedIncomingId || null,
     });
-  } catch(e) {
-    console.warn('Draft save error:', e);
-  }
+  } catch(e) { console.warn('Draft save error:', e); }
 }
 
 async function loadDraft(formType) {
   if (!window._fb || !currentUser) return null;
   try {
-    const { db, doc, getDoc } = window._fb;
+    const { db, ref, get } = window._fb;
     const draftId = currentUser.uid + '_' + formType;
-    const snap = await getDoc(doc(db, 'qf_drafts', draftId));
-    if (snap.exists()) return snap.data();
-  } catch(e) {
-    console.warn('Draft load error:', e);
-  }
+    const snap = await get(ref(db, 'qf_drafts/' + draftId));
+    if (snap.exists()) return snap.val();
+  } catch(e) { console.warn('Draft load error:', e); }
   return null;
 }
 
 async function clearDraft(formType) {
   if (!window._fb || !currentUser) return;
   try {
-    const { db, doc, deleteDoc } = window._fb;
+    const { db, ref, remove } = window._fb;
     const draftId = currentUser.uid + '_' + (formType || currentForm);
-    await deleteDoc(doc(db, 'qf_drafts', draftId));
+    await remove(ref(db, 'qf_drafts/' + draftId));
   } catch(e) { /* ignore */ }
 }
 
@@ -2342,7 +2324,7 @@ async function restoreDraftIfAny(formType) {
   if (!draft) return false;
 
   // Tanya user apakah mau restore
-  const ts = draft._draftTs?.toDate?.()?.toLocaleString('id-ID') || 'sebelumnya';
+  const ts = draft._draftTs ? new Date(draft._draftTs).toLocaleString('id-ID') : 'sebelumnya';
   if (!confirm(`📋 Ditemukan draft tersimpan (\${ts}).\nMau lanjutkan dari draft?`)) {
     await clearDraft(formType);
     return false;
@@ -3417,21 +3399,14 @@ function formatFirestoreDate(ts) {
   if (!ts) return '—';
   let d;
   try {
-    if (typeof ts.toDate === 'function') {
-      d = ts.toDate();
-    } else if (ts.seconds !== undefined) {
-      d = new Date(ts.seconds * 1000 + Math.floor((ts.nanoseconds||0) / 1e6));
-    } else if (typeof ts === 'number') {
-      d = new Date(ts);
-    } else if (typeof ts === 'string') {
-      d = new Date(ts);
-    } else {
-      d = new Date(ts);
-    }
+    if (typeof ts === 'number') d = new Date(ts);
+    else if (typeof ts.toDate === 'function') d = ts.toDate();
+    else if (ts.seconds !== undefined) d = new Date(ts.seconds * 1000);
+    else d = new Date(ts);
   } catch(e) { return '—'; }
   if (!d || isNaN(d.getTime())) return '—';
   const pad = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
 }
 
 function renderRecords() {
@@ -3452,10 +3427,9 @@ function renderRecords() {
     const meta = FORM_META[r.formType]||{label:'—',code:'—'};
     // Tampilkan waktu simpan (history) dari _updated atau _created
     // Ambil timestamp: serverTimestamp bisa null saat pending write, fallback ke Ms
-    const savedTs = r._updated || r._created || r._updatedAt || r._createdAt || null;
     const savedMs = r._updatedMs || r._createdMs || null;
-    const savedTime = formatFirestoreDate(savedTs) !== '—' ? formatFirestoreDate(savedTs) : formatFirestoreDate(savedMs);
-    const isUpdated = !!(r._updated || r._updatedAt || r._updatedMs);
+    const savedTime = formatFirestoreDate(savedMs);
+    const isUpdated = !!(r._updatedMs && r._createdMs && r._updatedMs !== r._createdMs);
     // Operator: siapa yang simpan (by email/name) + field operator dari form
     // Ambil operator sesuai field form masing-masing
     let formOp = '';
