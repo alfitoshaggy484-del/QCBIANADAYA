@@ -3760,24 +3760,31 @@ function viewRecord(id) {
     toast('✏️ Data dimuat — siap diedit', 'ok');
 
   } else if (r.formType === 'rtc') {
-    openForm('rtc');
+    // Reset dulu agar tabel bersih, lalu buka form
+    resetRTC();
     editId = id;
+    openForm('rtc');
     const sv = (elId, val) => { const el=document.getElementById(elId); if(el) el.value=val||''; };
     sv('rtc_tipe', r.tipe); sv('rtc_noseri', r.noseri); sv('rtc_supplier', r.supplier);
     sv('rtc_nopo', r.nopo); sv('rtc_jml_datang', r.jml_datang); sv('rtc_tgl', r.tgl);
     sv('rtc_qc', r.qc); sv('rtc_tgl_ttd', r.tgl_ttd); sv('rtc_catatan', r.catatan);
     setRtcStatus(r.status||'');
-    // Restore rows
+    // Restore rows — bangun ulang tabel dari data tersimpan
     const tbody = document.getElementById('rtc-tbody');
-    if (tbody && r.rows) {
-      tbody.querySelectorAll('tr').forEach((tr, i) => {
-        const d = r.rows[i]||{};
+    if (tbody && r.rows && r.rows.length) {
+      // Hapus tabel default, ganti dengan baris dari data tersimpan
+      tbody.innerHTML = '';
+      r.rows.forEach((d, i) => {
+        tbody.appendChild(_makeRTCRow(d.item||'', i + 1));
+        const tr = tbody.lastElementChild;
         const setInp = (cls, val) => { const el=tr.querySelector('input.'+cls); if(el) el.value=val||''; };
-        setInp('rtc-item', d.item); setInp('rtc-qty', d.qty);
-        setInp('rtc-aksesoris', d.aksesoris); setInp('rtc-ket', d.ket);
-        // Restore toggle buttons
+        setInp('rtc-qty', d.qty);
+        setInp('rtc-aksesoris', d.aksesoris);
+        setInp('rtc-ket', d.ket);
+        // Restore toggle buttons (vgood, vng, fgood, fng)
         ['rtc-vgood','rtc-vng','rtc-fgood','rtc-fng'].forEach(cls => {
-          const val = d[cls.replace('rtc-','')]||'';
+          const fieldKey = cls.replace('rtc-','');
+          const val = d[fieldKey]||'';
           const hid = tr.querySelector('input.'+cls);
           const btn = hid ? hid.nextElementSibling : null;
           if (hid) hid.value = val;
@@ -3789,7 +3796,10 @@ function viewRecord(id) {
         });
       });
     }
-    showTab('form');
+    // Update tombol simpan
+    document.querySelectorAll('#form-rtc .big-btn.save').forEach(b => { b.innerHTML = '💾 Update Record'; b.disabled = false; });
+    showTab('form'); window.scrollTo(0,0);
+    toast('✏️ Data dimuat — siap diedit', 'ok');
   } else {
     toast('ℹ️ Form tidak dikenal: ' + r.formType, '');
   }
